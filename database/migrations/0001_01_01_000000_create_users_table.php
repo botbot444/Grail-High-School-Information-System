@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+             // Roles: admin, teacher, staff
+            $table->string('role')->default('teacher');
+            $table->boolean('is_active')->default(true);
+            // end
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

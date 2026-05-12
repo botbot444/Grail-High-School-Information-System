@@ -6,16 +6,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-// use App\Models\ClassSubject;
+use App\Models\ClassSubject;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name','email','password',];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+    ];
 
-    protected $hidden = ['password','remember_token',];
-    //Returns key value arr(hash map)
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -33,10 +41,9 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
-    // A teacher's assigned classes or subjects
+
     public function assignments(): HasMany
     {
         return $this->hasMany(ClassSubject::class, 'teacher_id');
     }
 }
-?>
