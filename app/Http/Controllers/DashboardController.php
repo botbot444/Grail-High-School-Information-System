@@ -11,16 +11,23 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
         if ($user->isTeacher()) {
-            // Get teacher's assignments with class, subject, and students
-            $assignments = ClassSubject::with(['schoolClass.students', 'subject'])
-                ->where('teacher_id', $user->id)
-                ->get();
-
-            return view('dashboard', compact('assignments'));
+            return redirect()->route('teacher.marks');
+        }
+        if ($user->isParent()) {
+            return redirect()->route('parent.dashboard');
+        }
+        if ($user->isStudent()) {
+            return redirect()->route('student.dashboard');
         }
 
-        // For other roles, just show default dashboard
-        return view('dashboard');
+        $assignments = ClassSubject::with(['schoolClass.students', 'subject'])
+            ->where('teacher_id', $user->id)
+            ->get();
+
+        return view('dashboard', compact('assignments'));
     }
 }

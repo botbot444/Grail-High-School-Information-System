@@ -28,6 +28,23 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = $request->user();
+
+        if ($user) {
+            if ($user->isAdmin()) {
+                return redirect()->intended(route('admin.dashboard', absolute: false));
+            }
+            if ($user->isTeacher()) {
+                return redirect()->intended(route('teacher.marks', absolute: false));
+            }
+            if ($user->isParent()) {
+                return redirect()->intended(route('parent.dashboard', absolute: false));
+            }
+            if ($user->isStudent()) {
+                return redirect()->intended(route('student.dashboard', absolute: false));
+            }
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -42,6 +59,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

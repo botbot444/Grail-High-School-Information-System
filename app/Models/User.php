@@ -33,6 +33,17 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    public function isParent(): bool
+    {
+        return $this->role === 'parent';
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
+    }
+
     // A teacher's assigned classes or subjects
     public function assignments(): HasMany
     {

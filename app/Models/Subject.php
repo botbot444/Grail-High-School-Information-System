@@ -2,19 +2,36 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subject extends Model
 {
-    use HasFactory;
+    protected $primaryKey = 'subject_id';
 
-    protected $fillable = ['name','subject_code','category'];
+    protected $fillable = [
+        'subject_name',
+    ];
 
-    // Get all classes where this subject is taught.
-    public function classAssignments(): HasMany
+    // ── Relationships ─────────────────────────────────────────────────────────
+
+    /** Classes that offer this subject */
+    public function classes(): BelongsToMany
     {
-        return $this->hasMany(ClassSubject::class);
+        return $this->belongsToMany(
+            SchoolClass::class,
+            'class_subjects',
+            'subject_id',
+            'class_id',
+            'subject_id',
+            'class_id'
+        )->withPivot('teacher_id', 'class_subject_id')->withTimestamps();
+    }
+
+    /** ClassSubject pivot records for this subject */
+    public function classSubjects(): HasMany
+    {
+        return $this->hasMany(ClassSubject::class, 'subject_id', 'subject_id');
     }
 }

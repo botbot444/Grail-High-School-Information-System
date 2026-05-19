@@ -6,23 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('subjects', function (Blueprint $table) {
-            $table->id();
-            $table->string('name'); // e.g., "Mathematics", "English"
-            $table->string('subject_code')->unique(); // e.g., "MA110", "LA111"
-            $table->enum('category', ['Core', 'Elective'])->default('Core');
+            $table->id('subject_id');
+            $table->string('subject_name')->unique();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('subjects');

@@ -6,24 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('school_classes', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->nullable(); // e.g., "Class 10 A"
-            $table->integer('grade_level'); // 8, 9, 10, 11, 12
-            $table->string('section')->nullable(); // A, B, C or Blue, Red
-            $table->softDeletes();
+            $table->id('class_id');
+            $table->string('class_name');
+            $table->string('grade_level'); // e.g. "Grade 10", "Form 3"
+            // teacher_id (class teacher / homeroom) added after teachers table via foreign key
+            $table->unsignedBigInteger('teacher_id')->constrained('teachers', 'teacher_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('school_classes');

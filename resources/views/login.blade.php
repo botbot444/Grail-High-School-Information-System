@@ -7,7 +7,7 @@
         <div class="col-md-4">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h3 class="text-center">Welcome to Grail</h3>
+                    <h3 class="text-center">Welcme to Grail</h3>
                     <form>
                         <div class="mb-3">
                             <label>Email Address</label>
