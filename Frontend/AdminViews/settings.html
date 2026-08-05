@@ -1,0 +1,794 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>System Settings | Grail SIS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .active-tab-indicator {
+        box-shadow: inset 4px 0 0 0 #0059bb;
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed": "#001a41",
+              "inverse-surface": "#2e3132",
+              "surface-variant": "#e1e3e4",
+              "tertiary-fixed-dim": "#bfc8d0",
+              "primary-fixed": "#d8e2ff",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#6d767e",
+              secondary: "#465f88",
+              error: "#ba1a1a",
+              "on-surface": "#191c1d",
+              "error-container": "#ffdad6",
+              "on-tertiary-fixed": "#141d23",
+              "primary-fixed-dim": "#adc7ff",
+              "on-primary-container": "#fefcff",
+              "inverse-on-surface": "#f0f1f2",
+              "on-primary": "#ffffff",
+              "on-background": "#191c1d",
+              "secondary-container": "#b6d0ff",
+              "on-secondary-container": "#3f5881",
+              "on-tertiary-fixed-variant": "#3f484f",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#d6e3ff",
+              "surface-container-low": "#f3f4f5",
+              background: "#f8f9fa",
+              "surface-container-highest": "#e1e3e4",
+              "surface-container-high": "#e7e8e9",
+              "outline-variant": "#c1c6d7",
+              "on-error-container": "#93000a",
+              "inverse-primary": "#adc7ff",
+              "surface-dim": "#d9dadb",
+              surface: "#f8f9fa",
+              outline: "#717786",
+              "tertiary-fixed": "#dbe4ed",
+              "primary-container": "#0070ea",
+              "surface-bright": "#f8f9fa",
+              "secondary-fixed-dim": "#aec7f6",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "on-primary-fixed-variant": "#004493",
+              "on-secondary-fixed-variant": "#2d476f",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed": "#001b3d",
+              tertiary: "#545d65",
+              "on-error": "#ffffff",
+              "on-tertiary-container": "#fcfcff",
+              primary: "#0059bb",
+              "surface-tint": "#005bc0",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-sm": "8px",
+              "stack-md": "16px",
+              "header-height": "72px",
+              "container-padding": "32px",
+              "sidebar-width": "260px",
+              gutter: "24px",
+            },
+            fontFamily: {
+              "title-sm": ["Inter"],
+              "display-lg": ["Inter"],
+              "body-md": ["Inter"],
+              "headline-md": ["Inter"],
+              "data-mono": ["JetBrains Mono"],
+              "label-sm": ["Inter"],
+            },
+            fontSize: {
+              "title-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+              "display-lg": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "headline-md": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "600",
+                },
+              ],
+              "data-mono": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+              "label-sm": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "500",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-background text-on-surface">
+    <!-- Sidebar Navigation Shell -->
+    <aside
+      class="w-sidebar-width h-screen fixed left-0 top-0 bg-on-primary-fixed dark:bg-on-surface border-r border-outline-variant flex flex-col h-full overflow-y-auto z-50"
+    >
+      <div class="px-6 py-8 flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-primary-container rounded flex items-center justify-center"
+        >
+          <span
+            class="material-symbols-outlined text-on-primary-container"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >school</span
+          >
+        </div>
+        <div>
+          <h1
+            class="text-title-sm font-title-sm font-bold text-primary-fixed leading-tight"
+          >
+            Grail SIS
+          </h1>
+          <p
+            class="text-[10px] text-tertiary-fixed-dim uppercase tracking-widest"
+          >
+            Admin Portal
+          </p>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 space-y-1">
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >dashboard</span
+          >
+          <span class="font-label-sm text-label-sm">Dashboard</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >group</span
+          >
+          <span class="font-label-sm text-label-sm">User Management</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >school</span
+          >
+          <span class="font-label-sm text-label-sm">Students</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >person_pin</span
+          >
+          <span class="font-label-sm text-label-sm">Teachers</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >family_restroom</span
+          >
+          <span class="font-label-sm text-label-sm">Parents</span>
+        </a>
+        <div
+          class="pt-4 pb-2 px-3 text-[10px] text-tertiary-fixed-dim font-bold uppercase tracking-widest opacity-50"
+        >
+          Academic
+        </div>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >groups</span
+          >
+          <span class="font-label-sm text-label-sm">Classes</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >book</span
+          >
+          <span class="font-label-sm text-label-sm">Subjects</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >calendar_month</span
+          >
+          <span class="font-label-sm text-label-sm">Timetables</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >how_to_reg</span
+          >
+          <span class="font-label-sm text-label-sm">Attendance</span>
+        </a>
+        <div
+          class="pt-4 pb-2 px-3 text-[10px] text-tertiary-fixed-dim font-bold uppercase tracking-widest opacity-50"
+        >
+          Operations
+        </div>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >assignment_turned_in</span
+          >
+          <span class="font-label-sm text-label-sm">Examinations</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-white"
+            >analytics</span
+          >
+          <span class="font-label-sm text-label-sm">Reports</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 bg-primary-container text-on-primary-container border-l-4 border-primary transition-colors duration-200 rounded-r-lg group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >settings</span
+          >
+          <span class="font-label-sm text-label-sm">Settings</span>
+        </a>
+      </nav>
+      <div class="p-4 mt-auto border-t border-outline-variant/30">
+        <div
+          class="flex items-center gap-3 px-2 py-3 rounded-lg hover:bg-on-primary-fixed-variant cursor-pointer"
+        >
+          <img
+            alt="Administrator Profile"
+            class="w-8 h-8 rounded-full bg-surface-container-high"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUh6BkrpVYeylvkUoVrQhRtuBT2hU1qY7mLO8t7HJ0IBSVc1mbg0R6JAhEv5RlPyEyeFEGcuDVzEPDji7kq5n4sO1hC1ixz7O1mW_ffoxILDbJ3rN3LGDyHMinHkcUiPEEnK14pGoIjn1E3oQNOQXyX-KjgMT57isHQPFQRR9L73X6yyn7-Qn_f3UtJhyEPFexrd5AZvYAu7-uWBbsD5_SjwU4vjQlsmkec7kJbrSbgzuowsONYenxb7j8pJ0HhhYvXjWBvHT39yvM"
+          />
+          <div class="overflow-hidden">
+            <p class="text-label-sm font-label-sm text-primary-fixed truncate">
+              Alex Administrator
+            </p>
+            <p class="text-[10px] text-tertiary-fixed-dim truncate">
+              Super Admin
+            </p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <!-- Top Navigation Bar -->
+    <header
+      class="h-header-height fixed top-0 right-0 w-[calc(100%-260px)] z-40 bg-surface-container-lowest dark:bg-surface-dim border-b border-surface-container-high shadow-sm flex justify-between items-center px-container-padding"
+    >
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+            >search</span
+          >
+          <input
+            class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-md font-body-md focus:ring-2 focus:ring-primary focus:bg-white transition-all"
+            placeholder="Search system settings..."
+            type="text"
+          />
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button
+          class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 active:scale-95 transition-all"
+        >
+          <span class="material-symbols-outlined text-sm">add_circle</span>
+          Add New Configuration
+        </button>
+        <div class="h-8 w-[1px] bg-surface-container-high"></div>
+        <button
+          class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors relative"
+        >
+          <span class="material-symbols-outlined">notifications</span>
+          <span
+            class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"
+          ></span>
+        </button>
+        <button
+          class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors"
+        >
+          <span class="material-symbols-outlined">mail</span>
+        </button>
+        <button
+          class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors"
+        >
+          <span class="material-symbols-outlined">account_circle</span>
+        </button>
+      </div>
+    </header>
+    <!-- Main Content Area -->
+    <main class="ml-sidebar-width pt-header-height min-h-screen">
+      <div class="p-container-padding max-w-7xl mx-auto">
+        <div class="mb-gutter">
+          <h2 class="font-headline-md text-headline-md text-on-surface">
+            System Settings
+          </h2>
+          <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+            Configure global parameters and administrative profiles for the
+            institution.
+          </p>
+        </div>
+        <div class="grid grid-cols-12 gap-gutter items-start">
+          <!-- Vertical Tabs -->
+          <nav
+            class="col-span-12 lg:col-span-3 space-y-2 bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high shadow-sm sticky top-28"
+          >
+            <button
+              class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg bg-primary-container/10 text-primary active-tab-indicator font-label-sm text-label-sm"
+            >
+              <span
+                class="material-symbols-outlined"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >account_balance</span
+              >
+              School Profile
+            </button>
+            <button
+              class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm"
+            >
+              <span class="material-symbols-outlined">model_training</span>
+              Academic Settings
+            </button>
+            <button
+              class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm"
+            >
+              <span class="material-symbols-outlined"
+                >admin_panel_settings</span
+              >
+              Roles &amp; Permissions
+            </button>
+            <button
+              class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm"
+            >
+              <span class="material-symbols-outlined">settings_suggest</span>
+              System Config
+            </button>
+            <div class="pt-4 border-t border-surface-container-high mt-4">
+              <button
+                class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-error hover:bg-error-container/20 transition-colors font-label-sm text-label-sm"
+              >
+                <span class="material-symbols-outlined">history</span>
+                Audit Logs
+              </button>
+            </div>
+          </nav>
+          <!-- Settings Canvas -->
+          <div class="col-span-12 lg:col-span-9 space-y-gutter">
+            <!-- School Profile Form -->
+            <section
+              class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-sm overflow-hidden"
+            >
+              <div
+                class="p-6 border-b border-surface-container-high flex justify-between items-center bg-surface-container-low/50"
+              >
+                <div>
+                  <h3 class="font-title-sm text-title-sm text-on-surface">
+                    School Profile
+                  </h3>
+                  <p
+                    class="text-label-sm font-label-sm text-on-surface-variant"
+                  >
+                    Update the primary institutional identity information.
+                  </p>
+                </div>
+                <div class="flex gap-2">
+                  <button
+                    class="px-4 py-2 text-label-sm font-label-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors"
+                  >
+                    Discard
+                  </button>
+                  <button
+                    class="px-6 py-2 text-label-sm font-label-sm bg-primary text-on-primary rounded-lg hover:opacity-90 shadow-sm transition-opacity"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+              <div class="p-8 space-y-8">
+                <!-- Identity Section -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                  <div>
+                    <h4
+                      class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-1"
+                    >
+                      Institutional Logo
+                    </h4>
+                    <p
+                      class="text-body-md font-body-md text-on-surface-variant"
+                    >
+                      This logo will appear on report cards and official
+                      documents.
+                    </p>
+                  </div>
+                  <div class="md:col-span-2 flex items-center gap-6">
+                    <div class="relative group">
+                      <div
+                        class="w-32 h-32 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container flex items-center justify-center overflow-hidden"
+                      >
+                        <img
+                          alt="Institutional Logo Placeholder"
+                          class="w-full h-full object-cover"
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnBshYpnoj6AYNQJJj5Ahssu4Jb2iN-s3QeOYp9bhsYPOzrQPKHz9KIlbLyxhV0QKnoqfXrBkntaHSeXriVmFNCKDrIJFFVLiW_90IGBjYJZ41-uMkiyD8KhKpe23t_4gsO7hEZ2Tl566PWHhupOtOrydyQtV8ekIGT_IiLLzY2a6fx9rTDqCb3dHLtuqwdwsBFjKVSfz0a0BYE49NrvUDhrqAx4ndRx11lwcya12lJSdm3mqRnqSHE-kWFl2BXOnGOooTXAMIi-oS"
+                        />
+                      </div>
+                      <label
+                        class="absolute inset-0 flex items-center justify-center bg-on-surface/40 text-white opacity-0 group-hover:opacity-100 cursor-pointer rounded-xl transition-opacity"
+                      >
+                        <span class="material-symbols-outlined"
+                          >photo_camera</span
+                        >
+                        <input class="hidden" type="file" />
+                      </label>
+                    </div>
+                    <div class="space-y-2">
+                      <button
+                        class="px-4 py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                      >
+                        Replace Image
+                      </button>
+                      <p class="text-[11px] text-on-surface-variant">
+                        JPG, PNG or WEBP. Max size 2MB.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <hr class="border-surface-container-high" />
+                <!-- General Info Section -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                  <div>
+                    <h4
+                      class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-1"
+                    >
+                      General Details
+                    </h4>
+                    <p
+                      class="text-body-md font-body-md text-on-surface-variant"
+                    >
+                      Basic naming and categorization of the school.
+                    </p>
+                  </div>
+                  <div class="md:col-span-2 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="space-y-1">
+                        <label
+                          class="font-label-sm text-label-sm text-on-surface-variant"
+                          >Full School Name</label
+                        >
+                        <input
+                          class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                          type="text"
+                          value="Grail Academy of Excellence"
+                        />
+                      </div>
+                      <div class="space-y-1">
+                        <label
+                          class="font-label-sm text-label-sm text-on-surface-variant"
+                          >School Code</label
+                        >
+                        <input
+                          class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                          type="text"
+                          value="GAE-2024-INT"
+                        />
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <label
+                        class="font-label-sm text-label-sm text-on-surface-variant"
+                        >Mission Statement</label
+                      >
+                      <textarea
+                        class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                        rows="3"
+                      >
+To empower the next generation through rigorous academic excellence and holistic character development.</textarea
+                      >
+                    </div>
+                  </div>
+                </div>
+                <hr class="border-surface-container-high" />
+                <!-- Contact & Location -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                  <div>
+                    <h4
+                      class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-1"
+                    >
+                      Contact Information
+                    </h4>
+                    <p
+                      class="text-body-md font-body-md text-on-surface-variant"
+                    >
+                      Official communication channels and physical address.
+                    </p>
+                  </div>
+                  <div class="md:col-span-2 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="space-y-1">
+                        <label
+                          class="font-label-sm text-label-sm text-on-surface-variant"
+                          >Email Address</label
+                        >
+                        <input
+                          class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                          type="email"
+                          value="admin@grailacademy.edu"
+                        />
+                      </div>
+                      <div class="space-y-1">
+                        <label
+                          class="font-label-sm text-label-sm text-on-surface-variant"
+                          >Phone Number</label
+                        >
+                        <input
+                          class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                          type="tel"
+                          value="+1 (555) 0123-4567"
+                        />
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <label
+                        class="font-label-sm text-label-sm text-on-surface-variant"
+                        >Physical Address</label
+                      >
+                      <input
+                        class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                        type="text"
+                        value="123 Academic Drive, Knowledge Park, Boston MA 02108"
+                      />
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div class="space-y-1">
+                        <label
+                          class="font-label-sm text-label-sm text-on-surface-variant"
+                          >City</label
+                        >
+                        <input
+                          class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                          type="text"
+                          value="Boston"
+                        />
+                      </div>
+                      <div class="space-y-1">
+                        <label
+                          class="font-label-sm text-label-sm text-on-surface-variant"
+                          >State/Province</label
+                        >
+                        <input
+                          class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                          type="text"
+                          value="MA"
+                        />
+                      </div>
+                      <div class="space-y-1 col-span-2 md:col-span-1">
+                        <label
+                          class="font-label-sm text-label-sm text-on-surface-variant"
+                          >Country</label
+                        >
+                        <select
+                          class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md font-body-md px-4 py-2.5"
+                        >
+                          <option selected="">United States</option>
+                          <option>Canada</option>
+                          <option>United Kingdom</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-6 bg-surface-container-low/30 border-t border-surface-container-high flex justify-end gap-3"
+              >
+                <button
+                  class="px-6 py-2 border border-outline-variant rounded-lg font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                >
+                  Reset Form
+                </button>
+                <button
+                  class="px-8 py-2 bg-primary text-on-primary rounded-lg font-label-sm text-label-sm hover:shadow-lg active:scale-[0.98] transition-all"
+                >
+                  Save Institutional Profile
+                </button>
+              </div>
+            </section>
+            <!-- Academic Year Preview Bento -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+              <div
+                class="p-6 bg-surface-container-lowest border border-surface-container-high rounded-xl shadow-sm"
+              >
+                <div class="flex items-center justify-between mb-4">
+                  <h4 class="font-title-sm text-title-sm">
+                    Current Academic Cycle
+                  </h4>
+                  <span
+                    class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase"
+                    >Active</span
+                  >
+                </div>
+                <div class="space-y-4">
+                  <div class="flex justify-between items-end">
+                    <div>
+                      <p
+                        class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold"
+                      >
+                        Current Session
+                      </p>
+                      <p class="text-headline-md font-headline-md">
+                        2023 - 2024
+                      </p>
+                    </div>
+                    <div class="text-right">
+                      <p
+                        class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold"
+                      >
+                        Term
+                      </p>
+                      <p class="text-title-sm font-title-sm">Winter Quarter</p>
+                    </div>
+                  </div>
+                  <div
+                    class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden"
+                  >
+                    <div class="bg-primary h-full w-[65%]"></div>
+                  </div>
+                  <div
+                    class="flex justify-between text-label-sm font-label-sm text-on-surface-variant"
+                  >
+                    <span>Started: Aug 15, 2023</span>
+                    <span>Ends: Jun 20, 2024</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-6 bg-surface-container-lowest border border-surface-container-high rounded-xl shadow-sm flex flex-col justify-between"
+              >
+                <div>
+                  <h4 class="font-title-sm text-title-sm mb-1">
+                    System Health
+                  </h4>
+                  <p
+                    class="text-body-md font-body-md text-on-surface-variant mb-4"
+                  >
+                    Real-time status of integrated services.
+                  </p>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    <span class="text-body-md font-body-md flex-1"
+                      >Email Gateway (SendGrid)</span
+                    >
+                    <span
+                      class="text-label-sm font-label-sm text-on-surface-variant"
+                      >Operational</span
+                    >
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    <span class="text-body-md font-body-md flex-1"
+                      >SMS API (Twilio)</span
+                    >
+                    <span
+                      class="text-label-sm font-label-sm text-on-surface-variant"
+                      >Operational</span
+                    >
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    <span class="text-body-md font-body-md flex-1"
+                      >Cloud Storage (S3)</span
+                    >
+                    <span
+                      class="text-label-sm font-label-sm text-on-surface-variant"
+                      >Latency Detected</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Footer Identity -->
+    <footer
+      class="ml-sidebar-width border-t border-surface-container-high py-8 px-container-padding bg-surface-container-lowest"
+    >
+      <div
+        class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-on-surface-variant font-label-sm text-label-sm"
+      >
+        <p>© 2024 Grail Student Information System. All rights reserved.</p>
+        <div class="flex gap-6">
+          <a class="hover:text-primary transition-colors" href="#"
+            >Privacy Policy</a
+          >
+          <a class="hover:text-primary transition-colors" href="#"
+            >Security Manual</a
+          >
+          <a class="hover:text-primary transition-colors" href="#"
+            >Technical Support</a
+          >
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Simple micro-interaction for input focus
+      document
+        .querySelectorAll("input, textarea, select")
+        .forEach((element) => {
+          element.addEventListener("focus", () => {
+            element.parentElement
+              .querySelector("label")
+              ?.classList.add("text-primary");
+          });
+          element.addEventListener("blur", () => {
+            element.parentElement
+              .querySelector("label")
+              ?.classList.remove("text-primary");
+          });
+        });
+    </script>
+  </body>
+</html>

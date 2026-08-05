@@ -43,14 +43,14 @@
                             <div class="input-group">
                                 <label>Email Address</label>
 
-                                <input type="email" name="email" placeholder="admin@grail.edu" required
+                                <input type="email" name="email" placeholder="admin@grail.school" required
                                     value="{{ old('email') }}">
                             </div>
 
                             <div class="input-group">
                                 <label>Password</label>
 
-                                <input type="password" name="password" placeholder="Enter password" required>
+                                <input type="password" name="password" placeholder="Admin@1234" required>
                             </div>
 
                             <button type="submit" class="login-button">

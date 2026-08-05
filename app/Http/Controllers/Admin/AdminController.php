@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fee;
+use App\Models\ParentProfile;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Models\Subject;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 
@@ -17,25 +19,35 @@ class AdminController extends Controller
     public function dashboard()
     {
         $totalStudents = Student::count();
-        $totalStaff = Teacher::count();
-        
-        // Calculate total fees collected
-        $feesCollected = Fee::where('status', 'paid')
-            ->sum('amount_paid');
+        $totalStaff    = Teacher::count();
+        $totalParents  = ParentProfile::count();
+        $totalClasses  = SchoolClass::count();
+        $totalSubjects = Subject::count();
+
+        // Calculate total fees collected (only cleared/fully-paid fees)
+        $feesCollected = Fee::cleared()->sum('amount_paid');
+
+        // 5 most recently updated teachers for the dashboard panel
+        $recentTeachers = Teacher::with(['user', 'classSubjects.subject'])
+            ->orderByDesc('updated_at')
+            ->limit(5)
+            ->get();
 
         // Get students with their class and fee status
         $students = Student::with('schoolClass')
+            ->latest()
+            ->limit(10)
             ->get()
             ->map(function ($student) {
                 $totalFees = $student->fees()->sum('amount_due');
-                $paidFees = $student->fees()->where('status', 'paid')->sum('amount_paid');
-                $balance = $totalFees - $paidFees;
+                $paidFees  = $student->fees()->cleared()->sum('amount_paid');
+                $balance   = $totalFees - $paidFees;
 
                 return [
-                    'id' => $student->student_id,
-                    'name' => $student->full_name,
-                    'class' => $student->schoolClass?->class_name ?? 'N/A',
-                    'balance' => $balance,
+                    'id'         => $student->student_id,
+                    'name'       => $student->full_name,
+                    'class'      => $student->schoolClass?->class_name ?? 'N/A',
+                    'balance'    => $balance,
                     'fee_status' => $balance > 0 ? 'pending' : 'cleared',
                 ];
             });
@@ -43,7 +55,11 @@ class AdminController extends Controller
         return view('admin.dashboard', compact(
             'totalStudents',
             'totalStaff',
+            'totalParents',
+            'totalClasses',
+            'totalSubjects',
             'feesCollected',
+            'recentTeachers',
             'students'
         ));
     }
@@ -64,8 +80,10 @@ class AdminController extends Controller
      */
     public function create()
     {
-        $classes = \App\Models\SchoolClass::all();
-        return view('admin.students.create', compact('classes'));
+        $classes = SchoolClass::all();
+        $parents = ParentProfile::with('user')->orderBy('first_name')->orderBy('last_name')->get();
+
+        return view('admin.students.create', compact('classes', 'parents'));
     }
 
     /**
@@ -80,10 +98,15 @@ class AdminController extends Controller
             'gender' => 'required|in:Male,Female',
             'student_number' => 'required|unique:students|string|max:50',
             'class_id' => 'required|exists:school_classes,class_id',
+            'parent_user_id' => 'nullable|exists:users,id',
             'guardian_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:20',
             'enrolment_date' => 'nullable|date',
         ]);
+
+        if (! empty($validated['parent_user_id'])) {
+            $validated['parent_user_id'] = (int) $validated['parent_user_id'];
+        }
 
         try {
             Student::create($validated);
@@ -172,5 +195,21 @@ class AdminController extends Controller
             ->paginate(20);
 
         return view('admin.classes.index', compact('classes'));
+    }
+
+    /**
+     * Display the administration settings page.
+     */
+    public function settings()
+    {
+        return view('admin.settings');
+    }
+
+    /**
+     * Display the examinations page.
+     */
+    public function examinations()
+    {
+        return view('admin.examinations');
     }
 }

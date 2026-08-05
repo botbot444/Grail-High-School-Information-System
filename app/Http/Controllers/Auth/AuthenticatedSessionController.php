@@ -31,16 +31,16 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
 
         if ($user) {
-            if ($user->isAdmin()) {
+            if ($user->hasRole('admin')) {
                 return redirect()->intended(route('admin.dashboard', absolute: false));
             }
-            if ($user->isTeacher()) {
+            if ($user->hasRole('teacher')) {
                 return redirect()->intended(route('teacher.marks', absolute: false));
             }
-            if ($user->isParent()) {
+            if ($user->hasRole('parent')) {
                 return redirect()->intended(route('parent.dashboard', absolute: false));
             }
-            if ($user->isStudent()) {
+            if ($user->hasRole('student')) {
                 return redirect()->intended(route('student.dashboard', absolute: false));
             }
         }

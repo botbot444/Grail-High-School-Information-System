@@ -1,0 +1,1226 @@
+<!doctype html>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Student Directory | Grail SIS</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-primary-fixed": "#001a41",
+            "inverse-surface": "#2e3132",
+            "surface-variant": "#e1e3e4",
+            "tertiary-fixed-dim": "#bfc8d0",
+            "primary-fixed": "#d8e2ff",
+            "on-tertiary": "#ffffff",
+            "tertiary-container": "#6d767e",
+            secondary: "#465f88",
+            error: "#ba1a1a",
+            "on-surface": "#191c1d",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#141d23",
+            "primary-fixed-dim": "#adc7ff",
+            "on-primary-container": "#fefcff",
+            "inverse-on-surface": "#f0f1f2",
+            "on-primary": "#ffffff",
+            "on-background": "#191c1d",
+            "secondary-container": "#b6d0ff",
+            "on-secondary-container": "#3f5881",
+            "on-tertiary-fixed-variant": "#3f484f",
+            "on-secondary": "#ffffff",
+            "secondary-fixed": "#d6e3ff",
+            "surface-container-low": "#f3f4f5",
+            background: "#f8f9fa",
+            "surface-container-highest": "#e1e3e4",
+            "surface-container-high": "#e7e8e9",
+            "outline-variant": "#c1c6d7",
+            "on-error-container": "#93000a",
+            "inverse-primary": "#adc7ff",
+            "surface-dim": "#d9dadb",
+            surface: "#f8f9fa",
+            outline: "#717786",
+            "tertiary-fixed": "#dbe4ed",
+            "primary-container": "#0070ea",
+            "surface-bright": "#f8f9fa",
+            "secondary-fixed-dim": "#aec7f6",
+            "surface-container": "#edeeef",
+            "on-surface-variant": "#414754",
+            "on-primary-fixed-variant": "#004493",
+            "on-secondary-fixed-variant": "#2d476f",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#001b3d",
+            tertiary: "#545d65",
+            "on-error": "#ffffff",
+            "on-tertiary-container": "#fcfcff",
+            primary: "#0059bb",
+            "surface-tint": "#005bc0",
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem",
+          },
+          spacing: {
+            "stack-sm": "8px",
+            "stack-md": "16px",
+            "header-height": "72px",
+            "container-padding": "32px",
+            "sidebar-width": "260px",
+            gutter: "24px",
+          },
+          fontFamily: {
+            "title-sm": ["Inter"],
+            "display-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-md": ["Inter"],
+            "data-mono": ["JetBrains Mono"],
+            "label-sm": ["Inter"],
+          },
+          fontSize: {
+            "title-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+            "display-lg": [
+              "32px",
+              {
+                lineHeight: "40px",
+                letterSpacing: "-0.02em",
+                fontWeight: "700",
+              },
+            ],
+            "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            "headline-md": [
+              "24px",
+              {
+                lineHeight: "32px",
+                letterSpacing: "-0.01em",
+                fontWeight: "600",
+              },
+            ],
+            "data-mono": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+            "label-sm": [
+              "12px",
+              {
+                lineHeight: "16px",
+                letterSpacing: "0.02em",
+                fontWeight: "500",
+              },
+            ],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+      vertical-align: middle;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #c1c6d7;
+      border-radius: 10px;
+    }
+
+    .table-row-hover:hover {
+      background-color: rgba(0, 89, 187, 0.04);
+    }
+
+    .sidebar-transition {
+      transition:
+        transform 0.3s ease,
+        width 0.3s ease;
+    }
+
+    .main-transition {
+      transition:
+        margin-left 0.3s ease,
+        width 0.3s ease;
+    }
+
+    .header-transition {
+      transition:
+        width 0.3s ease,
+        left 0.3s ease;
+    }
+
+    .sidebar-collapsed {
+      transform: translateX(-100%);
+    }
+
+    .main-expanded {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
+
+    .header-expanded {
+      width: 100% !important;
+      left: 0 !important;
+    }
+
+    .toggle-btn {
+      transition: background-color 0.2s;
+    }
+
+    .toggle-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .delete-btn {
+      transition: all 0.15s ease;
+    }
+
+    .delete-btn:hover {
+      background-color: #ffdad6;
+      color: #ba1a1a;
+    }
+  </style>
+</head>
+
+<body class="bg-background font-body-md text-on-background overflow-hidden">
+  <!-- Fixed Sidebar -->
+  <aside id="sidebar"
+    class="w-sidebar-width h-screen fixed left-0 top-0 bg-on-primary-fixed dark:bg-on-surface border-r border-outline-variant z-50 flex flex-col h-full overflow-y-auto custom-scrollbar sidebar-transition">
+    <div class="px-6 py-8 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center text-primary-fixed">
+        <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">school</span>
+      </div>
+      <div>
+        <h1 class="text-title-sm font-title-sm font-bold text-primary-fixed">
+          Grail SIS
+        </h1>
+        <p class="text-[10px] uppercase tracking-widest text-tertiary-fixed-dim opacity-70">
+          Admin Portal
+        </p>
+      </div>
+    </div>
+    <nav class="flex-1 px-4 space-y-1">
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+        href="#">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="font-label-sm text-label-sm">Dashboard</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">group</span>
+        <span class="font-label-sm text-label-sm">User Management</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 bg-primary-container text-on-primary-container border-l-4 border-primary transition-colors duration-200 rounded-r-lg"
+        href="#">
+        <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">school</span>
+        <span class="font-label-sm text-label-sm">Students</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">person_pin</span>
+        <span class="font-label-sm text-label-sm">Teachers</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">family_restroom</span>
+        <span class="font-label-sm text-label-sm">Parents</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">groups</span>
+        <span class="font-label-sm text-label-sm">Classes</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">book</span>
+        <span class="font-label-sm text-label-sm">Subjects</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">calendar_month</span>
+        <span class="font-label-sm text-label-sm">Timetables</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">how_to_reg</span>
+        <span class="font-label-sm text-label-sm">Attendance</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">assignment_turned_in</span>
+        <span class="font-label-sm text-label-sm">Examinations</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+        href="#">
+        <span class="material-symbols-outlined">analytics</span>
+        <span class="font-label-sm text-label-sm">Reports</span>
+      </a>
+    </nav>
+    <div class="p-4 mt-auto">
+      <div class="space-y-2">
+        <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#">
+          <span class="material-symbols-outlined">settings</span>
+          <span class="font-label-sm text-label-sm">Settings</span>
+        </a>
+        <button
+          class="w-full flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group">
+          <span class="material-symbols-outlined">logout</span>
+          <span class="font-label-sm text-label-sm">Sign Out</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Top Bar -->
+  <header id="header"
+    class="h-header-height fixed top-0 right-0 w-[calc(100%-260px)] z-40 bg-surface-container-lowest border-b border-surface-container-high flex justify-between items-center px-container-padding shadow-sm header-transition">
+    <div class="flex items-center gap-4 flex-1 max-w-xl">
+      <button id="sidebarToggle"
+        class="toggle-btn p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all flex items-center justify-center"
+        aria-label="Toggle sidebar">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <div class="relative w-full">
+        <span
+          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+        <input
+          class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-md focus:ring-2 focus:ring-primary focus:bg-white transition-all"
+          placeholder="Search students, student IDs, or classes..." type="text" />
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <button
+        class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-all text-on-surface-variant">
+        <span class="material-symbols-outlined">add_circle</span>
+      </button>
+      <button
+        class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-all text-on-surface-variant relative">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+      </button>
+      <button
+        class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-all text-on-surface-variant">
+        <span class="material-symbols-outlined">mail</span>
+      </button>
+      <div class="h-8 w-px bg-surface-container-high mx-2"></div>
+      <div class="flex items-center gap-3 pl-2">
+        <div class="text-right">
+          <p class="font-label-sm text-label-sm text-on-surface font-semibold">
+            Alex Rivera
+          </p>
+          <p class="text-[10px] text-on-surface-variant">
+            Super Administrator
+          </p>
+        </div>
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant bg-surface-container-high">
+          <img alt="Administrator Profile"
+            data-alt="A professional portrait of a senior school administrator in a bright, modern office environment. He is wearing a clean charcoal suit and glasses, projecting an air of authoritative professionalism and trust. The lighting is soft and even, highlighting the sleek minimalist corporate aesthetic of the institution."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQbxgS7OqTF3jNVRL0zjVbtRc3nVyeqsFD1vdiliDh4TBgm6zb5qTPvxOs7BdOi4NavNMumsM1DRa_ZcscrraX7VY6mFBP-nfbZ5gpm5uYHM-IfibrlIMUkIbhrBnqW-h12eaexonN0b9gFn43A78fToW4tA9AKhBwG42yuVorZsdHSwTX9_EvwnmevJM5h-Z_ACTIw9cdEubStyFnrYPER00iq6FapjB9fxHu3nBD6XU-lcSD-LuWjarX1ApFNlXr0nbZWKI7tUh6" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Canvas -->
+  <main id="mainContent"
+    class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+    <!-- Header & Breadcrumbs -->
+    <div class="mb-8 flex justify-between items-end">
+      <div>
+        <nav class="flex items-center gap-2 text-on-surface-variant mb-2">
+          <span class="text-label-sm font-label-sm">Dashboard</span>
+          <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span class="text-label-sm font-label-sm text-primary font-bold">Students</span>
+        </nav>
+        <h1 class="font-headline-md text-headline-md font-extrabold text-on-surface">
+          Student Management
+        </h1>
+      </div>
+      <div class="flex gap-3">
+        <button
+          class="flex items-center gap-2 px-4 py-2.5 border border-outline text-on-surface rounded-lg font-label-sm text-label-sm hover:bg-surface-container-high transition-all">
+          <span class="material-symbols-outlined text-[20px]">file_download</span>
+          Export CSV
+        </button>
+        <button
+          class="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded-lg font-label-sm text-label-sm font-semibold shadow-md active:opacity-80 transition-all">
+          <span class="material-symbols-outlined text-[20px]">person_add</span>
+          + Add Student
+        </button>
+      </div>
+    </div>
+    <!-- Filters Section -->
+    <div
+      class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 mb-6 shadow-sm flex flex-wrap items-center gap-gutter">
+      <div class="flex flex-col gap-1.5 min-w-[180px]">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Grade / Level</label>
+        <select
+          class="bg-surface border-outline-variant rounded-lg text-body-md py-1.5 focus:ring-primary focus:border-primary">
+          <option>All Grades</option>
+          <option>Grade 10</option>
+          <option>Grade 11</option>
+          <option>Grade 12</option>
+        </select>
+      </div>
+      <div class="flex flex-col gap-1.5 min-w-[150px]">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Status</label>
+        <select
+          class="bg-surface border-outline-variant rounded-lg text-body-md py-1.5 focus:ring-primary focus:border-primary">
+          <option>All Status</option>
+          <option>Active</option>
+          <option>Suspended</option>
+          <option>Pending</option>
+        </select>
+      </div>
+      <div class="flex flex-col gap-1.5 min-w-[120px]">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Gender</label>
+        <select
+          class="bg-surface border-outline-variant rounded-lg text-body-md py-1.5 focus:ring-primary focus:border-primary">
+          <option>All</option>
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+      </div>
+      <div class="h-10 w-px bg-surface-container-high"></div>
+      <div class="flex items-center gap-2">
+        <button
+          class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg font-label-sm text-label-sm font-semibold hover:opacity-90 transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">filter_list</span>
+          Advanced Filters
+        </button>
+        <button class="text-on-surface-variant font-label-sm text-label-sm hover:underline">
+          Clear all
+        </button>
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <span class="text-body-md text-on-surface-variant">Bulk Actions:</span>
+        <button
+          class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed"
+          disabled>
+          Transfer
+        </button>
+        <button
+          class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed"
+          disabled>
+          Archive
+        </button>
+        <!-- NEW: Delete button (bulk) -->
+        <button id="bulkDeleteBtn"
+          class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed flex items-center gap-1"
+          disabled>
+          <span class="material-symbols-outlined text-[18px]">delete</span>
+          Delete
+        </button>
+      </div>
+    </div>
+    <!-- Data Table Container -->
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr
+              class="bg-surface-container-low border-b border-outline-variant text-[12px] font-bold uppercase tracking-wider text-on-surface-variant">
+              <th class="px-6 py-4 w-12">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox" />
+              </th>
+              <th class="px-4 py-4">Student ID</th>
+              <th class="px-4 py-4">Student Name</th>
+              <th class="px-4 py-4">Class</th>
+              <th class="px-4 py-4">Parent / Guardian</th>
+              <th class="px-4 py-4">Attendance</th>
+              <th class="px-4 py-4 text-center">Status</th>
+              <th class="px-4 py-4 text-right pr-8">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-container-high">
+            <!-- Row 1 -->
+            <tr class="table-row-hover transition-colors">
+              <td class="px-6 py-3">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
+                  type="checkbox" />
+              </td>
+              <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
+                GR-2024-001
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold border border-primary/10">
+                    JD
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-on-surface">Julianne Dorsey</span>
+                    <span class="text-[11px] text-on-surface-variant">julianne.d@school.edu</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface-variant">
+                Grade 10-A
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface">
+                Mark Dorsey
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-col gap-1 w-32">
+                  <div class="flex justify-between text-[11px] font-bold">
+                    <span>94.5%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-primary h-full" style="width: 94.5%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase bg-primary-fixed text-on-primary-fixed-variant">Active</span>
+              </td>
+              <td class="px-4 py-3 text-right pr-6">
+                <div class="flex items-center justify-end gap-1">
+                  <button class="p-1.5 hover:bg-surface-container-highest rounded text-primary transition-all"
+                    title="View Profile">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Edit">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Transfer">
+                    <span class="material-symbols-outlined text-[20px]">move_up</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all"
+                    title="Suspend">
+                    <span class="material-symbols-outlined text-[20px]">person_off</span>
+                  </button>
+                  <!-- NEW: individual delete button -->
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                    title="Delete student">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 2 -->
+            <tr class="table-row-hover transition-colors">
+              <td class="px-6 py-3">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
+                  type="checkbox" />
+              </td>
+              <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
+                GR-2024-042
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold border border-secondary/10">
+                    BM
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-on-surface">Benjamin Miller</span>
+                    <span class="text-[11px] text-on-surface-variant">ben.m@school.edu</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface-variant">
+                Grade 10-C
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface">
+                Sarah Miller
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-col gap-1 w-32">
+                  <div class="flex justify-between text-[11px] font-bold">
+                    <span>72.0%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-error h-full" style="width: 72%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase bg-error-container text-on-error-container">Suspended</span>
+              </td>
+              <td class="px-4 py-3 text-right pr-6">
+                <div class="flex items-center justify-end gap-1">
+                  <button class="p-1.5 hover:bg-surface-container-highest rounded text-primary transition-all"
+                    title="View Profile">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Edit">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Transfer">
+                    <span class="material-symbols-outlined text-[20px]">move_up</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-primary-container/20 hover:text-primary rounded text-error transition-all"
+                    title="Reactivate">
+                    <span class="material-symbols-outlined text-[20px]">person_check</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                    title="Delete student">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 3 -->
+            <tr class="table-row-hover transition-colors">
+              <td class="px-6 py-3">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
+                  type="checkbox" />
+              </td>
+              <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
+                GR-2024-088
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <img alt="Student Portrait" class="w-10 h-10 rounded-full object-cover border border-outline-variant"
+                    data-alt="A studio-lit, clear high-resolution portrait of a teenage student with a friendly expression. The lighting is bright and high-key, emphasizing a clean educational atmosphere. The background is a soft, solid neutral gray, fitting perfectly with a modern corporate student information system's aesthetic."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv8VeR5KLRatnIvXlFB9819QAd4sVuqAuavghBzvmNMJT_aiUG_ZhSuav6L22kUMfeHB4kwIVSfMQfnsPsKY9QWy0Dy_Lkp0ZfwLj0HDJRBMjvakK0P4DN1I8bYy1tSs36W2VwTMIXncujJpaF77oHcK50fMjHTZ2RWg20RBbDxSd5k-45RIF_YwbdkQVY3wP2YJPr4LLQ16qb8oAmlmbWCnyT-5_KWLPi99QYBoI4fit6mgGWzMxNpwnfIHBKXc05Vl4xBaVa29kD" />
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-on-surface">Sophia Chen</span>
+                    <span class="text-[11px] text-on-surface-variant">s.chen@school.edu</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface-variant">
+                Grade 12-A
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface">
+                Dr. Wei Chen
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-col gap-1 w-32">
+                  <div class="flex justify-between text-[11px] font-bold">
+                    <span>98.2%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-primary h-full" style="width: 98.2%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase bg-primary-fixed text-on-primary-fixed-variant">Active</span>
+              </td>
+              <td class="px-4 py-3 text-right pr-6">
+                <div class="flex items-center justify-end gap-1">
+                  <button class="p-1.5 hover:bg-surface-container-highest rounded text-primary transition-all"
+                    title="View Profile">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Edit">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Transfer">
+                    <span class="material-symbols-outlined text-[20px]">move_up</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all"
+                    title="Suspend">
+                    <span class="material-symbols-outlined text-[20px]">person_off</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                    title="Delete student">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 4 -->
+            <tr class="table-row-hover transition-colors">
+              <td class="px-6 py-3">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
+                  type="checkbox" />
+              </td>
+              <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
+                GR-2024-112
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed font-bold border border-tertiary/10">
+                    LR
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-on-surface">Lucas Ramirez</span>
+                    <span class="text-[11px] text-on-surface-variant">lucas.r@school.edu</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface-variant">
+                Grade 11-B
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface">
+                Anita Ramirez
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-col gap-1 w-32">
+                  <div class="flex justify-between text-[11px] font-bold">
+                    <span>88.0%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-primary h-full" style="width: 88%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase bg-primary-fixed text-on-primary-fixed-variant">Active</span>
+              </td>
+              <td class="px-4 py-3 text-right pr-6">
+                <div class="flex items-center justify-end gap-1">
+                  <button class="p-1.5 hover:bg-surface-container-highest rounded text-primary transition-all"
+                    title="View Profile">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Edit">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Transfer">
+                    <span class="material-symbols-outlined text-[20px]">move_up</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all"
+                    title="Suspend">
+                    <span class="material-symbols-outlined text-[20px]">person_off</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                    title="Delete student">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 5 -->
+            <tr class="table-row-hover transition-colors">
+              <td class="px-6 py-3">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
+                  type="checkbox" />
+              </td>
+              <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
+                GR-2024-156
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-on-error-container font-bold border border-error/10">
+                    AK
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-on-surface">Aisha Khan</span>
+                    <span class="text-[11px] text-on-surface-variant">a.khan@school.edu</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface-variant">
+                Grade 12-B
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface">
+                Rashid Khan
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-col gap-1 w-32">
+                  <div class="flex justify-between text-[11px] font-bold">
+                    <span>96.8%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-primary h-full" style="width: 96.8%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase bg-primary-fixed text-on-primary-fixed-variant">Active</span>
+              </td>
+              <td class="px-4 py-3 text-right pr-6">
+                <div class="flex items-center justify-end gap-1">
+                  <button class="p-1.5 hover:bg-surface-container-highest rounded text-primary transition-all"
+                    title="View Profile">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Edit">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Transfer">
+                    <span class="material-symbols-outlined text-[20px]">move_up</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all"
+                    title="Suspend">
+                    <span class="material-symbols-outlined text-[20px]">person_off</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                    title="Delete student">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 6 -->
+            <tr class="table-row-hover transition-colors">
+              <td class="px-6 py-3">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
+                  type="checkbox" />
+              </td>
+              <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
+                GR-2024-203
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <img alt="Student Portrait" class="w-10 h-10 rounded-full object-cover border border-outline-variant"
+                    data-alt="A professional school portrait of a teenage male student with a confident smile, set against a clean blue-gray background."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP845ek_uXc7qwQPBkjukItrxiEOnnayA8-L2W3Xn-nIcFohROcdD_JSFgxfvBSVZG6naAfQus6CbPMvCdkti96y4KMwAlTOgwVmlyVsZIFU9z31FeAT72DZw-F0uZM4GAk2eHZtMeg3AHGbPXV8cseP5PDwSnAQAebjTjM1Ekibz6aCFbNiBhCP-n_E9LP1lX0I0na_bQOGM-aW40_FgFhl8kn5NJr3i86Z4f0qMcg0Mwcgvo1Sf-HPlX96YzDw7LVV1tADmPn44I" />
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-on-surface">Marcus Thompson</span>
+                    <span class="text-[11px] text-on-surface-variant">m.thompson@school.edu</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface-variant">
+                Grade 11-A
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface">
+                David Thompson
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-col gap-1 w-32">
+                  <div class="flex justify-between text-[11px] font-bold">
+                    <span>67.3%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-error h-full" style="width: 67.3%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase bg-error-container text-on-error-container">Suspended</span>
+              </td>
+              <td class="px-4 py-3 text-right pr-6">
+                <div class="flex items-center justify-end gap-1">
+                  <button class="p-1.5 hover:bg-surface-container-highest rounded text-primary transition-all"
+                    title="View Profile">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Edit">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Transfer">
+                    <span class="material-symbols-outlined text-[20px]">move_up</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-primary-container/20 hover:text-primary rounded text-error transition-all"
+                    title="Reactivate">
+                    <span class="material-symbols-outlined text-[20px]">person_check</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                    title="Delete student">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 7 -->
+            <tr class="table-row-hover transition-colors">
+              <td class="px-6 py-3">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
+                  type="checkbox" />
+              </td>
+              <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
+                GR-2024-278
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-secondary-fixed-dim flex items-center justify-center text-on-secondary-fixed font-bold border border-secondary/10">
+                    NP
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-on-surface">Nina Patel</span>
+                    <span class="text-[11px] text-on-surface-variant">n.patel@school.edu</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface-variant">
+                Grade 10-B
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface">
+                Priya Patel
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-col gap-1 w-32">
+                  <div class="flex justify-between text-[11px] font-bold">
+                    <span>91.4%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-primary h-full" style="width: 91.4%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase bg-primary-fixed text-on-primary-fixed-variant">Active</span>
+              </td>
+              <td class="px-4 py-3 text-right pr-6">
+                <div class="flex items-center justify-end gap-1">
+                  <button class="p-1.5 hover:bg-surface-container-highest rounded text-primary transition-all"
+                    title="View Profile">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Edit">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Transfer">
+                    <span class="material-symbols-outlined text-[20px]">move_up</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all"
+                    title="Suspend">
+                    <span class="material-symbols-outlined text-[20px]">person_off</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                    title="Delete student">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 8 -->
+            <tr class="table-row-hover transition-colors">
+              <td class="px-6 py-3">
+                <input class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
+                  type="checkbox" />
+              </td>
+              <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
+                GR-2024-315
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-tertiary-fixed-dim flex items-center justify-center text-on-tertiary-fixed font-bold border border-tertiary/10">
+                    EO
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-on-surface">Ethan O'Brien</span>
+                    <span class="text-[11px] text-on-surface-variant">e.obrien@school.edu</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface-variant">
+                Grade 11-C
+              </td>
+              <td class="px-4 py-3 text-body-md text-on-surface">
+                Mary O'Brien
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-col gap-1 w-32">
+                  <div class="flex justify-between text-[11px] font-bold">
+                    <span>84.7%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-primary h-full" style="width: 84.7%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase bg-primary-fixed text-on-primary-fixed-variant">Active</span>
+              </td>
+              <td class="px-4 py-3 text-right pr-6">
+                <div class="flex items-center justify-end gap-1">
+                  <button class="p-1.5 hover:bg-surface-container-highest rounded text-primary transition-all"
+                    title="View Profile">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Edit">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-surface-container-highest rounded text-on-surface-variant transition-all"
+                    title="Transfer">
+                    <span class="material-symbols-outlined text-[20px]">move_up</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all"
+                    title="Suspend">
+                    <span class="material-symbols-outlined text-[20px]">person_off</span>
+                  </button>
+                  <button
+                    class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                    title="Delete student">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Pagination -->
+      <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
+        <p class="text-body-md text-on-surface-variant">
+          Showing <span class="font-bold text-on-surface">1 - 8</span> of
+          <span class="font-bold text-on-surface">1,248</span> students
+        </p>
+        <div class="flex items-center gap-1">
+          <button
+            class="w-9 h-9 flex items-center justify-center rounded border border-outline-variant bg-white text-on-surface-variant disabled:opacity-50"
+            disabled>
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button class="w-9 h-9 flex items-center justify-center rounded bg-primary text-on-primary font-bold">
+            1
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center rounded border border-outline-variant bg-white text-on-surface hover:bg-surface-container-high">
+            2
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center rounded border border-outline-variant bg-white text-on-surface hover:bg-surface-container-high">
+            3
+          </button>
+          <span class="px-2 text-on-surface-variant">...</span>
+          <button
+            class="w-9 h-9 flex items-center justify-center rounded border border-outline-variant bg-white text-on-surface hover:bg-surface-container-high">
+            52
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center rounded border border-outline-variant bg-white text-on-surface-variant hover:bg-surface-container-high">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Quick Summary Cards (Bento Style) -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-gutter">
+      <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+          <span class="material-symbols-outlined p-2 bg-primary-fixed text-primary rounded-lg">groups</span>
+          <span class="text-[12px] font-bold text-primary">+2.4% this month</span>
+        </div>
+        <p class="text-on-surface-variant text-label-sm font-label-sm uppercase tracking-wider">
+          Total Enrollment
+        </p>
+        <p class="text-display-lg font-display-lg text-on-surface mt-1">
+          1,248
+        </p>
+      </div>
+      <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+          <span
+            class="material-symbols-outlined p-2 bg-secondary-fixed text-on-secondary-container rounded-lg">how_to_reg</span>
+          <span class="text-[12px] font-bold text-error">-0.8% below target</span>
+        </div>
+        <p class="text-on-surface-variant text-label-sm font-label-sm uppercase tracking-wider">
+          Avg. Attendance
+        </p>
+        <p class="text-display-lg font-display-lg text-on-surface mt-1">
+          92.1%
+        </p>
+      </div>
+      <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+          <span
+            class="material-symbols-outlined p-2 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-lg">person_off</span>
+          <span class="text-[12px] font-bold text-on-surface-variant">3 pending review</span>
+        </div>
+        <p class="text-on-surface-variant text-label-sm font-label-sm uppercase tracking-wider">
+          Suspensions
+        </p>
+        <p class="text-display-lg font-display-lg text-on-surface mt-1">14</p>
+      </div>
+    </div>
+  </main>
+  <script>
+    // Sidebar toggle functionality
+    (function () {
+      const sidebar = document.getElementById("sidebar");
+      const mainContent = document.getElementById("mainContent");
+      const header = document.getElementById("header");
+      const toggleBtn = document.getElementById("sidebarToggle");
+
+      let sidebarVisible = true;
+
+      function updateLayout() {
+        if (sidebarVisible) {
+          sidebar.classList.remove("sidebar-collapsed");
+          mainContent.classList.remove("main-expanded");
+          header.classList.remove("header-expanded");
+          toggleBtn.querySelector(".material-symbols-outlined").textContent =
+            "menu";
+        } else {
+          sidebar.classList.add("sidebar-collapsed");
+          mainContent.classList.add("main-expanded");
+          header.classList.add("header-expanded");
+          toggleBtn.querySelector(".material-symbols-outlined").textContent =
+            "menu_open";
+        }
+      }
+
+      toggleBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        sidebarVisible = !sidebarVisible;
+        updateLayout();
+      });
+
+      updateLayout();
+    })();
+
+    // Micro-interactions for table checkboxes + bulk delete
+    const mainCheckbox = document.querySelector(
+      'thead input[type="checkbox"]',
+    );
+    const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+    const bulkButtons = document.querySelectorAll(
+      ".ml-auto .cursor-not-allowed, .ml-auto button[disabled]",
+    );
+    const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
+
+    function toggleBulkActions() {
+      const anyChecked = Array.from(rowCheckboxes).some((cb) => cb.checked);
+      // Transfer, Archive, Delete
+      const allBulkBtns = document.querySelectorAll(
+        ".ml-auto button:not(.opacity-50)",
+      );
+      const disabledBtns = document.querySelectorAll(
+        ".ml-auto .opacity-50",
+      );
+      if (anyChecked) {
+        disabledBtns.forEach((btn) => {
+          btn.removeAttribute("disabled");
+          btn.classList.remove("opacity-50", "cursor-not-allowed");
+          btn.classList.add(
+            "bg-white",
+            "hover:bg-surface-container-high",
+            "cursor-pointer",
+          );
+        });
+      } else {
+        disabledBtns.forEach((btn) => {
+          btn.setAttribute("disabled", "true");
+          btn.classList.add("opacity-50", "cursor-not-allowed");
+          btn.classList.remove(
+            "bg-white",
+            "hover:bg-surface-container-high",
+            "cursor-pointer",
+          );
+        });
+      }
+    }
+
+    mainCheckbox.addEventListener("change", (e) => {
+      rowCheckboxes.forEach((cb) => (cb.checked = e.target.checked));
+      toggleBulkActions();
+    });
+
+    rowCheckboxes.forEach((cb) => {
+      cb.addEventListener("change", () => {
+        toggleBulkActions();
+      });
+    });
+
+    // Individual delete buttons: show alert
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const row = this.closest("tr");
+        const name = row
+          .querySelector(".font-semibold")
+          ?.textContent.trim();
+        if (confirm(`Delete student "${name || 'this student'}"?`)) {
+          // In a real app, you'd send a DELETE request
+          row.style.transition = "opacity 0.2s";
+          row.style.opacity = "0.3";
+          setTimeout(() => {
+            row.remove();
+          }, 200);
+        }
+      });
+    });
+
+    // Bulk delete: show alert and remove selected rows
+    bulkDeleteBtn?.addEventListener("click", function () {
+      const checked = document.querySelectorAll(".row-checkbox:checked");
+      if (checked.length === 0) return;
+      if (
+        confirm(
+          `Delete ${checked.length} selected student(s)? This action cannot be undone.`,
+        )
+      ) {
+        checked.forEach((cb) => {
+          const row = cb.closest("tr");
+          row.style.transition = "opacity 0.2s";
+          row.style.opacity = "0.3";
+          setTimeout(() => {
+            row.remove();
+          }, 200);
+        });
+        // Uncheck main and reset bulk actions
+        mainCheckbox.checked = false;
+        toggleBulkActions();
+      }
+    });
+
+    // Toggle bulk actions initially
+    toggleBulkActions();
+  </script>
+</body>
+
+</html>

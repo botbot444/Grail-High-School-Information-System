@@ -6,69 +6,10 @@
 
     <div id="view-admin" class="app-view" style="display:flex;">
 
-        <div class="sidebar">
+                @include('admin.sidebar')
+        @include('admin.header')
 
-            <div class="logo">
-                <h2>GRAIL</h2>
-            </div>
-
-            <ul class="menu">
-
-                <li>
-                    <a href="{{ route('admin.dashboard') }}" class="nav-item">
-                        <i class="fa-solid fa-house"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.students.index') }}" class="nav-item active">
-                        <i class="fa-solid fa-user-graduate"></i>
-                        <span>Manage Students</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.teachers.index') }}" class="nav-item">
-                        <i class="fa-solid fa-chalkboard-user"></i>
-                        <span>Teachers & Staff</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.classes.index') }}" class="nav-item">
-                        <i class="fa-solid fa-book"></i>
-                        <span>Classes & Subjects</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.classes.index') }}" class="nav-item">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                        <span>Fee Structures</span>
-                    </a>
-                </li>
-
-                <li style="margin-top:40px;">
-
-                    <form method="POST" action="{{ route('logout') }}">
-
-                        @csrf
-
-                        <button type="submit" class="nav-item" style="border:none;background:none;width:100%;color:white;">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </button>
-
-                    </form>
-
-                </li>
-
-            </ul>
-
-        </div>
-
-        <div class="main-content">
+<div class="main-content main-transition pt-[72px]" id="mainContent">
 
             <div style="margin-bottom: 25px;">
                 <h2 style="color: #177aa4;">Edit Student: {{ $student->full_name }}</h2>

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Role;
 use App\Models\User;
 
 class AdminSeeder extends Seeder
@@ -11,13 +12,15 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         // Default admin — change password immediately after first login
+        $roleId = Role::where('name', 'admin')->value('id');
+
         User::firstOrCreate(
             ['email' => 'admin@grail.school'],
             [
                 'name'              => 'System Administrator',
                 'email'             => 'admin@grail.school',
                 'password'          => Hash::make('Admin@1234'),
-                'role'              => 'admin',
+                'role_id'           => $roleId,
                 'email_verified_at' => now(),
             ]
         );

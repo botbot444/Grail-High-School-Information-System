@@ -19,6 +19,7 @@ class Grade extends Model
         'term',
         'academic_year',
         'recorded_by',
+        'marks',
     ];
 
     protected $casts = [
@@ -42,6 +43,18 @@ class Grade extends Model
     public function recordedByTeacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class, 'recorded_by', 'teacher_id');
+    }
+
+    // ── Attribute Mapping ─────────────────────────────────────────────────────
+
+    public function getMarksAttribute()
+    {
+        return $this->score;
+    }
+
+    public function setMarksAttribute($value)
+    {
+        $this->score = $value;
     }
 
     // ── Business Logic ────────────────────────────────────────────────────────

@@ -16,14 +16,20 @@ class TeacherController extends Controller
     public function marks(Request $request)
     {
         $user = auth()->user();
+        $teacher = $user->teacher;
+
+        if (!$teacher) {
+            return view('teacher.marks', ['assignments' => collect()])
+                ->with('notification', 'Teacher profile not found.');
+        }
         
         // Get teacher's assignments with their classes and subjects
         $assignments = ClassSubject::with(['schoolClass', 'subject', 'teacher'])
-            ->where('teacher_id', $user->id)
+            ->where('teacher_id', $teacher->teacher_id)
             ->get();
 
         if ($assignments->isEmpty()) {
-            return view('teacher.marks')
+            return view('teacher.marks', compact('assignments'))
                 ->with('notification', 'No assignments found for this teacher.');
         }
 
@@ -42,23 +48,31 @@ class TeacherController extends Controller
             ->with('user')
             ->get()
             ->map(function ($student) use ($assignment) {
-                // Get current grade/mark for this student in this subject
+                // Get current grade/mark for this student in this subject (Term 1, Exam)
                 $grade = Grade::where('student_id', $student->student_id)
                     ->where('class_subject_id', $assignment->class_subject_id)
-                    ->latest()
+                    ->where('assessment_type', 'EXAM')
+                    ->where('term', 'Term 1')
+                    ->where('academic_year', now()->year)
                     ->first();
 
                 // Get current attendance for this student
                 $attendance = Attendance::where('student_id', $student->student_id)
                     ->where('class_subject_id', $assignment->class_subject_id)
-                    ->latest()
+                    ->where('date', now()->toDateString())
                     ->first();
+
+                $statusMap = [
+                    'Present' => 'P',
+                    'Absent'  => 'A',
+                    'Late'    => 'L',
+                ];
 
                 return [
                     'id' => $student->student_id,
                     'name' => $student->full_name,
-                    'mark' => $grade?->marks ?? 0,
-                    'attendance' => $attendance?->status ?? 'P',
+                    'mark' => $grade?->score ?? 0,
+                    'attendance' => $statusMap[$attendance?->status] ?? 'P',
                 ];
             });
 
@@ -75,10 +89,16 @@ class TeacherController extends Controller
     public function storeMarks(Request $request)
     {
         $user = auth()->user();
+        $teacher = $user->teacher;
+
+        if (!$teacher) {
+            return back()->withErrors('Teacher profile not found.');
+        }
+
         $assignmentId = $request->input('assignment_id');
 
         $assignment = ClassSubject::where('class_subject_id', $assignmentId)
-            ->where('teacher_id', $user->id)
+            ->where('teacher_id', $teacher->teacher_id)
             ->first();
 
         if (!$assignment) {
@@ -87,6 +107,12 @@ class TeacherController extends Controller
 
         $marks = $request->input('marks', []);
         $attendance = $request->input('attendance', []);
+
+        $statusMap = [
+            'P' => 'Present',
+            'A' => 'Absent',
+            'L' => 'Late',
+        ];
 
         try {
             foreach ($marks as $studentId => $mark) {
@@ -101,19 +127,24 @@ class TeacherController extends Controller
                     [
                         'student_id' => $studentId,
                         'class_subject_id' => $assignmentId,
+                        'assessment_type' => 'EXAM',
+                        'term' => 'Term 1',
+                        'academic_year' => now()->year,
                     ],
                     [
-                        'marks' => $mark,
-                        'recorded_by' => $user->id,
+                        'score' => $mark,
+                        'max_score' => 100.00,
+                        'recorded_by' => $teacher->teacher_id,
                     ]
                 );
             }
 
             foreach ($attendance as $studentId => $status) {
                 // Validate attendance status
-                if (!in_array($status, ['P', 'A', 'L'])) {
+                if (!isset($statusMap[$status])) {
                     continue;
                 }
+                $dbStatus = $statusMap[$status];
 
                 // Create or update attendance record
                 Attendance::updateOrCreate(
@@ -123,8 +154,8 @@ class TeacherController extends Controller
                         'date' => now()->toDateString(),
                     ],
                     [
-                        'status' => $status,
-                        'recorded_by' => $user->id,
+                        'status' => $dbStatus,
+                        'recorded_by' => $teacher->teacher_id,
                     ]
                 );
             }

@@ -5,75 +5,11 @@
 @section('content')
     <div id="view-admin" class="app-view" style="display:flex;">
 
-        <div class="sidebar">
+        @include('admin.sidebar')
+        @include('admin.header')
 
-            <div class="logo">
-                <h2>GRAIL</h2>
-            </div>
-
-            <ul class="menu">
-                <li>
-                    <a href="{{ route('admin.dashboard') }}" class="nav-item">
-                        <i class="fa-solid fa-house"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.students.index') }}" class="nav-item">
-                        <i class="fa-solid fa-user-graduate"></i>
-                        <span>Manage Students</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.teachers.index') }}" class="nav-item">
-                        <i class="fa-solid fa-chalkboard-user"></i>
-                        <span>Teachers & Staff</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.classes.index') }}" class="nav-item active">
-                        <i class="fa-solid fa-book"></i>
-                        <span>Classes & Subjects</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.classes.index') }}" class="nav-item">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                        <span>Fee Structures</span>
-                    </a>
-                </li>
-
-                <li style="margin-top:40px;">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="nav-item" style="border:none;background:none;width:100%;color:white;">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                </li>
-            </ul>
-
-        </div>
-
-        <div class="main-content">
-            <div class="topbar">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Search classes, subjects...">
-                </div>
-
-                <div class="profile">
-                    <div>
-                        <h4>{{ Auth::user()->name }}</h4>
-                        <small style="color:gray;">System Administrator</small>
-                    </div>
-                </div>
-            </div>
+        <div class="main-content main-transition pt-[72px]" id="mainContent">
+            
 
             <div class="cards">
                 <div class="card">
@@ -88,9 +24,15 @@
                 </div>
             </div>
 
-            <div class="table-section">
-                <h3>Class & Subject Assignments</h3>
+            <div style="margin-bottom: 25px; display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0;">Manage Classes</h3>
+                <a href="{{ route('admin.classes.create') }}" class="btn"
+                    style="background: #177aa4; color: white; padding: 12px 20px; text-decoration:none;">
+                    <i class="fa-solid fa-plus"></i> Add New Class
+                </a>
+            </div>
 
+            <div class="table-section">
                 <table>
                     <thead>
                         <tr>
@@ -98,6 +40,7 @@
                             <th>Grade Level</th>
                             <th>Homeroom Teacher</th>
                             <th>Subjects</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,6 +59,22 @@
                                     @else
                                         <span style="color:gray;">No subjects assigned</span>
                                     @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('admin.classes.show', $class) }}"
+                                        style="color: #177aa4; text-decoration: none;">View</a>
+                                    <span style="color: #cbd5e1;"> | </span>
+                                    <a href="{{ route('admin.classes.edit', $class) }}"
+                                        style="color: #177aa4; text-decoration: none;">Edit</a>
+                                    <span style="color: #cbd5e1;"> | </span>
+                                    <form method="POST" action="{{ route('admin.classes.destroy', $class) }}"
+                                        style="display:inline; margin:0; padding:0;"
+                                        onsubmit="return confirm('Are you sure?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            style="background: none; border: none; color: #dc2626; cursor: pointer; padding: 0; text-decoration: underline;">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty

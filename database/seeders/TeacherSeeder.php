@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Teacher;
 
@@ -15,6 +16,8 @@ class TeacherSeeder extends Seeder
      */
     public function run(): void
     {
+        $roleId = Role::where('name', 'teacher')->value('id');
+
         // ── Demo teacher (known credentials for testing) ──────────────────────
         $demoUser = User::firstOrCreate(
             ['email' => 'teacher@grail.school'],
@@ -22,7 +25,7 @@ class TeacherSeeder extends Seeder
                 'name'              => 'Demo Teacher',
                 'email'             => 'teacher@grail.school',
                 'password'          => Hash::make('Teacher@1234'),
-                'role'              => 'teacher',
+                'role_id'           => $roleId,
                 'email_verified_at' => now(),
             ]
         );
@@ -50,7 +53,7 @@ class TeacherSeeder extends Seeder
                     'name'              => "{$firstName} {$lastName}",
                     'email'             => $email,
                     'password'          => Hash::make('Teacher@1234'),
-                    'role'              => 'teacher',
+                    'role_id'           => $roleId,
                     'email_verified_at' => now(),
                 ]
             );

@@ -1,0 +1,919 @@
+<!doctype html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Teacher Directory | Grail SIS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed": "#001a41",
+              "inverse-surface": "#2e3132",
+              "surface-variant": "#e1e3e4",
+              "tertiary-fixed-dim": "#bfc8d0",
+              "primary-fixed": "#d8e2ff",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#6d767e",
+              secondary: "#465f88",
+              error: "#ba1a1a",
+              "on-surface": "#191c1d",
+              "error-container": "#ffdad6",
+              "on-tertiary-fixed": "#141d23",
+              "primary-fixed-dim": "#adc7ff",
+              "on-primary-container": "#fefcff",
+              "inverse-on-surface": "#f0f1f2",
+              "on-primary": "#ffffff",
+              "on-background": "#191c1d",
+              "secondary-container": "#b6d0ff",
+              "on-secondary-container": "#3f5881",
+              "on-tertiary-fixed-variant": "#3f484f",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#d6e3ff",
+              "surface-container-low": "#f3f4f5",
+              background: "#f8f9fa",
+              "surface-container-highest": "#e1e3e4",
+              "surface-container-high": "#e7e8e9",
+              "outline-variant": "#c1c6d7",
+              "on-error-container": "#93000a",
+              "inverse-primary": "#adc7ff",
+              "surface-dim": "#d9dadb",
+              surface: "#f8f9fa",
+              outline: "#717786",
+              "tertiary-fixed": "#dbe4ed",
+              "primary-container": "#0070ea",
+              "surface-bright": "#f8f9fa",
+              "secondary-fixed-dim": "#aec7f6",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "on-primary-fixed-variant": "#004493",
+              "on-secondary-fixed-variant": "#2d476f",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed": "#001b3d",
+              tertiary: "#545d65",
+              "on-error": "#ffffff",
+              "on-tertiary-container": "#fcfcff",
+              primary: "#0059bb",
+              "surface-tint": "#005bc0",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-sm": "8px",
+              "stack-md": "16px",
+              "header-height": "72px",
+              "container-padding": "32px",
+              "sidebar-width": "260px",
+              gutter: "24px",
+            },
+            fontFamily: {
+              "title-sm": ["Inter"],
+              "display-lg": ["Inter"],
+              "body-md": ["Inter"],
+              "headline-md": ["Inter"],
+              "data-mono": ["JetBrains Mono"],
+              "label-sm": ["Inter"],
+            },
+            fontSize: {
+              "title-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+              "display-lg": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "headline-md": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "600",
+                },
+              ],
+              "data-mono": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+              "label-sm": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "500",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #f8f9fa;
+        color: #191c1d;
+        font-family: "Inter", sans-serif;
+      }
+      .sidebar-active {
+        background-color: #0070ea;
+        color: #fefcff;
+        border-left: 4px solid #0059bb;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+        vertical-align: middle;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e1e3e4;
+        border-radius: 10px;
+      }
+      .table-row-hover:hover {
+        background-color: rgba(0, 89, 187, 0.04);
+      }
+    </style>
+  </head>
+  <body class="flex overflow-hidden">
+    <!-- SideNavBar -->
+    <aside
+      class="w-sidebar-width h-screen fixed left-0 top-0 bg-on-primary-fixed dark:bg-on-surface border-r border-outline-variant flex flex-col z-50"
+    >
+      <div class="p-6 flex items-center gap-3">
+        <div
+          class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"
+        >
+          <span
+            class="material-symbols-outlined text-white text-sm"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >school</span
+          >
+        </div>
+        <div>
+          <h1
+            class="font-title-sm text-title-sm font-bold text-primary-fixed leading-tight"
+          >
+            Grail SIS
+          </h1>
+          <p class="font-label-sm text-label-sm text-tertiary-fixed-dim">
+            Admin Portal
+          </p>
+        </div>
+      </div>
+      <nav class="flex-1 overflow-y-auto custom-scrollbar px-3 space-y-1">
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">dashboard</span>
+          <span class="font-label-sm text-label-sm">Dashboard</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">group</span>
+          <span class="font-label-sm text-label-sm">User Management</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">school</span>
+          <span class="font-label-sm text-label-sm">Students</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container border-l-4 border-primary"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >person_pin</span
+          >
+          <span class="font-label-sm text-label-sm">Teachers</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">family_restroom</span>
+          <span class="font-label-sm text-label-sm">Parents</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">groups</span>
+          <span class="font-label-sm text-label-sm">Classes</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">book</span>
+          <span class="font-label-sm text-label-sm">Subjects</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">calendar_month</span>
+          <span class="font-label-sm text-label-sm">Timetables</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">how_to_reg</span>
+          <span class="font-label-sm text-label-sm">Attendance</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">assignment_turned_in</span>
+          <span class="font-label-sm text-label-sm">Examinations</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">analytics</span>
+          <span class="font-label-sm text-label-sm">Reports</span>
+        </a>
+      </nav>
+      <div class="p-4 border-t border-on-primary-fixed-variant">
+        <a
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined">settings</span>
+          <span class="font-label-sm text-label-sm">Settings</span>
+        </a>
+      </div>
+    </aside>
+    <!-- Main Workspace -->
+    <main
+      class="flex-1 ml-[260px] h-screen overflow-y-auto flex flex-col bg-background"
+    >
+      <!-- TopNavBar -->
+      <header
+        class="h-header-height bg-surface-container-lowest flex items-center justify-between px-container-padding border-b border-surface-container-high sticky top-0 z-40 shadow-sm"
+      >
+        <div class="flex items-center flex-1">
+          <div class="relative w-full max-w-md">
+            <span
+              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl"
+              >search</span
+            >
+            <input
+              class="w-full bg-surface-container border-none rounded-lg pl-11 pr-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary outline-none"
+              placeholder="Search teachers, IDs, or subjects..."
+              type="text"
+            />
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2">
+            <button
+              class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button
+              class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all"
+            >
+              <span class="material-symbols-outlined">mail</span>
+            </button>
+          </div>
+          <div class="h-8 w-[1px] bg-outline-variant"></div>
+          <div class="flex items-center gap-3 group cursor-pointer">
+            <div class="text-right">
+              <p class="font-label-sm text-label-sm font-bold text-on-surface">
+                Alex Thompson
+              </p>
+              <p
+                class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider"
+              >
+                Super Admin
+              </p>
+            </div>
+            <img
+              alt="Administrator Profile"
+              class="w-10 h-10 rounded-full border-2 border-primary-fixed"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPYInmhEIfKk-8afgqBbhEzg8bmrPjNXVtZ7fNukLF9jVQ7ub_9o7Xf5gopJbuvJziOyl_ZMHUlATG3n7NhQt3Sor3aJAEBUO_0ZcTQRhLsMZPtbUIobfhTXvYZIBcYEoreoaaU4hn_UA6yj7ksydgGI8bEWacjU1xe3CdOqg1_mCpS2lHz7jFKMPqH5c2rDHMeC97G1R3ZZAJJoSpArlI_2J6Xq2N2LPwiXBq-3EvX41e7-r0bP3T7Is_NoGYILHQMIz__cvq3CnI"
+            />
+          </div>
+        </div>
+      </header>
+      <!-- Page Content -->
+      <div class="p-container-padding space-y-gutter">
+        <!-- Page Header Area -->
+        <div
+          class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
+          <div>
+            <h2
+              class="font-headline-md text-headline-md font-extrabold text-on-surface"
+            >
+              Teacher Directory
+            </h2>
+            <p class="font-body-md text-body-md text-on-surface-variant">
+              Manage and overview faculty staff members across all departments.
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button
+              class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface font-label-sm text-label-sm rounded hover:bg-surface-container transition-colors"
+            >
+              <span class="material-symbols-outlined text-lg">download</span>
+              Export CSV
+            </button>
+            <button
+              class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:opacity-90 transition-opacity shadow-md"
+            >
+              <span class="material-symbols-outlined text-lg">add_circle</span>
+              Add Teacher
+            </button>
+          </div>
+        </div>
+        <!-- Stats/Summary Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+          <div
+            class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center text-primary"
+            >
+              <span
+                class="material-symbols-outlined"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >groups</span
+              >
+            </div>
+            <div>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">
+                Total Teachers
+              </p>
+              <p class="font-headline-md text-headline-md font-bold">142</p>
+            </div>
+          </div>
+          <div
+            class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary"
+            >
+              <span
+                class="material-symbols-outlined"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >check_circle</span
+              >
+            </div>
+            <div>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">
+                Active Now
+              </p>
+              <p class="font-headline-md text-headline-md font-bold">138</p>
+            </div>
+          </div>
+          <div
+            class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary"
+            >
+              <span
+                class="material-symbols-outlined"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >pending_actions</span
+              >
+            </div>
+            <div>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">
+                On Leave
+              </p>
+              <p class="font-headline-md text-headline-md font-bold">4</p>
+            </div>
+          </div>
+          <div
+            class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-lg bg-error-container flex items-center justify-center text-error"
+            >
+              <span
+                class="material-symbols-outlined"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >warning</span
+              >
+            </div>
+            <div>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">
+                Vacancies
+              </p>
+              <p class="font-headline-md text-headline-md font-bold">12</p>
+            </div>
+          </div>
+        </div>
+        <!-- Filters & Data Table Container -->
+        <div
+          class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden"
+        >
+          <!-- Filters Bar -->
+          <div
+            class="p-6 border-b border-outline-variant flex flex-wrap items-center justify-between gap-4"
+          >
+            <div class="flex items-center gap-4">
+              <div class="flex flex-col gap-1">
+                <label
+                  class="font-label-sm text-label-sm text-on-surface-variant px-1"
+                  >Department</label
+                >
+                <select
+                  class="bg-surface-container-low border border-outline-variant rounded px-3 py-2 font-body-md text-body-md min-w-[180px] focus:ring-1 focus:ring-primary outline-none"
+                >
+                  <option>All Departments</option>
+                  <option>Mathematics</option>
+                  <option>Science</option>
+                  <option>Humanities</option>
+                  <option>Arts &amp; Sports</option>
+                  <option>Languages</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-1">
+                <label
+                  class="font-label-sm text-label-sm text-on-surface-variant px-1"
+                  >Status</label
+                >
+                <select
+                  class="bg-surface-container-low border border-outline-variant rounded px-3 py-2 font-body-md text-body-md min-w-[150px] focus:ring-1 focus:ring-primary outline-none"
+                >
+                  <option>All Statuses</option>
+                  <option>Active</option>
+                  <option>On Leave</option>
+                  <option>Resigned</option>
+                </select>
+              </div>
+            </div>
+            <button
+              class="flex items-center gap-2 text-primary font-label-sm text-label-sm hover:underline"
+            >
+              <span class="material-symbols-outlined text-lg"
+                >filter_list_off</span
+              >
+              Clear Filters
+            </button>
+          </div>
+          <!-- Table Area -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface-container-low text-on-surface-variant uppercase tracking-wider font-label-sm text-[11px]"
+                >
+                  <th
+                    class="px-6 py-4 font-semibold border-b border-outline-variant"
+                  >
+                    Employee No.
+                  </th>
+                  <th
+                    class="px-6 py-4 font-semibold border-b border-outline-variant"
+                  >
+                    Teacher Name
+                  </th>
+                  <th
+                    class="px-6 py-4 font-semibold border-b border-outline-variant"
+                  >
+                    Assigned Subjects
+                  </th>
+                  <th
+                    class="px-6 py-4 font-semibold border-b border-outline-variant"
+                  >
+                    Classes
+                  </th>
+                  <th
+                    class="px-6 py-4 font-semibold border-b border-outline-variant"
+                  >
+                    Status
+                  </th>
+                  <th
+                    class="px-6 py-4 font-semibold border-b border-outline-variant text-right"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant"
+              >
+                <!-- Row 1 -->
+                <tr class="table-row-hover transition-colors">
+                  <td class="px-6 py-4 font-data-mono text-data-mono">
+                    EMP-2024-001
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img
+                        alt="Sarah Jenkins"
+                        class="w-10 h-10 rounded-full bg-surface-container-high"
+                        data-alt="A professional portrait of a female teacher in her late 30s wearing glasses and a formal business casual blazer. The background is a brightly lit, modern school corridor with clean lines and soft blue tones, maintaining a high-quality educational portal aesthetic. Professional, friendly, and authoritative lighting."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZDL-k_sOoSxwNbjKK6E52rV_nbbv3rWuNuLopLj2U0fDRSF-UCQSt0qSDGqZrD8HDCdsjFzNJY3nFLB9W77twnvaCsaRKXriwBv9xfJDW6f_owXSSTJxoeEnLcd0T4IY0SUN-Y8UIgr4-yFz-8pk2kJS-6OJ9RMve475ogzyhRscnCO794qEb_WIs5i3d1j7lg2mDazZ-LqFoWI9kX3KUxbCA5Kt5BmYcAh0voNo6drC1UqwgcN5TWP87HxompvbRYLwXkNUVByc1"
+                      />
+                      <div>
+                        <p class="font-bold text-on-surface">
+                          Dr. Sarah Jenkins
+                        </p>
+                        <p class="text-xs text-on-surface-variant">
+                          Senior Faculty
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                      <span
+                        class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold"
+                        >Advanced Physics</span
+                      >
+                      <span
+                        class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold"
+                        >Mathematics II</span
+                      >
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">12-A, 11-C, 12-B</td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-100"
+                    >
+                      <span
+                        class="w-1.5 h-1.5 rounded-full bg-green-600"
+                      ></span>
+                      Active
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >visibility</span
+                        >
+                      </button>
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >delete</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Row 2 -->
+                <tr class="table-row-hover transition-colors">
+                  <td class="px-6 py-4 font-data-mono text-data-mono">
+                    EMP-2024-015
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img
+                        alt="Michael Chen"
+                        class="w-10 h-10 rounded-full bg-surface-container-high"
+                        data-alt="A professional studio portrait of a male teacher in his early 40s wearing a light blue oxford shirt. He has a warm, approachable smile. The setting is a minimalist office with soft bokeh of bookshelves in the background. The lighting is crisp and modern, reflecting a premium corporate SaaS interface style."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAbdIe1D02hePPMbhWH_ZYzI-sqsg_0NhNzWOmR2mFGmdqg_02dQkfyeF6iXBiYC64UqWGAJane-LH_XHx0mwcfun9rZipSi_WzoRsuWG7iohHHE_Yxy1zz9pFOHYCCXp3pjn4LR7LeZcYjQp_vN_ZXG7BvmNlL-doGflfgdBHjkkioiJx21cmIU7gEXqFynuHbG0ILr8wHc2kqIcNCDl0wo5glicGROFg7KnOdsgWAOagWM7SWHVTJkv2uU9KhtK6SUn76RhIjEhg"
+                      />
+                      <div>
+                        <p class="font-bold text-on-surface">Michael Chen</p>
+                        <p class="text-xs text-on-surface-variant">
+                          Department Head
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                      <span
+                        class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold"
+                        >World History</span
+                      >
+                      <span
+                        class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold"
+                        >Sociology</span
+                      >
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">10-D, 11-A</td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-100"
+                    >
+                      <span
+                        class="w-1.5 h-1.5 rounded-full bg-amber-500"
+                      ></span>
+                      On Leave
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >visibility</span
+                        >
+                      </button>
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >delete</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Row 3 -->
+                <tr class="table-row-hover transition-colors">
+                  <td class="px-6 py-4 font-data-mono text-data-mono">
+                    EMP-2023-088
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img
+                        alt="Elena Rodriguez"
+                        class="w-10 h-10 rounded-full bg-surface-container-high"
+                        data-alt="A portrait of a Hispanic female educator in her late 20s with a modern professional hairstyle, wearing a dark green sweater. The background is a brightly lit library with blurred rows of colorful books. High-key lighting emphasizing a clean, trustworthy, and modern educational software environment."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAud-OyFL2H_iQ89cl-rfTuaxuhVSgK7ZZuGcrWTWmHtZlfnvhIyPRLN6JJWJypnRn2IhNULMkLeTwIcQy95T7_V3RV41h-s5AAKraTnON34rXGgackX0arnFkITzktVN-L_h9slojKBcAaz6muyIPN1hCX8-UamtZD0iB26PpEcC-mu-GfXFQ33Uvs0yEQhZFulztvIJAeiplkJqyu_mQZwYz5SdfGx5ZYotSEd6rK8Y1tTWJ9WHUFhwSCqksDbQlW1EzR-R3HIYN7"
+                      />
+                      <div>
+                        <p class="font-bold text-on-surface">Elena Rodriguez</p>
+                        <p class="text-xs text-on-surface-variant">
+                          Associate Professor
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                      <span
+                        class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold"
+                        >Creative Writing</span
+                      >
+                      <span
+                        class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold"
+                        >Literature</span
+                      >
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">09-B, 10-C, 12-A</td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-100"
+                    >
+                      <span
+                        class="w-1.5 h-1.5 rounded-full bg-green-600"
+                      ></span>
+                      Active
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >visibility</span
+                        >
+                      </button>
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >delete</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Row 4 -->
+                <tr class="table-row-hover transition-colors">
+                  <td class="px-6 py-4 font-data-mono text-data-mono">
+                    EMP-2024-042
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img
+                        alt="David Miller"
+                        class="w-10 h-10 rounded-full bg-surface-container-high"
+                        data-alt="A professional headshot of a mature Caucasian male teacher in his 50s with salt-and-pepper hair, wearing a grey turtleneck. He exudes experience and kindness. The setting is a minimalist grey studio background that fits perfectly into a high-end corporate management dashboard. Bright, even lighting."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbGnwhppKXa91aIhXTme6iV12SbU7sprndb6MQf8K7_v11kTDXebXEag9HnjP9fpk7GtLFBT7gweyYhcdBQjbinMfyyYRoByh3DofsDYYKEWtde4tAJu9fQxtLfIg0N6k2JCm4s5o0g5XYhPrV013PsWBWYFnZy9Owr53nOt9Ae6dsQldyMd4cBM8ydvgv86wdf-GDBLVyqWh7fheNFn1bMxvfB32NPwHU7zHXPxvk6d4ZO8sLVpgMAf6HAdC941XUeUWWT6tU97_J"
+                      />
+                      <div>
+                        <p class="font-bold text-on-surface">David Miller</p>
+                        <p class="text-xs text-on-surface-variant">
+                          Mathematics Lead
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                      <span
+                        class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold"
+                        >Calculus</span
+                      >
+                      <span
+                        class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold"
+                        >Statistics</span
+                      >
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">12-C, 12-D</td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-100"
+                    >
+                      <span
+                        class="w-1.5 h-1.5 rounded-full bg-green-600"
+                      ></span>
+                      Active
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >visibility</span
+                        >
+                      </button>
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl"
+                          >delete</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination Area -->
+          <div
+            class="px-6 py-4 bg-surface-container-low flex items-center justify-between border-t border-outline-variant"
+          >
+            <p class="font-label-sm text-label-sm text-on-surface-variant">
+              Showing 1 to 4 of 142 entries
+            </p>
+            <div class="flex items-center gap-2">
+              <button
+                class="px-3 py-1 bg-surface-container-lowest border border-outline-variant rounded font-label-sm text-label-sm text-on-surface hover:bg-surface-container transition-colors disabled:opacity-50"
+                disabled=""
+              >
+                Previous
+              </button>
+              <button
+                class="w-8 h-8 bg-primary text-on-primary rounded font-label-sm text-label-sm flex items-center justify-center"
+              >
+                1
+              </button>
+              <button
+                class="w-8 h-8 hover:bg-surface-container-high rounded font-label-sm text-label-sm flex items-center justify-center"
+              >
+                2
+              </button>
+              <button
+                class="w-8 h-8 hover:bg-surface-container-high rounded font-label-sm text-label-sm flex items-center justify-center"
+              >
+                3
+              </button>
+              <span class="px-2">...</span>
+              <button
+                class="w-8 h-8 hover:bg-surface-container-high rounded font-label-sm text-label-sm flex items-center justify-center"
+              >
+                36
+              </button>
+              <button
+                class="px-3 py-1 bg-surface-container-lowest border border-outline-variant rounded font-label-sm text-label-sm text-on-surface hover:bg-surface-container transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Footer Quick Links / Bottom Actions -->
+        <div class="flex items-center justify-between py-6">
+          <div class="flex items-center gap-6">
+            <a
+              class="font-label-sm text-label-sm text-primary hover:underline"
+              href="#"
+              >Download Staff Handbook</a
+            >
+            <a
+              class="font-label-sm text-label-sm text-primary hover:underline"
+              href="#"
+              >Department Hierarchy View</a
+            >
+            <a
+              class="font-label-sm text-label-sm text-primary hover:underline"
+              href="#"
+              >Teacher Schedule Bulk Import</a
+            >
+          </div>
+          <div
+            class="text-on-surface-variant font-label-sm text-[11px] uppercase tracking-widest"
+          >
+            Grail School Information System v2.4.0
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      // Micro-interactions for table rows
+      document.querySelectorAll(".table-row-hover").forEach((row) => {
+        row.addEventListener("mouseenter", () => {
+          row.style.cursor = "pointer";
+        });
+
+        // Simple click effect for simulation
+        row.addEventListener("click", (e) => {
+          if (e.target.closest("button")) return; // Don't trigger if button was clicked
+          const name = row.querySelector(".font-bold").innerText;
+          console.log(`Opening profile for: ${name}`);
+        });
+      });
+
+      // Search bar focus effect
+      const searchInput = document.querySelector('input[type="text"]');
+      searchInput.addEventListener("focus", () => {
+        searchInput.parentElement.classList.add("scale-[1.02]");
+        searchInput.parentElement.classList.add("transition-transform");
+      });
+      searchInput.addEventListener("blur", () => {
+        searchInput.parentElement.classList.remove("scale-[1.02]");
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1004 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Student Profile - Julian Mitchell | Grail SIS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed": "#001a41",
+              "inverse-surface": "#2e3132",
+              "surface-variant": "#e1e3e4",
+              "tertiary-fixed-dim": "#bfc8d0",
+              "primary-fixed": "#d8e2ff",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#6d767e",
+              secondary: "#465f88",
+              error: "#ba1a1a",
+              "on-surface": "#191c1d",
+              "error-container": "#ffdad6",
+              "on-tertiary-fixed": "#141d23",
+              "primary-fixed-dim": "#adc7ff",
+              "on-primary-container": "#fefcff",
+              "inverse-on-surface": "#f0f1f2",
+              "on-primary": "#ffffff",
+              "on-background": "#191c1d",
+              "secondary-container": "#b6d0ff",
+              "on-secondary-container": "#3f5881",
+              "on-tertiary-fixed-variant": "#3f484f",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#d6e3ff",
+              "surface-container-low": "#f3f4f5",
+              background: "#f8f9fa",
+              "surface-container-highest": "#e1e3e4",
+              "surface-container-high": "#e7e8e9",
+              "outline-variant": "#c1c6d7",
+              "on-error-container": "#93000a",
+              "inverse-primary": "#adc7ff",
+              "surface-dim": "#d9dadb",
+              surface: "#f8f9fa",
+              outline: "#717786",
+              "tertiary-fixed": "#dbe4ed",
+              "primary-container": "#0070ea",
+              "surface-bright": "#f8f9fa",
+              "secondary-fixed-dim": "#aec7f6",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "on-primary-fixed-variant": "#004493",
+              "on-secondary-fixed-variant": "#2d476f",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed": "#001b3d",
+              tertiary: "#545d65",
+              "on-error": "#ffffff",
+              "on-tertiary-container": "#fcfcff",
+              primary: "#0059bb",
+              "surface-tint": "#005bc0",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-sm": "8px",
+              "stack-md": "16px",
+              "header-height": "72px",
+              "container-padding": "32px",
+              "sidebar-width": "260px",
+              gutter: "24px",
+            },
+            fontFamily: {
+              "title-sm": ["Inter"],
+              "display-lg": ["Inter"],
+              "body-md": ["Inter"],
+              "headline-md": ["Inter"],
+              "data-mono": ["JetBrains Mono"],
+              "label-sm": ["Inter"],
+            },
+            fontSize: {
+              "title-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+              "display-lg": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "headline-md": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "600",
+                },
+              ],
+              "data-mono": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+              "label-sm": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "500",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+        vertical-align: middle;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e1e3e4;
+        border-radius: 10px;
+      }
+      .card-shadow {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+      /* Sidebar transition */
+      .sidebar-transition {
+        transition:
+          transform 0.3s ease,
+          width 0.3s ease;
+      }
+      .main-transition {
+        transition:
+          margin-left 0.3s ease,
+          width 0.3s ease;
+      }
+      .header-transition {
+        transition:
+          width 0.3s ease,
+          left 0.3s ease;
+      }
+      /* When sidebar is collapsed */
+      .sidebar-collapsed {
+        transform: translateX(-100%);
+      }
+      .main-expanded {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+      .header-expanded {
+        width: 100% !important;
+        left: 0 !important;
+      }
+      /* Toggle button styling */
+      .toggle-btn {
+        transition: background-color 0.2s;
+      }
+      .toggle-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface">
+    <!-- Sidebar Navigation -->
+    <aside
+      id="sidebar"
+      class="w-sidebar-width h-screen fixed left-0 top-0 bg-on-primary-fixed dark:bg-on-surface border-r border-outline-variant z-50 flex flex-col h-full overflow-y-auto custom-scrollbar sidebar-transition"
+    >
+      <div class="px-6 py-8 flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-primary-container rounded flex items-center justify-center text-primary-fixed"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >school</span
+          >
+        </div>
+        <div>
+          <h1 class="text-title-sm font-title-sm font-bold text-primary-fixed">
+            Grail SIS
+          </h1>
+          <p
+            class="text-[10px] uppercase tracking-widest text-tertiary-fixed-dim opacity-70"
+          >
+            Admin Portal
+          </p>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 space-y-1">
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          href="#"
+        >
+          <span class="material-symbols-outlined">dashboard</span>
+          <span class="font-label-sm text-label-sm">Dashboard</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">group</span>
+          <span class="font-label-sm text-label-sm">User Management</span>
+        </a>
+        <!-- Active Item: Students -->
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 bg-primary-container text-on-primary-container border-l-4 border-primary transition-colors duration-200 rounded-r-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >school</span
+          >
+          <span class="font-label-sm text-label-sm">Students</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">person_pin</span>
+          <span class="font-label-sm text-label-sm">Teachers</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">family_restroom</span>
+          <span class="font-label-sm text-label-sm">Parents</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">groups</span>
+          <span class="font-label-sm text-label-sm">Classes</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">book</span>
+          <span class="font-label-sm text-label-sm">Subjects</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">calendar_month</span>
+          <span class="font-label-sm text-label-sm">Timetables</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">how_to_reg</span>
+          <span class="font-label-sm text-label-sm">Attendance</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">assignment_turned_in</span>
+          <span class="font-label-sm text-label-sm">Examinations</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">analytics</span>
+          <span class="font-label-sm text-label-sm">Reports</span>
+        </a>
+      </nav>
+      <div class="p-4 mt-auto">
+        <div class="space-y-2">
+          <a
+            class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+            href="#"
+          >
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-label-sm text-label-sm">Settings</span>
+          </a>
+          <button
+            class="w-full flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
+          >
+            <span class="material-symbols-outlined">logout</span>
+            <span class="font-label-sm text-label-sm">Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Top Bar -->
+    <header
+      id="header"
+      class="h-header-height fixed top-0 right-0 w-[calc(100%-260px)] z-40 bg-surface-container-lowest dark:bg-surface-dim border-b border-surface-container-high shadow-sm flex justify-between items-center px-container-padding header-transition"
+    >
+      <div class="flex items-center gap-4 flex-1">
+        <!-- Sidebar Toggle Button -->
+        <button
+          id="sidebarToggle"
+          class="toggle-btn p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all flex items-center justify-center"
+          aria-label="Toggle sidebar"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="relative w-full max-w-md">
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+            >search</span
+          >
+          <input
+            class="w-full pl-10 pr-4 py-2 bg-surface-container border-none rounded-full text-body-md focus:ring-2 focus:ring-primary focus:bg-white transition-all"
+            placeholder="Search student records, classes, or reports..."
+            type="text"
+          />
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button
+          class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-label-sm text-label-sm hover:opacity-80 transition-opacity active:scale-95"
+        >
+          <span class="material-symbols-outlined">add_circle</span>
+          Add New
+        </button>
+        <div
+          class="flex items-center gap-2 border-l border-outline-variant pl-4"
+        >
+          <button
+            class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all"
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button
+            class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all"
+          >
+            <span class="material-symbols-outlined">mail</span>
+          </button>
+          <div class="flex items-center gap-3 ml-2 cursor-pointer group">
+            <img
+              alt="Administrator Profile"
+              class="w-10 h-10 rounded-full border-2 border-primary/20 group-hover:border-primary transition-all"
+              data-alt="A professional headshot of a middle-aged male school administrator with a warm, confident smile. He is wearing a sharp charcoal suit and glasses, set against a clean, softly blurred modern office background with blue accent lighting. The image maintains a high-end corporate aesthetic with professional lighting."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsAMAFVIAsX_jQCGfopn16m7sLzUvSpwjA_urcFzgQmTu0INbQcBrWUPejZAvqrpyJ0hqLkSX4sAjQIYwoFBwUQakryQrEd7PRt1oyeGavOC_XnBokBTY1UxUquTx0XqRiv_Jmf8cmxLo2B2z8g3CYNuXtoR24ZqH0AHwta9K3z_XITtjQ6vENGFBvanC4rKMN8sd7Q-jWgr477klqxMBqcm33j91PL4i5LhjHns_ZIFChTlrR0ln7U4hIzHzuvpA69GUs6spX9W8z"
+            />
+            <div class="hidden lg:block text-right">
+              <p
+                class="font-label-sm text-label-sm font-bold text-on-surface leading-tight"
+              >
+                Admin User
+              </p>
+              <p class="text-[10px] text-on-surface-variant">
+                Registrar Office
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main
+      id="mainContent"
+      class="ml-[260px] pt-[72px] min-h-screen bg-background p-container-padding main-transition"
+    >
+      <!-- Breadcrumbs & Actions -->
+      <div class="flex justify-between items-center mb-8">
+        <nav
+          class="flex items-center gap-2 text-on-surface-variant text-label-sm"
+        >
+          <a class="hover:text-primary transition-colors" href="#">Students</a>
+          <span class="material-symbols-outlined text-[16px]"
+            >chevron_right</span
+          >
+          <span class="text-on-surface font-semibold">Julian Mitchell</span>
+        </nav>
+        <div class="flex gap-3">
+          <button
+            class="flex items-center gap-2 px-4 py-2 border border-outline text-on-surface rounded-lg font-label-sm text-label-sm hover:bg-surface-container-high transition-all"
+          >
+            <span class="material-symbols-outlined">print</span>
+            Print Profile
+          </button>
+          <button
+            class="flex items-center gap-2 px-4 py-2 border border-outline text-on-surface rounded-lg font-label-sm text-label-sm hover:bg-surface-container-high transition-all"
+          >
+            <span class="material-symbols-outlined">edit</span>
+            Edit Records
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-gutter">
+        <!-- Left Side: Main Profile Info (now spans full width on large screens) -->
+        <div class="col-span-12 lg:col-span-12 space-y-gutter">
+          <!-- Profile Header Card -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden card-shadow"
+            style="--mouse-x: 81px; --mouse-y: 269.6666564941406px"
+          >
+            <div class="h-32 bg-primary relative overflow-hidden">
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"
+              ></div>
+            </div>
+            <div
+              class="px-8 pb-8 flex flex-col md:flex-row items-end -mt-12 relative z-10 gap-6"
+            >
+              <div class="relative group">
+                <img
+                  alt="Julian Mitchell Profile"
+                  class="w-32 h-32 md:w-40 md:h-40 rounded-2xl border-4 border-surface-container-lowest shadow-xl object-cover"
+                  data-alt="A close-up studio portrait of a young male student named Julian Mitchell, approximately 17 years old. He has short brown hair, blue eyes, and a pleasant, engaged expression. He is wearing a smart-casual navy blue sweater. The lighting is soft and professional, with a modern, high-contrast studio aesthetic that aligns with a premium school management platform."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP845ek_uXc7qwQPBkjukItrxiEOnnayA8-L2W3Xn-nIcFohROcdD_JSFgxfvBSVZG6naAfQus6CbPMvCdkti96y4KMwAlTOgwVmlyVsZIFU9z31FeAT72DZw-F0uZM4GAk2eHZtMeg3AHGbPXV8cseP5PDwSnAQAebjTjM1Ekibz6aCFbNiBhCP-n_E9LP1lX0I0na_bQOGM-aW40_FgFhl8kn5NJr3i86Z4f0qMcg0Mwcgvo1Sf-HPlX96YzDw7LVV1tADmPn44I"
+                />
+                <div
+                  class="absolute bottom-2 right-2 bg-green-500 w-5 h-5 rounded-full border-4 border-surface-container-lowest"
+                  title="Currently Enrolled"
+                ></div>
+              </div>
+              <div class="flex-1 pb-2">
+                <h2
+                  class="font-display-lg text-display-lg text-on-surface mb-1"
+                >
+                  Julian Mitchell
+                </h2>
+                <div
+                  class="flex flex-wrap gap-4 items-center text-on-surface-variant font-label-sm"
+                >
+                  <span
+                    class="flex items-center gap-1.5 bg-surface-container px-3 py-1 rounded-full border border-outline-variant/30"
+                  >
+                    <span class="material-symbols-outlined text-[18px]"
+                      >badge</span
+                    >
+                    #STU-2024-001
+                  </span>
+                  <span
+                    class="flex items-center gap-1.5 bg-surface-container px-3 py-1 rounded-full border border-outline-variant/30"
+                  >
+                    <span class="material-symbols-outlined text-[18px]"
+                      >school</span
+                    >
+                    Grade 12-A (Senior Secondary)
+                  </span>
+                  <span
+                    class="flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full font-bold"
+                  >
+                    Honors Program
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Tabbed Navigation Content Area -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl card-shadow min-h-[500px] flex flex-col"
+          >
+            <!-- Custom Tabs -->
+            <div
+              class="flex px-4 border-b border-outline-variant bg-surface-container-low/30 overflow-x-auto whitespace-nowrap"
+            >
+              <button
+                class="tab-btn active px-6 py-4 font-label-sm text-label-sm text-primary border-b-2 border-primary transition-all"
+                onclick="switchTab('personal')"
+              >
+                Personal Info
+              </button>
+              <button
+                class="tab-btn px-6 py-4 font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all"
+                onclick="switchTab('academic')"
+              >
+                Academic Records
+              </button>
+              <button
+                class="tab-btn px-6 py-4 font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all"
+                onclick="switchTab('attendance')"
+              >
+                Attendance
+              </button>
+              <button
+                class="tab-btn px-6 py-4 font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all"
+                onclick="switchTab('parent')"
+              >
+                Parent Details
+              </button>
+              <button
+                class="tab-btn px-6 py-4 font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all"
+                onclick="switchTab('documents')"
+              >
+                Documents
+              </button>
+            </div>
+            <!-- Tab Panels -->
+            <div class="p-8 flex-1">
+              <!-- Personal Info Panel -->
+              <div
+                class="tab-panel animate-in fade-in duration-500"
+                id="panel-personal"
+              >
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div class="space-y-6">
+                    <h3
+                      class="font-title-sm text-title-sm border-l-4 border-primary pl-3"
+                    >
+                      General Information
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <p
+                          class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1"
+                        >
+                          Full Name
+                        </p>
+                        <p class="font-body-md text-body-md">
+                          Julian Matthew Mitchell
+                        </p>
+                      </div>
+                      <div>
+                        <p
+                          class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1"
+                        >
+                          Date of Birth
+                        </p>
+                        <p class="font-body-md text-body-md">March 14, 2007</p>
+                      </div>
+                      <div>
+                        <p
+                          class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1"
+                        >
+                          Gender
+                        </p>
+                        <p class="font-body-md text-body-md">Male</p>
+                      </div>
+                      <div>
+                        <p
+                          class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1"
+                        >
+                          Blood Group
+                        </p>
+                        <p class="font-body-md text-body-md">
+                          A positive (+ve)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="space-y-6">
+                    <h3
+                      class="font-title-sm text-title-sm border-l-4 border-primary pl-3"
+                    >
+                      Contact Details
+                    </h3>
+                    <div class="space-y-4">
+                      <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary"
+                          >location_on</span
+                        >
+                        <div>
+                          <p
+                            class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest"
+                          >
+                            Permanent Address
+                          </p>
+                          <p class="font-body-md text-body-md">
+                            452 Heritage Boulevard, Apartment 4B<br />Maple
+                            Ridge, CA 94521
+                          </p>
+                        </div>
+                      </div>
+                      <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary"
+                          >mail</span
+                        >
+                        <div>
+                          <p
+                            class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest"
+                          >
+                            Personal Email
+                          </p>
+                          <p class="font-body-md text-body-md">
+                            j.mitchell.edu@example.com
+                          </p>
+                        </div>
+                      </div>
+                      <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary"
+                          >call</span
+                        >
+                        <div>
+                          <p
+                            class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest"
+                          >
+                            Phone Number
+                          </p>
+                          <p class="font-body-md text-body-md">
+                            +1 (555) 234-5678
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Academic Info Panel (Hidden by default) -->
+              <div
+                class="tab-panel hidden animate-in fade-in duration-500"
+                id="panel-academic"
+              >
+                <div class="flex flex-col gap-8">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div
+                      class="bg-primary-container/10 border border-primary-container p-4 rounded-xl flex items-center gap-4"
+                    >
+                      <div
+                        class="p-3 bg-primary-container text-on-primary-container rounded-lg"
+                      >
+                        <span class="material-symbols-outlined">grade</span>
+                      </div>
+                      <div>
+                        <p
+                          class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest"
+                        >
+                          Cumulative GPA
+                        </p>
+                        <p
+                          class="text-headline-md font-headline-md text-primary"
+                        >
+                          3.85 / 4.0
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="bg-secondary-container/10 border border-secondary-container p-4 rounded-xl flex items-center gap-4"
+                    >
+                      <div
+                        class="p-3 bg-secondary-container text-on-secondary-container rounded-lg"
+                      >
+                        <span class="material-symbols-outlined"
+                          >trending_up</span
+                        >
+                      </div>
+                      <div>
+                        <p
+                          class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest"
+                        >
+                          Class Rank
+                        </p>
+                        <p
+                          class="text-headline-md font-headline-md text-on-secondary-container"
+                        >
+                          12th / 140
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="bg-surface-container border border-outline-variant p-4 rounded-xl flex items-center gap-4"
+                    >
+                      <div
+                        class="p-3 bg-on-surface-variant text-surface rounded-lg"
+                      >
+                        <span class="material-symbols-outlined">verified</span>
+                      </div>
+                      <div>
+                        <p
+                          class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest"
+                        >
+                          Credits Earned
+                        </p>
+                        <p
+                          class="text-headline-md font-headline-md text-on-surface"
+                        >
+                          112 / 120
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 class="font-title-sm text-title-sm mb-4">
+                      Current Subjects
+                    </h4>
+                    <div class="overflow-x-auto">
+                      <table class="w-full text-left border-collapse">
+                        <thead>
+                          <tr
+                            class="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm uppercase"
+                          >
+                            <th
+                              class="px-4 py-3 border-b border-outline-variant"
+                            >
+                              Subject Name
+                            </th>
+                            <th
+                              class="px-4 py-3 border-b border-outline-variant"
+                            >
+                              Instructor
+                            </th>
+                            <th
+                              class="px-4 py-3 border-b border-outline-variant"
+                            >
+                              Grade
+                            </th>
+                            <th
+                              class="px-4 py-3 border-b border-outline-variant text-right"
+                            >
+                              Attendance
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody class="text-body-md font-body-md">
+                          <tr
+                            class="hover:bg-surface-container transition-colors border-b border-outline-variant/30"
+                          >
+                            <td class="px-4 py-3 font-semibold">
+                              Advanced Physics III
+                            </td>
+                            <td class="px-4 py-3">Dr. Helena Vance</td>
+                            <td class="px-4 py-3">
+                              <span
+                                class="px-2 py-0.5 bg-green-100 text-green-800 rounded"
+                                >A</span
+                              >
+                            </td>
+                            <td class="px-4 py-3 text-right">98%</td>
+                          </tr>
+                          <tr
+                            class="hover:bg-surface-container transition-colors border-b border-outline-variant/30"
+                          >
+                            <td class="px-4 py-3 font-semibold">
+                              World Literature
+                            </td>
+                            <td class="px-4 py-3">Prof. Marcus Thorne</td>
+                            <td class="px-4 py-3">
+                              <span
+                                class="px-2 py-0.5 bg-green-100 text-green-800 rounded"
+                                >A-</span
+                              >
+                            </td>
+                            <td class="px-4 py-3 text-right">95%</td>
+                          </tr>
+                          <tr
+                            class="hover:bg-surface-container transition-colors border-b border-outline-variant/30"
+                          >
+                            <td class="px-4 py-3 font-semibold">Calculus BC</td>
+                            <td class="px-4 py-3">Mrs. Sarah Jenkins</td>
+                            <td class="px-4 py-3">
+                              <span
+                                class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded"
+                                >B+</span
+                              >
+                            </td>
+                            <td class="px-4 py-3 text-right">92%</td>
+                          </tr>
+                          <tr
+                            class="hover:bg-surface-container transition-colors"
+                          >
+                            <td class="px-4 py-3 font-semibold">
+                              Macroeconomics
+                            </td>
+                            <td class="px-4 py-3">Mr. Robert Chen</td>
+                            <td class="px-4 py-3">
+                              <span
+                                class="px-2 py-0.5 bg-green-100 text-green-800 rounded"
+                                >A</span
+                              >
+                            </td>
+                            <td class="px-4 py-3 text-right">100%</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Other panels would be built similarly... -->
+              <div
+                class="tab-panel hidden text-center py-20"
+                id="panel-attendance"
+              >
+                <span
+                  class="material-symbols-outlined text-6xl text-surface-variant mb-4"
+                  >event_available</span
+                >
+                <p class="text-on-surface-variant font-label-sm">
+                  Detailed attendance records for 2024 Semester 2 are loading...
+                </p>
+              </div>
+              <div class="tab-panel hidden" id="panel-parent">
+                <div
+                  class="flex items-center gap-6 p-6 border border-outline-variant rounded-xl bg-surface-container-low"
+                >
+                  <img
+                    alt="Parent Profile"
+                    class="w-24 h-24 rounded-full border-2 border-white shadow-sm"
+                    data-alt="A professional headshot of a middle-aged woman with shoulder-length dark hair and a kind expression. She is wearing a cream-colored silk blouse and minimalist jewelry. The lighting is bright and airy, suggesting a clean corporate or upscale educational setting."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxr5CEIbHMwnJ8WaSLljXlfi6qpKENGqd1ZCRGDMsaKIXXULAjXbMZlchnPEDHABHgfA_0XvfZSROHAH1leIYD6rVhYiaelIaf-o2d6TE86xfVzRFluL9jltC8zCX3i5pOAmkwZxwTlMLFASOYoouUEBOdWw-oLkudkDB25fQ8oC1gH21Gndh_M5GM2fUHYR-HkA_4rBo8zPvQaLzoxUn3R6rJpS8tNEib0o2HLNPSV48igGq5Ugu_PuUdXng_owGpLA46e4Ol_hLc"
+                  />
+                  <div class="flex-1">
+                    <h4 class="font-title-sm text-title-sm text-on-surface">
+                      Elena Mitchell
+                    </h4>
+                    <p class="text-on-surface-variant text-body-md mb-3">
+                      Primary Contact & Guardian (Mother)
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                      <button
+                        class="text-primary font-bold text-label-sm flex items-center gap-1 hover:underline"
+                      >
+                        <span class="material-symbols-outlined text-sm"
+                          >visibility</span
+                        >
+                        View Parent Profile
+                      </button>
+                      <button
+                        class="text-primary font-bold text-label-sm flex items-center gap-1 hover:underline"
+                      >
+                        <span class="material-symbols-outlined text-sm"
+                          >send</span
+                        >
+                        Message Guardian
+                      </button>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p
+                      class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest"
+                    >
+                      Emergency Priority
+                    </p>
+                    <span
+                      class="px-3 py-1 bg-error-container text-on-error-container font-bold text-xs rounded-full"
+                      >Level 1 - Urgent</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="tab-panel hidden" id="panel-documents">
+                <div class="space-y-3">
+                  <div
+                    class="p-4 border border-outline-variant rounded-lg flex items-center justify-between hover:bg-surface-container transition-all"
+                  >
+                    <div class="flex items-center gap-3">
+                      <span class="material-symbols-outlined text-red-500"
+                        >picture_as_pdf</span
+                      >
+                      <div>
+                        <p class="font-body-md font-bold">
+                          Annual_Progress_Report_2023.pdf
+                        </p>
+                        <p class="text-[10px] text-on-surface-variant">
+                          Modified: Jan 12, 2024 • 1.2 MB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      class="p-2 hover:bg-white rounded-full transition-colors"
+                    >
+                      <span class="material-symbols-outlined">download</span>
+                    </button>
+                  </div>
+                  <div
+                    class="p-4 border border-outline-variant rounded-lg flex items-center justify-between hover:bg-surface-container transition-all"
+                  >
+                    <div class="flex items-center gap-3">
+                      <span class="material-symbols-outlined text-blue-500"
+                        >description</span
+                      >
+                      <div>
+                        <p class="font-body-md font-bold">
+                          Health_Vaccination_Certificate.docx
+                        </p>
+                        <p class="text-[10px] text-on-surface-variant">
+                          Modified: Nov 05, 2023 • 450 KB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      class="p-2 hover:bg-white rounded-full transition-colors"
+                    >
+                      <span class="material-symbols-outlined">download</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right Sidebar completely removed as requested -->
+      </div>
+    </main>
+    <script>
+      (function () {
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const header = document.getElementById("header");
+        const toggleBtn = document.getElementById("sidebarToggle");
+
+        let sidebarVisible = true;
+
+        function updateLayout() {
+          if (sidebarVisible) {
+            sidebar.classList.remove("sidebar-collapsed");
+            mainContent.classList.remove("main-expanded");
+            header.classList.remove("header-expanded");
+            toggleBtn.querySelector(".material-symbols-outlined").textContent =
+              "menu";
+          } else {
+            sidebar.classList.add("sidebar-collapsed");
+            mainContent.classList.add("main-expanded");
+            header.classList.add("header-expanded");
+            toggleBtn.querySelector(".material-symbols-outlined").textContent =
+              "menu_open";
+          }
+        }
+
+        toggleBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          sidebarVisible = !sidebarVisible;
+          updateLayout();
+        });
+
+        // Initial state is visible, already set in HTML classes
+        updateLayout();
+
+        // Optional: Close sidebar when clicking on main content if it's open on mobile?
+        // Not strictly necessary but can be added.
+      })();
+
+      function switchTab(tabId) {
+        // Hide all panels
+        document.querySelectorAll(".tab-panel").forEach((panel) => {
+          panel.classList.add("hidden");
+        });
+        // Show selected panel
+        document.getElementById("panel-" + tabId).classList.remove("hidden");
+
+        // Update Tab Buttons
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove(
+            "text-primary",
+            "border-b-2",
+            "border-primary",
+            "active",
+          );
+          btn.classList.add("text-on-surface-variant");
+        });
+
+        // Find the clicked button (searching by part of onclick for robustness)
+        const activeBtn = Array.from(
+          document.querySelectorAll(".tab-btn"),
+        ).find((btn) => btn.getAttribute("onclick").includes(tabId));
+        if (activeBtn) {
+          activeBtn.classList.add(
+            "text-primary",
+            "border-b-2",
+            "border-primary",
+            "active",
+          );
+          activeBtn.classList.remove("text-on-surface-variant");
+        }
+      }
+
+      // Simple interactive hover for student card
+      const mainCard = document.querySelector(
+        ".lg\\:col-span-12 > div:first-child",
+      );
+      if (mainCard) {
+        mainCard.addEventListener("mousemove", (e) => {
+          const rect = mainCard.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          mainCard.style.setProperty("--mouse-x", `${x}px`);
+          mainCard.style.setProperty("--mouse-y", `${y}px`);
+        });
+      }
+    </script>
+  </body>
+</html>

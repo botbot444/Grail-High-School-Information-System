@@ -40,17 +40,17 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        $this->ensureIsNotRateLimited();
+        $this->ensureIsNotRateLimited(); //Checks if user(IP) has tried to log in too many times
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+            RateLimiter::hit($this->throttleKey()); //Logs failed attempt // Creates a timer and counter for the users unique id
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
-            ]);
+            ]); // failed log in message to the user
         }
 
-        RateLimiter::clear($this->throttleKey());
+        RateLimiter::clear($this->throttleKey());//Successful  log in
     }
 
     /**
@@ -61,12 +61,12 @@ class LoginRequest extends FormRequest
     public function ensureIsNotRateLimited(): void
     {
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
-            return;
+            return;// Returns if the user has NOT tried more than 5 times
         }
 
-        event(new Lockout($this));
+        event(new Lockout($this));// Locks out the user
 
-        $seconds = RateLimiter::availableIn($this->throttleKey());
+        $seconds = RateLimiter::availableIn($this->throttleKey()); //Specifies duration of lockout
 
         throw ValidationException::withMessages([
             'email' => trans('auth.throttle', [
@@ -81,6 +81,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());// Creates a unique ID for the user, their lowercase email + '|' + ip address.
     }
 }

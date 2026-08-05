@@ -37,7 +37,7 @@ class StudentController extends Controller
 
         // Calculate fee balance
         $totalFees = $student->fees()->sum('amount_due');
-        $paidFees = $student->fees()->where('status', 'paid')->sum('amount_paid');
+        $paidFees = $student->fees()->cleared()->sum('amount_paid');
         $feeBalance = $totalFees - $paidFees;
         $feeStatus = $feeBalance > 0 ? 'Pending' : 'Cleared';
 

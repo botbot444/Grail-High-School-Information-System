@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Student;
 use App\Models\SchoolClass;
@@ -17,13 +18,16 @@ class StudentSeeder extends Seeder
         $count   = 0;
 
         // ── Demo student (known credentials) ─────────────────────────────────
+        $studentRoleId = Role::where('name', 'student')->value('id');
+        $parentRoleId = Role::where('name', 'parent')->value('id');
+
         $demoStudentUser = User::firstOrCreate(
             ['email' => 'student@grail.school'],
             [
                 'name'              => 'Demo Student',
                 'email'             => 'student@grail.school',
                 'password'          => Hash::make('Student@1234'),
-                'role'              => 'student',
+                'role_id'           => $studentRoleId,
                 'email_verified_at' => now(),
             ]
         );
@@ -34,7 +38,7 @@ class StudentSeeder extends Seeder
                 'name'              => 'Demo Parent',
                 'email'             => 'parent@grail.school',
                 'password'          => Hash::make('Parent@1234'),
-                'role'              => 'parent',
+                'role_id'           => $parentRoleId,
                 'email_verified_at' => now(),
             ]
         );

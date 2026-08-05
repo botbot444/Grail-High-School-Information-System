@@ -50,7 +50,7 @@ class ParentController extends Controller
 
         // Calculate fee balance
         $totalFees = $student->fees()->sum('amount_due');
-        $paidFees = $student->fees()->where('status', 'paid')->sum('amount_paid');
+        $paidFees = $student->fees()->cleared()->sum('amount_paid');
         $feeBalance = $totalFees - $paidFees;
 
         return view('parent.dashboard', compact(

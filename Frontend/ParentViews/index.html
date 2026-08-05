@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grail SIS - Parent Portal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-left">
+                <div class="search-bar">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" placeholder="Search students, records...">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn" aria-label="Notifications">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                </button>
+                <button class="icon-btn" aria-label="Messages">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </button>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <span class="user-name">Sarah Mitchell</span>
+                        <span class="user-role">Parent Account</span>
+                    </div>
+                    <img src="https://i.pravatar.cc/150?img=47" alt="Sarah Mitchell" class="avatar">
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg class="school-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <div class="sidebar-brand">
+                        <span class="brand-name">Grail SIS</span>
+                        <span class="brand-subtitle">Parent Portal</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="#" class="nav-item active" data-view="home">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            <span class="nav-text">Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-view="children">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span class="nav-text">My Children</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-view="attendance">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span class="nav-text">Attendance</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-view="performance">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            <span class="nav-text">Performance</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-view="reports">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <span class="nav-text">Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-view="assignments">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                            <span class="nav-text">Assignments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-view="announcements">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                            <span class="nav-text">Announcements</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-view="contact-teachers">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span class="nav-text">Contact Teachers</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item" data-view="settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <a href="#" class="nav-item sign-out">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span class="nav-text">Sign Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Toggle Button -->
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Home Dashboard View -->
+            <div class="view active" id="view-home">
+                <div class="dashboard-header">
+                    <div class="dashboard-greeting">
+                        <h2>Hello, Sarah</h2>
+                        <p>Overview for: <strong>Julian Mitchell, Grade 10</strong></p>
+                    </div>
+                    <div class="dashboard-actions">
+                        <button class="btn btn-outline">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            View Schedule
+                        </button>
+                        <button class="btn btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Download Progress Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <span class="stat-card-label">Attendance Rate</span>
+                                <span class="stat-card-value">94.2%</span>
+                            </div>
+                            <div class="stat-card-icon attendance-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="8.5" cy="7" r="4"></circle>
+                                    <polyline points="17 11 19 13 23 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="attendance-circle">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" class="circle-bg"></circle>
+                                <circle cx="50" cy="50" r="45" class="circle-progress" style="stroke-dashoffset: 54"></circle>
+                            </svg>
+                            <span class="grade-badge">A+</span>
+                        </div>
+                        <p class="stat-card-footer">On track for excellence award</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <span class="stat-card-label">Current GPA</span>
+                                <span class="stat-card-value">3.85</span>
+                            </div>
+                            <div class="stat-card-icon gpa-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="term-average">
+                            <span>Term Average</span>
+                            <span class="average-value">3.91</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 95%"></div>
+                        </div>
+                        <p class="stat-change-positive">+0.12 from last term</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <span class="stat-card-label">Pending Assignments</span>
+                                <span class="stat-card-value">3</span>
+                            </div>
+                            <div class="stat-card-icon pending-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="pending-list">
+                            <div class="pending-item urgent">
+                                <div>
+                                    <span class="pending-name">Calculus Quiz Correction</span>
+                                    <span class="pending-due">Due: Today</span>
+                                </div>
+                            </div>
+                            <div class="pending-item">
+                                <div>
+                                    <span class="pending-name">Biology Lab Report</span>
+                                    <span class="pending-due">Due: Friday</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card events-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">UPCOMING EVENTS</span>
+                            <div class="stat-card-icon events-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="events-list">
+                            <div class="event-item">
+                                <div class="event-date">
+                                    <span class="event-day">14</span>
+                                    <span class="event-month">NOV</span>
+                                </div>
+                                <div class="event-info">
+                                    <span class="event-title">Quarterly PTA Meeting</span>
+                                    <span class="event-time">04:00 PM • Auditorium</span>
+                                </div>
+                            </div>
+                            <div class="event-item">
+                                <div class="event-date">
+                                    <span class="event-day">22</span>
+                                    <span class="event-month">NOV</span>
+                                </div>
+                                <div class="event-info">
+                                    <span class="event-title">Annual Sports Day</span>
+                                    <span class="event-time">08:00 AM • Main Field</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance & Results Row -->
+                <div class="dashboard-row">
+                    <div class="performance-card">
+                        <div class="performance-header">
+                            <div>
+                                <h3>Performance Trend</h3>
+                                <p>Academic growth throughout the current semester</p>
+                            </div>
+                            <select class="semester-select">
+                                <option>Fall Semester 2023</option>
+                                <option>Spring Semester 2023</option>
+                            </select>
+                        </div>
+                        <div class="chart-area">
+                            <div class="chart-y-axis">
+                                <span>100</span>
+                                <span>80</span>
+                                <span>60</span>
+                                <span>40</span>
+                                <span>20</span>
+                            </div>
+                            <div class="chart-content">
+                                <svg viewBox="0 0 400 150" class="line-chart">
+                                    <defs>
+                                        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#1e40af;stop-opacity:0.2" />
+                                            <stop offset="100%" style="stop-color:#1e40af;stop-opacity:0" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M0,120 L80,100 L160,85 L240,70 L320,50 L400,30 L400,150 L0,150 Z" fill="url(#chartGradient)"></path>
+                                    <polyline points="0,120 80,100 160,85 240,70 320,50 400,30" fill="none" stroke="#1e40af" stroke-width="2"></polyline>
+                                    <circle cx="240" cy="70" r="4" fill="#1e40af"></circle>
+                                </svg>
+                                <div class="chart-x-axis">
+                                    <span>Aug</span>
+                                    <span>Sep</span>
+                                    <span>Oct</span>
+                                    <span>Nov</span>
+                                    <span>Dec</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-card">
+                        <div class="results-header">
+                            <h3>Recent Results</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="results-list">
+                            <div class="result-item">
+                                <div class="result-icon calc-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <text x="4" y="18" font-size="16" font-weight="bold" fill="currentColor" stroke="none">Σ</text>
+                                    </svg>
+                                </div>
+                                <div class="result-info">
+                                    <span class="result-subject">Advanced Calculus</span>
+                                    <span class="result-type">Midterm Exam</span>
+                                </div>
+                                <div class="result-grade">
+                                    <span class="grade-letter">A-</span>
+                                    <span class="grade-score">92/100</span>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-icon bio-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                                    </svg>
+                                </div>
+                                <div class="result-info">
+                                    <span class="result-subject">Molecular Biology</span>
+                                    <span class="result-type">Practical Test</span>
+                                </div>
+                                <div class="result-grade">
+                                    <span class="grade-letter b-plus">B+</span>
+                                    <span class="grade-score">88/100</span>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-icon history-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                    </svg>
+                                </div>
+                                <div class="result-info">
+                                    <span class="result-subject">World History</span>
+                                    <span class="result-type">Essay Review</span>
+                                </div>
+                                <div class="result-grade">
+                                    <span class="grade-letter a-grade">A</span>
+                                    <span class="grade-score">95/100</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Announcements -->
+                <div class="announcements-section">
+                    <h3>Latest Announcements</h3>
+                    <div class="announcements-grid">
+                        <div class="announcement-card">
+                            <div class="announcement-top admin"></div>
+                            <div class="announcement-content">
+                                <span class="announcement-tag admin-tag">ADMIN</span>
+                                <h4>Campus Safety Policy Update</h4>
+                                <p>Please review the updated guidelines for campus entry and...</p>
+                                <div class="announcement-footer">
+                                    <span class="announcement-time">2 hours ago</span>
+                                    <a href="#" class="announcement-link">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            <polyline points="12 5 19 12 12 19"></polyline>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="announcement-card">
+                            <div class="announcement-top academic"></div>
+                            <div class="announcement-content">
+                                <span class="announcement-tag academic-tag">ACADEMIC</span>
+                                <h4>Winter Break Schedule</h4>
+                                <p>The official calendar for the upcoming winter holidays has bee...</p>
+                                <div class="announcement-footer">
+                                    <span class="announcement-time">Yesterday</span>
+                                    <a href="#" class="announcement-link">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            <polyline points="12 5 19 12 12 19"></polyline>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="announcement-card">
+                            <div class="announcement-top faculty"></div>
+                            <div class="announcement-content">
+                                <span class="announcement-tag faculty-tag">FACULTY</span>
+                                <h4>Math Olympiad Registration</h4>
+                                <p>Registration for the National Math Olympiad is now open for student...</p>
+                                <div class="announcement-footer">
+                                    <span class="announcement-time">3 days ago</span>
+                                    <a href="#" class="announcement-link">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            <polyline points="12 5 19 12 12 19"></polyline>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Children View -->
+            <div class="view" id="view-children">
+                <div class="content-header">
+                <div class="content-title">
+                    <h2>My Children</h2>
+                    <p>Manage profiles, academic performance, and attendance records for your linked students.</p>
+                </div>
+                <div class="content-actions">
+                    <button class="btn btn-outline">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                        Print Reports
+                    </button>
+                    <button class="btn btn-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Link New Student
+                    </button>
+                </div>
+            </div>
+
+            <!-- Student Cards -->
+            <div class="student-cards">
+                <!-- Julian Mitchell -->
+                <div class="student-card">
+                    <div class="student-info">
+                        <img src="https://i.pravatar.cc/150?img=68" alt="Julian Mitchell" class="student-avatar">
+                        <div class="student-details">
+                            <div class="student-header">
+                                <span class="badge badge-active">ACTIVE</span>
+                                <div class="admin-number">
+                                    <span class="admin-label">ADMIN #</span>
+                                    <span class="admin-value">2024001</span>
+                                </div>
+                            </div>
+                            <h3 class="student-name">Julian Mitchell</h3>
+                            <p class="student-meta">Grade 10 • Section B</p>
+                            <div class="student-stats">
+                                <div class="stat-box">
+                                    <span class="stat-label">GPA Score</span>
+                                    <div class="stat-value">
+                                        <span class="stat-number">3.85</span>
+                                        <span class="stat-change positive">↑ 0.1</span>
+                                    </div>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-label">Attendance</span>
+                                    <div class="stat-value">
+                                        <span class="stat-number">94.2%</span>
+                                        <span class="stat-indicator blue"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="student-actions">
+                        <a href="#" class="action-item" data-navigate="profile" data-student="julian">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>View Profile</span>
+                        </a>
+                        <a href="#" class="action-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            <span>View Results</span>
+                        </a>
+                        <a href="#" class="action-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span>Attendance</span>
+                        </a>
+                        <a href="#" class="action-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                            <span>Assignments</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Maya Mitchell -->
+                <div class="student-card">
+                    <div class="student-info">
+                        <img src="https://i.pravatar.cc/150?img=45" alt="Maya Mitchell" class="student-avatar">
+                        <div class="student-details">
+                            <div class="student-header">
+                                <span class="badge badge-active">ACTIVE</span>
+                                <div class="admin-number">
+                                    <span class="admin-label">ADMIN #</span>
+                                    <span class="admin-value">2024045</span>
+                                </div>
+                            </div>
+                            <h3 class="student-name">Maya Mitchell</h3>
+                            <p class="student-meta">Grade 7 • Section A</p>
+                            <div class="student-stats">
+                                <div class="stat-box">
+                                    <span class="stat-label">GPA Score</span>
+                                    <div class="stat-value">
+                                        <span class="stat-number">3.92</span>
+                                        <span class="stat-change max">MAX</span>
+                                    </div>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-label">Attendance</span>
+                                    <div class="stat-value">
+                                        <span class="stat-number">98.1%</span>
+                                        <span class="stat-indicator blue"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="student-actions">
+                        <a href="#" class="action-item" data-navigate="profile" data-student="maya">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>View Profile</span>
+                        </a>
+                        <a href="#" class="action-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            <span>View Results</span>
+                        </a>
+                        <a href="#" class="action-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span>Attendance</span>
+                        </a>
+                        <a href="#" class="action-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                            <span>Assignments</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Assignments -->
+            <div class="assignments-section">
+                <div class="section-header">
+                    <h3>Upcoming Assignments</h3>
+                    <a href="#" class="view-calendar">View Calendar</a>
+                </div>
+                <table class="assignments-table">
+                    <thead>
+                        <tr>
+                            <th>STUDENT</th>
+                            <th>ASSIGNMENT</th>
+                            <th>SUBJECT</th>
+                            <th>DUE DATE</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="student-cell">
+                                    <span class="avatar-initials jm">JM</span>
+                                    <span>Julian Mitchell</span>
+                                </div>
+                            </td>
+                            <td>Calc II: Taylor Series</td>
+                            <td>Mathematics</td>
+                            <td>Oct 24, 2024</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-cell">
+                                    <span class="avatar-initials mm">MM</span>
+                                    <span>Maya Mitchell</span>
+                                </div>
+                            </td>
+                            <td>Cell Biology Diagram</td>
+                            <td>General Science</td>
+                            <td>Oct 22, 2024</td>
+                            <td><span class="badge badge-submitted">Submitted</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <!-- Student Profile View -->
+            <div class="view" id="view-profile">
+                <div class="profile-header-card">
+                    <div class="profile-header-content">
+                        <div class="profile-avatar-section">
+                            <img src="https://i.pravatar.cc/150?img=68" alt="Julian Mitchell" class="profile-avatar">
+                            <button class="camera-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                    <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="profile-main-info">
+                            <div class="profile-name-row">
+                                <h2>Julian Mitchell</h2>
+                                <span class="badge badge-active">Active Student</span>
+                            </div>
+                            <div class="profile-meta-row">
+                                <div class="profile-meta-item">
+                                    <span class="meta-label">GRADE LEVEL</span>
+                                    <span class="meta-value">Grade 10</span>
+                                </div>
+                                <div class="profile-meta-item">
+                                    <span class="meta-label">STUDENT ID</span>
+                                    <span class="meta-value">SIS-2024-0891</span>
+                                </div>
+                                <div class="profile-meta-item">
+                                    <span class="meta-label">HOMEROOM</span>
+                                    <span class="meta-value">Room 402-B</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn btn-primary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download PDF
+                            </button>
+                            <button class="btn btn-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="1"></circle>
+                                    <circle cx="12" cy="5" r="1"></circle>
+                                    <circle cx="12" cy="19" r="1"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Tabs -->
+                <div class="profile-tabs">
+                    <button class="profile-tab active" data-tab="overview">Overview</button>
+                    <button class="profile-tab" data-tab="personal">Personal Info</button>
+                    <button class="profile-tab" data-tab="academic">Academic Summary</button>
+                </div>
+
+                <!-- Profile Content Grid -->
+                <div class="profile-content-grid">
+                    <div class="profile-main-content">
+                        <!-- Stats Row -->
+                        <div class="profile-stats-row">
+                            <div class="profile-stat-card">
+                                <div class="profile-stat-icon attendance-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
+                                <div class="profile-stat-info">
+                                    <span class="profile-stat-label">Current Attendance</span>
+                                    <span class="profile-stat-value">94%</span>
+                                    <span class="profile-stat-change positive">+1.2% from last month</span>
+                                </div>
+                            </div>
+                            <div class="profile-stat-card">
+                                <div class="profile-stat-icon gpa-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                </div>
+                                <div class="profile-stat-info">
+                                    <span class="profile-stat-label">Average Marks</span>
+                                    <span class="profile-stat-value">88%</span>
+                                    <span class="profile-stat-sub">Class Percentile: 85th</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subject Performance -->
+                        <div class="subject-performance-card">
+                            <div class="subject-header">
+                                <h3>Subject Performance Breakdown</h3>
+                                <select class="semester-select">
+                                    <option>Semester 1 (Current)</option>
+                                    <option>Semester 2</option>
+                                </select>
+                            </div>
+                            <div class="subject-list">
+                                <div class="subject-item">
+                                    <div class="subject-info">
+                                        <span class="subject-name">Mathematics</span>
+                                        <span class="subject-score">92%</span>
+                                    </div>
+                                    <div class="subject-bar">
+                                        <div class="subject-bar-fill" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                                <div class="subject-item">
+                                    <div class="subject-info">
+                                        <span class="subject-name">English Language</span>
+                                        <span class="subject-score">85%</span>
+                                    </div>
+                                    <div class="subject-bar">
+                                        <div class="subject-bar-fill" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div class="subject-item">
+                                    <div class="subject-info">
+                                        <span class="subject-name">Physics</span>
+                                        <span class="subject-score">78%</span>
+                                    </div>
+                                    <div class="subject-bar">
+                                        <div class="subject-bar-fill" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                                <div class="subject-item">
+                                    <div class="subject-info">
+                                        <span class="subject-name">Computer Science</span>
+                                        <span class="subject-score">96%</span>
+                                    </div>
+                                    <div class="subject-bar">
+                                        <div class="subject-bar-fill" style="width: 96%"></div>
+                                    </div>
+                                </div>
+                                <div class="subject-item">
+                                    <div class="subject-info">
+                                        <span class="subject-name">Art & Design</span>
+                                        <span class="subject-score">90%</span>
+                                    </div>
+                                    <div class="subject-bar">
+                                        <div class="subject-bar-fill" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-sidebar-content">
+                        <!-- Personal Details -->
+                        <div class="personal-details-card">
+                            <h3>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                Personal Details
+                            </h3>
+                            <div class="details-list">
+                                <div class="detail-row">
+                                    <span class="detail-label">Gender</span>
+                                    <span class="detail-value">Male</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Date of Birth</span>
+                                    <span class="detail-value">15 May 2008</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Age</span>
+                                    <span class="detail-value">16 Years</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Nationality</span>
+                                    <span class="detail-value">United Kingdom</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Blood Group</span>
+                                    <span class="detail-value">O+</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Contacts -->
+                        <div class="emergency-contacts-card">
+                            <h3>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                Emergency Contacts
+                            </h3>
+                            <div class="contacts-list">
+                                <div class="contact-item">
+                                    <div class="contact-avatar primary">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="contact-info">
+                                        <span class="contact-name">Sarah Mitchell (Primary)</span>
+                                        <span class="contact-detail">Mother • +44 20 7123 4567</span>
+                                        <span class="contact-email">sarah.m@email.com</span>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-avatar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                    </div>
+                                    <div class="contact-info">
+                                        <span class="contact-name">David Mitchell</span>
+                                        <span class="contact-detail">Father • +44 20 7123 4568</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline btn-full">Update Information</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance View -->
+            <div class="view" id="view-attendance">
+                <div class="attendance-top-bar">
+                    <div class="breadcrumb">
+                        <span>Portal</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span>Attendance</span>
+                    </div>
+                    <div class="attendance-filters">
+                        <div class="filter-group">
+                            <span class="filter-label">STUDENT</span>
+                            <span class="filter-value">Julian Mitchell</span>
+                        </div>
+                        <div class="filter-group">
+                            <span class="filter-label">DATE RANGE</span>
+                            <span class="filter-value">Current Term (Fall 2023)</span>
+                        </div>
+                        <div class="filter-group">
+                            <span class="filter-label">VIEW</span>
+                            <div class="toggle-pill">
+                                <button class="pill active">Daily</button>
+                                <button class="pill">Monthly</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary">Update View</button>
+                    </div>
+                </div>
+
+                <h2 class="attendance-title">Attendance Monitoring</h2>
+
+                <!-- Stats Row -->
+                <div class="attendance-stats-grid">
+                    <div class="attendance-stat-card">
+                        <div class="attendance-stat-header">
+                            <span class="attendance-stat-label">Attendance Rate</span>
+                            <div class="attendance-stat-icon percent-icon">
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <span class="attendance-stat-big">94.2%</span>
+                        <span class="attendance-stat-change positive">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                            +1.2% from last term
+                        </span>
+                    </div>
+
+                    <div class="attendance-stat-card">
+                        <div class="attendance-stat-header">
+                            <span class="attendance-stat-label">Days Present</span>
+                            <div class="attendance-stat-icon present-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                        </div>
+                        <span class="attendance-stat-big">45/48</span>
+                        <span class="attendance-stat-sub">Scheduled days in Term</span>
+                    </div>
+
+                    <div class="attendance-stat-card">
+                        <div class="attendance-stat-header">
+                            <span class="attendance-stat-label">Total Absences</span>
+                            <div class="attendance-stat-icon absent-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><line x1="10" y1="14" x2="14" y2="14"></line></svg>
+                            </div>
+                        </div>
+                        <span class="attendance-stat-big red">03</span>
+                        <span class="attendance-stat-detail">2 Unexcused, 1 Excused</span>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="attendance-charts-row">
+                    <div class="monthly-comparison-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <h3>Monthly Comparison</h3>
+                                <p>Academic Term 2023</p>
+                            </div>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="legend-dot present-dot"></span> Present</span>
+                                <span class="legend-item"><span class="legend-dot absent-dot"></span> Absent</span>
+                            </div>
+                        </div>
+                        <div class="bar-chart">
+                            <div class="bar-group">
+                                <div class="bar-stack">
+                                    <div class="bar present-bar" style="height: 80%"></div>
+                                    <div class="bar absent-bar" style="height: 10%"></div>
+                                </div>
+                                <span class="bar-label">Aug</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-stack">
+                                    <div class="bar present-bar" style="height: 90%"></div>
+                                    <div class="bar absent-bar" style="height: 6%"></div>
+                                </div>
+                                <span class="bar-label">Sep</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-stack">
+                                    <div class="bar present-bar" style="height: 82%"></div>
+                                    <div class="bar absent-bar" style="height: 12%"></div>
+                                </div>
+                                <span class="bar-label">Oct</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-stack">
+                                    <div class="bar present-bar" style="height: 88%"></div>
+                                    <div class="bar absent-bar" style="height: 5%"></div>
+                                </div>
+                                <span class="bar-label">Nov</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-stack">
+                                    <div class="bar present-bar partial" style="height: 50%"></div>
+                                </div>
+                                <span class="bar-label">Dec*</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-split-card">
+                        <h3>Status Split</h3>
+                        <p>Total Distribution</p>
+                        <div class="donut-chart">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="12"></circle>
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#1e40af" stroke-width="12" stroke-dasharray="226.2 251.3" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#3b82f6" stroke-width="12" stroke-dasharray="12.6 251.3" stroke-dashoffset="-226.2" transform="rotate(-90 50 50)"></circle>
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#dc2626" stroke-width="12" stroke-dasharray="25.3 251.3" stroke-dashoffset="-238.8" transform="rotate(-90 50 50)"></circle>
+                            </svg>
+                            <div class="donut-center">
+                                <span class="donut-number">48</span>
+                                <span class="donut-label">TOTAL DAYS</span>
+                            </div>
+                        </div>
+                        <div class="status-legend">
+                            <div class="status-row">
+                                <span class="legend-dot present-dot"></span>
+                                <span class="status-name">Present</span>
+                                <span class="status-count">45 Days</span>
+                            </div>
+                            <div class="status-row">
+                                <span class="legend-dot excused-dot"></span>
+                                <span class="status-name">Excused</span>
+                                <span class="status-count">1 Day</span>
+                            </div>
+                            <div class="status-row">
+                                <span class="legend-dot absent-dot"></span>
+                                <span class="status-name">Absent</span>
+                                <span class="status-count">2 Days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance History Table -->
+                <div class="attendance-history-card">
+                    <div class="history-header">
+                        <div>
+                            <h3>Recent Attendance History</h3>
+                            <p>Detailed log for Julian Mitchell</p>
+                        </div>
+                        <button class="btn btn-outline">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Export PDF
+                        </button>
+                    </div>
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>STATUS</th>
+                                <th>REMARKS</th>
+                                <th>RECORDED BY</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="date-cell">
+                                        <span class="date-main">Oct 24, 2023</span>
+                                        <span class="date-sub">Tuesday</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge-present">Present</span></td>
+                                <td>Morning homeroom check-in</td>
+                                <td>
+                                    <div class="recorded-by">
+                                        <span class="avatar-sm rh">RH</span>
+                                        <span>Ms. Rachel H.</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="more-btn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="date-cell">
+                                        <span class="date-main">Oct 23, 2023</span>
+                                        <span class="date-sub">Monday</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge-late">Late</span></td>
+                                <td>Arrived at 08:15 AM (Traffic)</td>
+                                <td>
+                                    <div class="recorded-by">
+                                        <span class="avatar-sm jd">JD</span>
+                                        <span>Office Clerk</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="more-btn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="date-cell">
+                                        <span class="date-main">Oct 20, 2023</span>
+                                        <span class="date-sub">Friday</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge-absent">Absent</span></td>
+                                <td>Unexcused absence</td>
+                                <td>
+                                    <div class="recorded-by">
+                                        <span class="avatar-sm rh">RH</span>
+                                        <span>Ms. Rachel H.</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="more-btn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="date-cell">
+                                        <span class="date-main">Oct 19, 2023</span>
+                                        <span class="date-sub">Thursday</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge-excused">Excused</span></td>
+                                <td>Dental Appointment (Doctor's Note)</td>
+                                <td>
+                                    <div class="recorded-by">
+                                        <span class="avatar-sm jd">JD</span>
+                                        <span>Front Office</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="more-btn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="table-footer">
+                        <span>Showing 1 to 4 of 48 records</span>
+                        <div class="pagination">
+                            <button class="page-btn" disabled>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                            <button class="page-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance View -->
+            <div class="view" id="view-performance">
+                <div class="performance-top-bar">
+                    <div class="breadcrumb">
+                        <span>Portal</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span>Academic Performance</span>
+                    </div>
+                </div>
+
+                <!-- Student Profile Header -->
+                <div class="perf-profile-header">
+                    <div class="perf-profile-left">
+                        <div class="perf-avatar-wrapper">
+                            <div class="perf-avatar">
+                                <img src="https://i.pravatar.cc/150?img=68" alt="Julian Mitchell">
+                            </div>
+                            <div class="perf-verified-badge">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                        </div>
+                        <div class="perf-profile-info">
+                            <h2 class="perf-student-name">Julian Mitchell</h2>
+                            <div class="perf-tags">
+                                <span class="perf-tag">Grade 11-B</span>
+                                <span class="perf-tag">ID: #20240501</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="perf-kpi-cards">
+                        <div class="perf-kpi-card">
+                            <span class="perf-kpi-label">CURRENT GPA</span>
+                            <div class="perf-kpi-value">
+                                <span class="perf-kpi-number">3.85</span>
+                                <span class="perf-kpi-max">/ 4.0</span>
+                            </div>
+                            <span class="perf-kpi-trend positive">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                                +0.12 this term
+                            </span>
+                        </div>
+                        <div class="perf-kpi-card">
+                            <span class="perf-kpi-label">CLASS RANK</span>
+                            <div class="perf-kpi-value">
+                                <span class="perf-kpi-number">5</span>
+                                <span class="perf-kpi-max">/ 42</span>
+                            </div>
+                            <span class="perf-kpi-trend neutral">Top 12% of Class</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="perf-charts-grid">
+                    <!-- Subject Comparison Bar Chart -->
+                    <div class="perf-chart-card perf-chart-wide">
+                        <div class="perf-chart-header">
+                            <h3 class="perf-chart-title">Subject Mastery Comparison</h3>
+                            <div class="perf-legend">
+                                <span class="perf-legend-dot actual"></span>
+                                <span class="perf-legend-label">Actual Score</span>
+                                <span class="perf-legend-dot average"></span>
+                                <span class="perf-legend-label">Class Average</span>
+                            </div>
+                        </div>
+                        <div class="perf-bar-chart">
+                            <div class="perf-bar-group">
+                                <div class="perf-bars">
+                                    <div class="perf-bar average" style="height: 85%;"></div>
+                                    <div class="perf-bar actual" style="height: 92%;"></div>
+                                </div>
+                                <span class="perf-bar-label">Math</span>
+                            </div>
+                            <div class="perf-bar-group">
+                                <div class="perf-bars">
+                                    <div class="perf-bar average" style="height: 78%;"></div>
+                                    <div class="perf-bar actual" style="height: 88%;"></div>
+                                </div>
+                                <span class="perf-bar-label">Science</span>
+                            </div>
+                            <div class="perf-bar-group">
+                                <div class="perf-bars">
+                                    <div class="perf-bar average" style="height: 82%;"></div>
+                                    <div class="perf-bar actual" style="height: 75%;"></div>
+                                </div>
+                                <span class="perf-bar-label">History</span>
+                            </div>
+                            <div class="perf-bar-group">
+                                <div class="perf-bars">
+                                    <div class="perf-bar average" style="height: 70%;"></div>
+                                    <div class="perf-bar actual" style="height: 95%;"></div>
+                                </div>
+                                <span class="perf-bar-label">English</span>
+                            </div>
+                            <div class="perf-bar-group">
+                                <div class="perf-bars">
+                                    <div class="perf-bar average" style="height: 88%;"></div>
+                                    <div class="perf-bar actual" style="height: 90%;"></div>
+                                </div>
+                                <span class="perf-bar-label">Physics</span>
+                            </div>
+                            <div class="perf-bar-group">
+                                <div class="perf-bars">
+                                    <div class="perf-bar average" style="height: 75%;"></div>
+                                    <div class="perf-bar actual" style="height: 82%;"></div>
+                                </div>
+                                <span class="perf-bar-label">Art</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Trend Line -->
+                    <div class="perf-chart-card">
+                        <h3 class="perf-chart-title">Performance Trend</h3>
+                        <div class="perf-trend-chart">
+                            <div class="perf-term-labels">
+                                <span>Term 1</span>
+                                <span>Term 2</span>
+                                <span>Term 3</span>
+                                <span>Term 4</span>
+                            </div>
+                            <svg class="perf-trend-svg" viewBox="0 0 400 250">
+                                <path d="M 0,180 Q 100,160 133,140 T 266,100 T 400,60" fill="none" stroke="#0070ea" stroke-linecap="round" stroke-width="4"></path>
+                                <circle cx="0" cy="180" fill="#0070ea" r="6"></circle>
+                                <circle cx="133" cy="140" fill="#0070ea" r="6"></circle>
+                                <circle cx="266" cy="100" fill="#0070ea" r="6"></circle>
+                                <circle cx="400" cy="60" fill="#0070ea" r="6"></circle>
+                                <text class="perf-trend-value" x="10" y="170">3.65</text>
+                                <text class="perf-trend-value" x="143" y="130">3.72</text>
+                                <text class="perf-trend-value" x="276" y="90">3.78</text>
+                                <text class="perf-trend-value" x="360" y="50">3.85</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subject Results Table -->
+                <div class="perf-table-card">
+                    <div class="perf-table-header">
+                        <h3 class="perf-chart-title">Detailed Subject Performance</h3>
+                        <div class="perf-table-actions">
+                            <button class="perf-action-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Download PDF
+                            </button>
+                            <button class="perf-action-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                                All Terms
+                            </button>
+                        </div>
+                    </div>
+                    <div class="perf-table-wrapper">
+                        <table class="perf-table">
+                            <thead>
+                                <tr>
+                                    <th>SUBJECT</th>
+                                    <th>TEST SCORE</th>
+                                    <th>EXAM SCORE</th>
+                                    <th>TOTAL</th>
+                                    <th>GRADE</th>
+                                    <th>REMARKS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="perf-subject-name">Mathematics</td>
+                                    <td>44/50</td>
+                                    <td>48/50</td>
+                                    <td class="perf-total">92%</td>
+                                    <td><span class="perf-grade grade-a">A</span></td>
+                                    <td class="perf-remarks">Excellent mastery of concepts.</td>
+                                </tr>
+                                <tr>
+                                    <td class="perf-subject-name">English Language</td>
+                                    <td>48/50</td>
+                                    <td>47/50</td>
+                                    <td class="perf-total">95%</td>
+                                    <td><span class="perf-grade grade-a">A</span></td>
+                                    <td class="perf-remarks">Outstanding analytical writing.</td>
+                                </tr>
+                                <tr>
+                                    <td class="perf-subject-name">Science (Physics)</td>
+                                    <td>42/50</td>
+                                    <td>46/50</td>
+                                    <td class="perf-total">88%</td>
+                                    <td><span class="perf-grade grade-aminus">A-</span></td>
+                                    <td class="perf-remarks">Great focus on practicals.</td>
+                                </tr>
+                                <tr>
+                                    <td class="perf-subject-name">History</td>
+                                    <td>38/50</td>
+                                    <td>37/50</td>
+                                    <td class="perf-total">75%</td>
+                                    <td><span class="perf-grade grade-b">B</span></td>
+                                    <td class="perf-remarks">Consistent improvement noted.</td>
+                                </tr>
+                                <tr>
+                                    <td class="perf-subject-name">Computer Science</td>
+                                    <td>45/50</td>
+                                    <td>45/50</td>
+                                    <td class="perf-total">90%</td>
+                                    <td><span class="perf-grade grade-a">A</span></td>
+                                    <td class="perf-remarks">Logical approach is stellar.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignments View -->
+            <div class="view" id="view-assignments">
+                <div class="assignments-top-bar">
+                    <div class="breadcrumb">
+                        <span>Portal</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span>Assignments</span>
+                    </div>
+                </div>
+
+                <!-- Page Header -->
+                <div class="assignments-header">
+                    <div class="assignments-header-left">
+                        <span class="assignments-subtitle">Academic Dashboard</span>
+                        <h2 class="assignments-title">Assignments Overview</h2>
+                    </div>
+                    <button class="assignments-export-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Export Calendar
+                    </button>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="assignments-filter-bar">
+                    <div class="assignments-filter-group">
+                        <span class="assignments-filter-label">Filter by Child:</span>
+                        <div class="assignments-filter-pills">
+                            <button class="assignments-pill active">Julian</button>
+                            <button class="assignments-pill">Maya</button>
+                        </div>
+                    </div>
+                    <div class="assignments-filter-divider"></div>
+                    <div class="assignments-filter-group">
+                        <span class="assignments-filter-label">Subject:</span>
+                        <select class="assignments-select">
+                            <option>All Subjects</option>
+                            <option>Mathematics</option>
+                            <option>History</option>
+                            <option>Biology</option>
+                            <option>Literature</option>
+                        </select>
+                    </div>
+                    <div class="assignments-filter-divider"></div>
+                    <div class="assignments-filter-group">
+                        <span class="assignments-filter-label">Status:</span>
+                        <div class="assignments-status-toggle">
+                            <button class="assignments-status-btn active">Active</button>
+                            <button class="assignments-status-btn">Completed</button>
+                            <button class="assignments-status-btn">Overdue</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment Cards Grid -->
+                <div class="assignments-grid">
+                    <!-- Card 1: Overdue -->
+                    <div class="assignment-card">
+                        <div class="assignment-card-corner overdue"></div>
+                        <div class="assignment-card-top">
+                            <div class="assignment-icon overdue">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                            </div>
+                            <span class="assignment-badge overdue">Overdue</span>
+                        </div>
+                        <h3 class="assignment-card-title">Calculus Problem Set #4</h3>
+                        <p class="assignment-card-desc">Advanced derivatives and integrals covering the fundamental theorem of calculus part II.</p>
+                        <div class="assignment-card-footer">
+                            <div class="assignment-due overdue">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                Due yesterday
+                            </div>
+                            <button class="assignment-action-btn">View Details</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Pending -->
+                    <div class="assignment-card">
+                        <div class="assignment-card-top">
+                            <div class="assignment-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                            </div>
+                            <span class="assignment-badge pending">Pending</span>
+                        </div>
+                        <h3 class="assignment-card-title">The Great Depression Analysis</h3>
+                        <p class="assignment-card-desc">Write a 500-word essay on the economic factors leading to the stock market crash of 1929.</p>
+                        <div class="assignment-card-footer">
+                            <div class="assignment-due">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Due in 3 days
+                            </div>
+                            <button class="assignment-action-btn">Upload</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: In Progress -->
+                    <div class="assignment-card">
+                        <div class="assignment-card-top">
+                            <div class="assignment-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 2v11h3v9l7-12h-4l4-8z"></path></svg>
+                            </div>
+                            <span class="assignment-badge in-progress">In Progress</span>
+                        </div>
+                        <h3 class="assignment-card-title">Cellular Mitosis Lab Report</h3>
+                        <p class="assignment-card-desc">Submit your findings from the Tuesday lab session including diagrams of all four phases.</p>
+                        <div class="assignment-card-footer">
+                            <div class="assignment-due">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Due in 5 days
+                            </div>
+                            <button class="assignment-action-btn">Open Lab</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Pending Literature -->
+                    <div class="assignment-card">
+                        <div class="assignment-card-top">
+                            <div class="assignment-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            </div>
+                            <span class="assignment-badge pending">Pending</span>
+                        </div>
+                        <h3 class="assignment-card-title">Macbeth Act IV Reading Quiz</h3>
+                        <p class="assignment-card-desc">Comprehensive quiz covering the three prophecies and Lady Macbeth's declining state.</p>
+                        <div class="assignment-card-footer">
+                            <div class="assignment-due">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Due tomorrow
+                            </div>
+                            <button class="assignment-action-btn">Start Quiz</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Term Project Progress -->
+                    <div class="assignment-card project-card">
+                        <div class="assignment-project-content">
+                            <div class="assignment-project-info">
+                                <h3 class="assignment-project-title">Term Project: Renaissance Art</h3>
+                                <p class="assignment-project-desc">A collaborative research project exploring the impact of the Medici family on Florentine art and culture during the 15th century.</p>
+                                <div class="assignment-progress">
+                                    <div class="assignment-progress-bar">
+                                        <div class="assignment-progress-fill" style="width: 65%;"></div>
+                                    </div>
+                                    <span class="assignment-progress-label">65% Done</span>
+                                </div>
+                            </div>
+                            <div class="assignment-deadline-box">
+                                <span class="assignment-deadline-label">Final Deadline</span>
+                                <span class="assignment-deadline-days">12</span>
+                                <span class="assignment-deadline-text">Days Left</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 6: Pending Physics -->
+                    <div class="assignment-card">
+                        <div class="assignment-card-top">
+                            <div class="assignment-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                            </div>
+                            <span class="assignment-badge pending">Pending</span>
+                        </div>
+                        <h3 class="assignment-card-title">Kinematics Review Questions</h3>
+                        <p class="assignment-card-desc">Practice problems for displacement, velocity, and acceleration calculations under gravity.</p>
+                        <div class="assignment-card-footer">
+                            <div class="assignment-due">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Due in 4 days
+                            </div>
+                            <button class="assignment-action-btn">Open PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load More -->
+                <div class="assignments-load-more">
+                    <button class="assignments-load-btn">
+                        Load Older Assignments
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Announcements View -->
+            <div class="view" id="view-announcements">
+                <div class="announcements-top-bar">
+                    <div class="breadcrumb">
+                        <span>Portal</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span>Announcements</span>
+                    </div>
+                </div>
+
+                <!-- Page Header -->
+                <div class="announcements-header">
+                    <div class="announcements-header-left">
+                        <h2 class="announcements-title">School Announcements</h2>
+                        <p class="announcements-subtitle">Stay updated with the latest news and alerts from Grail Academy.</p>
+                    </div>
+                    <div class="announcements-filters">
+                        <button class="announcements-filter-btn active">All News</button>
+                        <button class="announcements-filter-btn urgent">Urgent</button>
+                        <button class="announcements-filter-btn academic">Academic</button>
+                        <button class="announcements-filter-btn events">Events</button>
+                        <button class="announcements-filter-btn general">General</button>
+                    </div>
+                </div>
+
+                <!-- Urgent Notice Hero -->
+                <div class="announcements-urgent">
+                    <div class="announcements-urgent-icon">
+                        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <div class="announcements-urgent-content">
+                        <div class="announcements-urgent-meta">
+                            <span class="announcements-urgent-badge">Urgent Alert</span>
+                            <span class="announcements-urgent-date">October 24, 2023 • 08:30 AM</span>
+                        </div>
+                        <h3 class="announcements-urgent-title">Campus Safety Update: Scheduled Emergency Drill</h3>
+                        <p class="announcements-urgent-desc">Please be advised that we will be conducting a routine campus-wide emergency drill today between 10:00 AM and 10:45 AM. All facilities will be briefly locked down. This is a standard safety procedure and no action is required from parents.</p>
+                        <a href="#" class="announcements-urgent-link">Read Detailed Protocol <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
+                    </div>
+                </div>
+
+                <!-- Announcements Grid -->
+                <div class="announcements-grid">
+                    <!-- Card 1 -->
+                    <article class="announcement-card">
+                        <div class="announcement-card-image">
+                            <img src="https://i.pravatar.cc/400?img=48" alt="School corridor">
+                            <span class="announcement-tag academic">Academic</span>
+                        </div>
+                        <div class="announcement-card-body">
+                            <time class="announcement-date">Oct 22, 2023</time>
+                            <h4 class="announcement-card-title">Mid-Term Assessment Schedule Released</h4>
+                            <p class="announcement-card-desc">The comprehensive schedule for the upcoming mid-term examinations is now available for all departments. Please review the specific times and room assignments for your child's grade level...</p>
+                            <div class="announcement-card-footer">
+                                <a href="#" class="announcement-read-more">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+                                <button class="announcement-bookmark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 2 -->
+                    <article class="announcement-card">
+                        <div class="announcement-card-image">
+                            <img src="https://i.pravatar.cc/400?img=49" alt="Students collaborating">
+                            <span class="announcement-tag events">Events</span>
+                        </div>
+                        <div class="announcement-card-body">
+                            <time class="announcement-date">Oct 20, 2023</time>
+                            <h4 class="announcement-card-title">Annual Fall Gala & Fundraiser Tickets</h4>
+                            <p class="announcement-card-desc">Join us for an evening of celebration and community support. Tickets for the Grail Academy Annual Fall Gala are now on sale. Early bird pricing ends this Friday!</p>
+                            <div class="announcement-card-footer">
+                                <a href="#" class="announcement-read-more">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+                                <button class="announcement-bookmark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 3: No Image Variant -->
+                    <article class="announcement-card no-image">
+                        <div class="announcement-card-body">
+                            <span class="announcement-tag general">General</span>
+                            <time class="announcement-date">Oct 19, 2023</time>
+                            <h4 class="announcement-card-title">New School Bus Routes for Winter Term</h4>
+                            <p class="announcement-card-desc">In anticipation of the winter weather, we have optimized several transport routes to ensure timely and safe arrivals. Please check the updated bus schedule in the transportation portal.</p>
+                            <div class="announcement-card-footer">
+                                <a href="#" class="announcement-read-more">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+                                <button class="announcement-bookmark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 4 -->
+                    <article class="announcement-card">
+                        <div class="announcement-card-image">
+                            <img src="https://i.pravatar.cc/400?img=50" alt="Library">
+                            <span class="announcement-tag academic">Academic</span>
+                        </div>
+                        <div class="announcement-card-body">
+                            <time class="announcement-date">Oct 15, 2023</time>
+                            <h4 class="announcement-card-title">Extended Library Hours for Finals Week</h4>
+                            <p class="announcement-card-desc">To support students during their final projects and exam preparations, the Main Library will remain open until 9:00 PM starting next Monday.</p>
+                            <div class="announcement-card-footer">
+                                <a href="#" class="announcement-read-more">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+                                <button class="announcement-bookmark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 5 -->
+                    <article class="announcement-card">
+                        <div class="announcement-card-image">
+                            <img src="https://i.pravatar.cc/400?img=51" alt="Classroom">
+                            <span class="announcement-tag general">General</span>
+                        </div>
+                        <div class="announcement-card-body">
+                            <time class="announcement-date">Oct 12, 2023</time>
+                            <h4 class="announcement-card-title">Quarterly Parent-Teacher Conference Booking</h4>
+                            <p class="announcement-card-desc">The booking portal for our quarterly conferences is now open. Each session is 15 minutes long. We encourage you to schedule meetings with all core subject teachers.</p>
+                            <div class="announcement-card-footer">
+                                <a href="#" class="announcement-read-more">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+                                <button class="announcement-bookmark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 6: Special Event Card -->
+                    <article class="announcement-card event-card">
+                        <div class="announcement-card-body">
+                            <span class="announcement-tag upcoming">Upcoming Event</span>
+                            <time class="announcement-date">Happening in 3 Days</time>
+                            <h4 class="announcement-card-title">Science & Innovation Fair 2023</h4>
+                            <p class="announcement-card-desc">Don't miss the biggest academic event of the year! Over 200 student projects will be on display in the Grand Hall. Guest speakers from the National Research Center will be attending.</p>
+                            <div class="announcement-card-footer">
+                                <a href="#" class="announcement-read-more">Event Details <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></a>
+                                <div class="announcement-attendees">
+                                    <img src="https://i.pravatar.cc/32?img=52" alt="Attendee" class="announcement-attendee">
+                                    <img src="https://i.pravatar.cc/32?img=53" alt="Attendee" class="announcement-attendee">
+                                    <div class="announcement-attendee-more">+42</div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Pagination -->
+                <div class="announcements-pagination">
+                    <button class="announcements-page-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                    <button class="announcements-page-btn active">1</button>
+                    <button class="announcements-page-btn">2</button>
+                    <button class="announcements-page-btn">3</button>
+                    <span class="announcements-page-dots">...</span>
+                    <button class="announcements-page-btn">8</button>
+                    <button class="announcements-page-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                </div>
+            </div>
+
+            <!-- Contact Teachers View -->
+            <div class="view" id="view-contact-teachers">
+                <div class="contact-top-bar">
+                    <div class="breadcrumb">
+                        <span>Portal</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span>Contact Teachers</span>
+                    </div>
+                </div>
+
+                <!-- Page Header -->
+                <div class="contact-header">
+                    <div class="contact-header-left">
+                        <h2 class="contact-title">Contact Teachers</h2>
+                        <p class="contact-subtitle">Directory of faculty for Julian Mitchell</p>
+                    </div>
+                    <div class="contact-search">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" placeholder="Search by name or subject...">
+                    </div>
+                </div>
+
+                <!-- Leadership Section -->
+                <section class="contact-section">
+                    <h3 class="contact-section-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 12v.01"></path><path d="M9 15v.01"></path><path d="M9 18v.01"></path></svg>
+                        School Leadership
+                    </h3>
+                    <div class="contact-leadership-grid">
+                        <!-- Principal -->
+                        <div class="contact-leadership-card principal">
+                            <div class="contact-leadership-badge principal">Principal</div>
+                            <div class="contact-leadership-content">
+                                <img src="https://i.pravatar.cc/150?img=60" alt="Dr. Alistair Vance" class="contact-leadership-avatar">
+                                <div class="contact-leadership-info">
+                                    <h4 class="contact-leadership-name">Dr. Alistair Vance</h4>
+                                    <p class="contact-leadership-role">Head Teacher</p>
+                                    <a href="mailto:a.vance@grailacademy.edu" class="contact-leadership-email">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                        a.vance@grailacademy.edu
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Deputy Principal -->
+                        <div class="contact-leadership-card">
+                            <div class="contact-leadership-badge">Academic Affairs</div>
+                            <div class="contact-leadership-content">
+                                <img src="https://i.pravatar.cc/150?img=47" alt="Mrs. Catherine Sterling" class="contact-leadership-avatar">
+                                <div class="contact-leadership-info">
+                                    <h4 class="contact-leadership-name">Mrs. Catherine Sterling</h4>
+                                    <p class="contact-leadership-role">Deputy Head Teacher</p>
+                                    <a href="mailto:c.sterling@grailacademy.edu" class="contact-leadership-email">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                        c.sterling@grailacademy.edu
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Assigned Teachers Section -->
+                <section class="contact-section">
+                    <h3 class="contact-section-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        Assigned Subject Teachers
+                    </h3>
+                    <div class="contact-teachers-grid">
+                        <!-- Teacher 1 -->
+                        <div class="contact-teacher-card">
+                            <img src="https://i.pravatar.cc/150?img=62" alt="Mr. Thomas Henderson" class="contact-teacher-avatar">
+                            <div class="contact-teacher-info">
+                                <h4 class="contact-teacher-name">Mr. Thomas Henderson</h4>
+                                <p class="contact-teacher-subject">Science & Lab Lead</p>
+                                <a href="mailto:t.henderson@grailacademy.edu" class="contact-teacher-email">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    t.henderson@grailacademy.edu
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Teacher 2 -->
+                        <div class="contact-teacher-card">
+                            <img src="https://i.pravatar.cc/150?img=45" alt="Ms. Elena Kim" class="contact-teacher-avatar">
+                            <div class="contact-teacher-info">
+                                <h4 class="contact-teacher-name">Ms. Elena Kim</h4>
+                                <p class="contact-teacher-subject">Guidance Counselor</p>
+                                <a href="mailto:e.kim@grailacademy.edu" class="contact-teacher-email">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    e.kim@grailacademy.edu
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Teacher 3 -->
+                        <div class="contact-teacher-card">
+                            <img src="https://i.pravatar.cc/150?img=63" alt="Coach Marcus Wright" class="contact-teacher-avatar">
+                            <div class="contact-teacher-info">
+                                <h4 class="contact-teacher-name">Coach Marcus Wright</h4>
+                                <p class="contact-teacher-subject">Physical Education</p>
+                                <a href="mailto:m.wright@grailacademy.edu" class="contact-teacher-email">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    m.wright@grailacademy.edu
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Teacher 4 -->
+                        <div class="contact-teacher-card">
+                            <div class="contact-teacher-avatar-placeholder">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                            <div class="contact-teacher-info">
+                                <h4 class="contact-teacher-name">Ms. Sarah Jenkins</h4>
+                                <p class="contact-teacher-subject">Mathematics</p>
+                                <a href="mailto:s.jenkins@grailacademy.edu" class="contact-teacher-email">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    s.jenkins@grailacademy.edu
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Teacher 5 -->
+                        <div class="contact-teacher-card">
+                            <div class="contact-teacher-avatar-placeholder">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                            <div class="contact-teacher-info">
+                                <h4 class="contact-teacher-name">Mr. David Lopez</h4>
+                                <p class="contact-teacher-subject">History & Civics</p>
+                                <a href="mailto:d.lopez@grailacademy.edu" class="contact-teacher-email">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    d.lopez@grailacademy.edu
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Teacher 6 -->
+                        <div class="contact-teacher-card">
+                            <div class="contact-teacher-avatar-placeholder">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                            <div class="contact-teacher-info">
+                                <h4 class="contact-teacher-name">Ms. Linda Chen</h4>
+                                <p class="contact-teacher-subject">Art & Design</p>
+                                <a href="mailto:l.chen@grailacademy.edu" class="contact-teacher-email">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    l.chen@grailacademy.edu
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Reports View -->
+            <div class="view" id="view-reports">
+                <div class="reports-top-bar">
+                    <div class="breadcrumb">
+                        <span>Portal</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span>Reports</span>
+                    </div>
+                </div>
+
+                <!-- Action Header -->
+                <div class="reports-action-header">
+                    <div class="reports-action-left">
+                        <h2 class="reports-title">Student Report Card</h2>
+                        <p class="reports-subtitle">Detailed academic performance for Fall Semester.</p>
+                    </div>
+                    <div class="reports-actions">
+                        <button class="reports-btn-outline" onclick="window.print()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            Print Report Card
+                        </button>
+                        <button class="reports-btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                            Download PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report Card Document -->
+                <div class="report-card">
+                    <div class="report-card-watermark">
+                        <svg width="400" height="400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </div>
+
+                    <!-- Report Header -->
+                    <div class="report-header">
+                        <div class="report-header-left">
+                            <div class="report-school-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 12v.01"></path><path d="M9 15v.01"></path><path d="M9 18v.01"></path></svg>
+                            </div>
+                            <div>
+                                <h1 class="report-school-name">Grail Academy</h1>
+                                <p class="report-school-motto">Center of Academic Excellence</p>
+                            </div>
+                        </div>
+                        <div class="report-header-right">
+                            <span class="report-official-badge">OFFICIAL RECORD</span>
+                            <h3 class="report-semester">Fall Semester Report</h3>
+                            <p class="report-year">Academic Year 2023-2024</p>
+                        </div>
+                    </div>
+
+                    <!-- Student Info Grid -->
+                    <div class="report-student-info">
+                        <div class="report-info-item">
+                            <span class="report-info-label">Student Name</span>
+                            <span class="report-info-value">Julian Mitchell</span>
+                        </div>
+                        <div class="report-info-item">
+                            <span class="report-info-label">Grade Level</span>
+                            <span class="report-info-value">Grade 10 - Section B</span>
+                        </div>
+                        <div class="report-info-item">
+                            <span class="report-info-label">Student ID</span>
+                            <span class="report-info-value">#GR-2023-8842</span>
+                        </div>
+                    </div>
+
+                    <!-- Grades Table -->
+                    <div class="report-table-wrapper">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>SUBJECT</th>
+                                    <th class="text-center">MARKS (%)</th>
+                                    <th class="text-center">GRADE</th>
+                                    <th>TEACHER COMMENTS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="report-subject">Advanced Mathematics</td>
+                                    <td class="text-center">94</td>
+                                    <td class="text-center"><span class="report-grade grade-aplus">A+</span></td>
+                                    <td class="report-comment">Exceptional problem-solving skills and participation.</td>
+                                </tr>
+                                <tr>
+                                    <td class="report-subject">English Literature</td>
+                                    <td class="text-center">88</td>
+                                    <td class="text-center"><span class="report-grade grade-a">A</span></td>
+                                    <td class="report-comment">Great insight in essay writing. Needs to focus on citations.</td>
+                                </tr>
+                                <tr>
+                                    <td class="report-subject">Physics (Honors)</td>
+                                    <td class="text-center">91</td>
+                                    <td class="text-center"><span class="report-grade grade-aplus">A+</span></td>
+                                    <td class="report-comment">Strong understanding of core physical principles.</td>
+                                </tr>
+                                <tr>
+                                    <td class="report-subject">World History</td>
+                                    <td class="text-center">82</td>
+                                    <td class="text-center"><span class="report-grade grade-bplus">B+</span></td>
+                                    <td class="report-comment">Consistent performance. Participation could improve.</td>
+                                </tr>
+                                <tr>
+                                    <td class="report-subject">Computer Science</td>
+                                    <td class="text-center">98</td>
+                                    <td class="text-center"><span class="report-grade grade-aplus">A+</span></td>
+                                    <td class="report-comment">Outstanding project work. A leader in the lab.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Summary & Remarks -->
+                    <div class="report-summary">
+                        <div class="report-summary-left">
+                            <h4 class="report-summary-title">Summary Performance</h4>
+                            <div class="report-summary-items">
+                                <div class="report-summary-item highlight">
+                                    <span>Overall Aggregate Marks</span>
+                                    <span class="report-summary-value">90.6%</span>
+                                </div>
+                                <div class="report-summary-item">
+                                    <span>Attendance Percentage</span>
+                                    <span class="report-summary-value">96.5%</span>
+                                </div>
+                            </div>
+                            <div class="report-remarks">
+                                <span class="report-remarks-label">Class Teacher's Remarks</span>
+                                <p class="report-remarks-text">"Julian is a dedicated student who consistently strives for excellence. His growth in analytical subjects is commendable. He is a positive influence on his peers."</p>
+                            </div>
+                        </div>
+                        <div class="report-summary-right">
+                            <div class="report-signatures">
+                                <div class="report-signature">
+                                    <div class="report-signature-line">
+                                        <img src="https://i.pravatar.cc/200?img=68" alt="Signature" class="report-signature-img">
+                                    </div>
+                                    <div class="report-signature-info">
+                                        <p class="report-signature-name">Mr. Robert Henderson</p>
+                                        <p class="report-signature-role">Class Teacher</p>
+                                    </div>
+                                </div>
+                                <div class="report-signature">
+                                    <div class="report-signature-line">
+                                        <img src="https://i.pravatar.cc/200?img=47" alt="School Seal" class="report-signature-img">
+                                    </div>
+                                    <div class="report-signature-info">
+                                        <p class="report-signature-name">Dr. Elena Vance</p>
+                                        <p class="report-signature-role">Principal</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="report-issue-date">Issued on January 15th, 2024</p>
+                        </div>
+                    </div>
+
+                    <!-- Decorative Corner -->
+                    <div class="report-corner"></div>
+                </div>
+
+                <!-- Footer -->
+                <div class="reports-footer">
+                    <p>© 2024 Grail Student Information System. This is a digital copy of the original physical record.</p>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="view" id="view-settings">
+                <div class="settings-top-bar">
+                    <div class="breadcrumb">
+                        <span>Home</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span>Settings</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span class="active">Parent Profile</span>
+                    </div>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- Left Column: Profile Header & Quick Stats -->
+                    <div class="settings-left">
+                        <!-- Profile Header Card -->
+                        <div class="settings-profile-card">
+                            <div class="settings-profile-banner">
+                                <button class="settings-edit-banner">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </button>
+                            </div>
+                            <div class="settings-profile-content">
+                                <div class="settings-avatar-wrapper">
+                                    <img src="https://i.pravatar.cc/150?img=47" alt="Sarah Mitchell" class="settings-avatar">
+                                    <button class="settings-camera-btn">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                    </button>
+                                </div>
+                                <h1 class="settings-profile-name">Sarah Mitchell</h1>
+                                <p class="settings-profile-id">Parent / Guardian ID: #SIS-88219</p>
+                                <div class="settings-tags">
+                                    <span class="settings-tag primary">Primary Guardian</span>
+                                    <span class="settings-tag verified">Verified Account</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="settings-stats-grid">
+                            <div class="settings-stat-card">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                <div class="settings-stat-value">02</div>
+                                <div class="settings-stat-label">Active Students</div>
+                            </div>
+                            <div class="settings-stat-card">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                <div class="settings-stat-value">98%</div>
+                                <div class="settings-stat-label">Child Attendance</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Personal Info & Actions -->
+                    <div class="settings-right">
+                        <!-- Personal Information Card -->
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h2 class="settings-card-title">Personal Information</h2>
+                                <button class="settings-edit-btn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    Edit Profile
+                                </button>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="settings-info-grid">
+                                    <div class="settings-info-item">
+                                        <label>Full Name</label>
+                                        <span>Sarah Mitchell</span>
+                                    </div>
+                                    <div class="settings-info-item">
+                                        <label>Email Address</label>
+                                        <span>sarah.mitchell@edu-domain.com</span>
+                                    </div>
+                                    <div class="settings-info-item">
+                                        <label>Phone Number</label>
+                                        <span>+1 (555) 234-8910</span>
+                                    </div>
+                                    <div class="settings-info-item">
+                                        <label>Secondary Contact</label>
+                                        <span>+1 (555) 987-6543</span>
+                                    </div>
+                                    <div class="settings-info-item full-width">
+                                        <label>Home Address</label>
+                                        <span>1248 Oakwood Avenue, Maple Heights, CA 90210</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Security & Actions -->
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h2 class="settings-card-title">Account Security & Actions</h2>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="settings-action-buttons">
+                                    <button class="settings-action-btn password">
+                                        <div class="settings-action-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        </div>
+                                        <div class="settings-action-info">
+                                            <span class="settings-action-title">Change Password</span>
+                                            <span class="settings-action-desc">Last changed 3 months ago</span>
+                                        </div>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                    <button class="settings-action-btn privacy" data-navigate="privacy">
+                                        <div class="settings-action-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                        </div>
+                                        <div class="settings-action-info">
+                                            <span class="settings-action-title">Privacy Settings</span>
+                                            <span class="settings-action-desc">Manage data sharing preferences</span>
+                                        </div>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                </div>
+
+                                <!-- Danger Zone -->
+                                <div class="settings-danger-zone">
+                                    <div class="settings-danger-info">
+                                        <div class="settings-danger-icon">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                        </div>
+                                        <div>
+                                            <span class="settings-danger-title">Dangerous Action</span>
+                                            <p class="settings-danger-desc">Request to deactivate your account permanently.</p>
+                                        </div>
+                                    </div>
+                                    <button class="settings-deactivate-btn">Deactivate Account</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Associated Students -->
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <h2 class="settings-card-title">Associated Students</h2>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="settings-students-grid">
+                                    <div class="settings-student-card">
+                                        <img src="https://i.pravatar.cc/150?img=68" alt="Marcus Mitchell" class="settings-student-avatar">
+                                        <div class="settings-student-info">
+                                            <span class="settings-student-name">Marcus Mitchell</span>
+                                            <span class="settings-student-grade">Grade 5 • Section B</span>
+                                            <a href="#" class="settings-student-link">View Dashboard <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
+                                        </div>
+                                    </div>
+                                    <div class="settings-student-card">
+                                        <img src="https://i.pravatar.cc/150?img=45" alt="Elena Mitchell" class="settings-student-avatar">
+                                        <div class="settings-student-info">
+                                            <span class="settings-student-name">Elena Mitchell</span>
+                                            <span class="settings-student-grade">Grade 10 • Honors</span>
+                                            <a href="#" class="settings-student-link">View Dashboard <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy Settings View -->
+            <div class="view" id="view-privacy">
+                <div class="privacy-top-bar">
+                    <div class="breadcrumb">
+                        <span>Home</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span>Settings</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span class="active">Account Settings</span>
+                    </div>
+                </div>
+
+                <!-- Page Header -->
+                <div class="privacy-header">
+                    <h2 class="privacy-title">Account Settings</h2>
+                    <p class="privacy-subtitle">Manage your portal preferences and security configurations.</p>
+                </div>
+
+                <!-- Bento Layout -->
+                <div class="privacy-grid">
+                    <!-- Left Column: Notification Preferences -->
+                    <div class="privacy-left">
+                        <section class="privacy-card">
+                            <div class="privacy-card-header">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                <h3 class="privacy-card-title">Notification Preferences</h3>
+                            </div>
+
+                            <!-- Attendance Alerts -->
+                            <div class="privacy-category">
+                                <h4 class="privacy-category-title">Attendance Alerts</h4>
+                                <div class="privacy-toggles-grid">
+                                    <div class="privacy-toggle-item">
+                                        <span>Email</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="privacy-toggle-item">
+                                        <span>SMS</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox">
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="privacy-toggle-item">
+                                        <span>Push</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Grade Updates -->
+                            <div class="privacy-category">
+                                <h4 class="privacy-category-title">Grade Updates</h4>
+                                <div class="privacy-toggles-grid">
+                                    <div class="privacy-toggle-item">
+                                        <span>Email</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="privacy-toggle-item">
+                                        <span>SMS</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="privacy-toggle-item">
+                                        <span>Push</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- School Announcements -->
+                            <div class="privacy-category no-border">
+                                <h4 class="privacy-category-title">School Announcements</h4>
+                                <div class="privacy-toggles-grid">
+                                    <div class="privacy-toggle-item">
+                                        <span>Email</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="privacy-toggle-item">
+                                        <span>SMS</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="privacy-toggle-item">
+                                        <span>Push</span>
+                                        <label class="privacy-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="privacy-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Right Column: Security & Privacy -->
+                    <div class="privacy-right">
+                        <!-- Security Card -->
+                        <section class="privacy-card">
+                            <div class="privacy-card-header">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                <h3 class="privacy-card-title">Security</h3>
+                            </div>
+                            <div class="privacy-security-items">
+                                <div class="privacy-security-item">
+                                    <div>
+                                        <p class="privacy-security-label">Two-Factor Authentication</p>
+                                        <p class="privacy-security-desc">Recommended for security</p>
+                                    </div>
+                                    <label class="privacy-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="privacy-toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <a href="#" class="privacy-security-link">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    Login History
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </a>
+                                <button class="privacy-change-password-btn">Change Password</button>
+                            </div>
+                        </section>
+
+                        <!-- Privacy Card -->
+                        <section class="privacy-card">
+                            <div class="privacy-card-header">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                <h3 class="privacy-card-title">Privacy</h3>
+                            </div>
+                            <p class="privacy-desc">Manage how your school academic data is shared with partner educational tools.</p>
+                            <div class="privacy-privacy-items">
+                                <div class="privacy-privacy-item">
+                                    <div>
+                                        <p class="privacy-privacy-label">Share Data with Partners</p>
+                                        <p class="privacy-privacy-desc">e.g., Tutoring services, libraries</p>
+                                    </div>
+                                    <label class="privacy-toggle">
+                                        <input type="checkbox">
+                                        <span class="privacy-toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="privacy-privacy-item">
+                                    <div>
+                                        <p class="privacy-privacy-label">Anonymous Usage Statistics</p>
+                                    </div>
+                                    <label class="privacy-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="privacy-toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <button class="privacy-download-btn">Download My Data Portfolio</button>
+                            </div>
+                        </section>
+
+                        <!-- Profile Visual Support -->
+                        <div class="privacy-image-card">
+                            <img src="https://i.pravatar.cc/600?img=50" alt="Student studying" class="privacy-image">
+                            <div class="privacy-image-overlay">
+                                <p class="privacy-image-title">Privacy by Design</p>
+                                <p class="privacy-image-desc">Your data security is our top priority.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Global Actions -->
+                <div class="privacy-actions">
+                    <button class="privacy-btn-discard">Discard Changes</button>
+                    <button class="privacy-btn-save">Save Preferences</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Help Button -->
+    <button class="help-btn" aria-label="Help">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>

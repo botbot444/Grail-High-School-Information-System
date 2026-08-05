@@ -4,6 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminParentController;
+use App\Http\Controllers\Admin\AdminTeacherController;
+use App\Http\Controllers\Admin\AdminClassController;
+use App\Http\Controllers\Admin\AdminSubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -29,8 +33,12 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('/teachers', [AdminController::class, 'teachers'])->name('teachers.index');
-        Route::get('/classes', [AdminController::class, 'classes'])->name('classes.index');
+        Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+        Route::get('/examinations', [AdminController::class, 'examinations'])->name('examinations');
+        Route::resource('teachers', AdminTeacherController::class);
+        Route::resource('parents', AdminParentController::class);
+        Route::resource('classes', AdminClassController::class);
+        Route::resource('subjects', AdminSubjectController::class);
         Route::resource('students', AdminController::class);
     });
 

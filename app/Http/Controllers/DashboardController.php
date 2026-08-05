@@ -11,22 +11,25 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isAdmin()) {
+        if ($user->hasRole('admin')) {
             return redirect()->route('admin.dashboard');
         }
-        if ($user->isTeacher()) {
+        if ($user->hasRole('teacher')) {
             return redirect()->route('teacher.marks');
         }
-        if ($user->isParent()) {
+        if ($user->hasRole('parent')) {
             return redirect()->route('parent.dashboard');
         }
-        if ($user->isStudent()) {
+        if ($user->hasRole('student')) {
             return redirect()->route('student.dashboard');
         }
 
-        $assignments = ClassSubject::with(['schoolClass.students', 'subject'])
-            ->where('teacher_id', $user->id)
-            ->get();
+        $teacher = $user->teacher;
+        $assignments = $teacher 
+            ? ClassSubject::with(['schoolClass.students', 'subject'])
+                ->where('teacher_id', $teacher->teacher_id)
+                ->get()
+            : collect();
 
         return view('dashboard', compact('assignments'));
     }
