@@ -1,6 +1,6 @@
 # Architecture
 
-> Last updated: 2026-08-02
+> Last updated: 2026-08-09
 > Update this file when the project structure, tech stack, or file counts change.
 
 ---
@@ -22,7 +22,7 @@ grail/
 │   │   │   ├── Parent/       (ParentController)
 │   │   │   └── Student/      (StudentController)
 │   │   ├── Middleware/       (CheckRole.php)
-│   │   └── Requests/         (Profile + Auth requests)
+│   │   └── Requests/         (Profile + Auth requests; includes Auth/LoginRequest.php)
 │   ├── Models/               (11 Eloquent models — see models.md)
 │   ├── Providers/
 │   └── View/
@@ -31,13 +31,26 @@ grail/
 ├── database/
 │   ├── factories/            (7 factories)
 │   ├── migrations/           (14 migration files)
-│   └── seeders/              (11 seeders)
+│   └── seeders/              (11 domain seeders + DatabaseSeeder orchestrator)
 ├── Frontend/                 (Static HTML/CSS/JS prototypes)
 │   ├── AdminViews/
 │   └── ParentViews/
 ├── public/
 ├── resources/
-│   └── views/                (Blade templates)
+│   └── views/                (Blade templates — see views.md)
+│       ├── admin/
+│       ├── auth/
+│       ├── components/
+│       ├── errors/
+│       ├── layouts/
+│       ├── parent/
+│       ├── profile/
+│       ├── student/
+│       └── teacher/
+│       ├── dashboard.blade.php
+│       ├── login.blade.php
+│       ├── mark_entry.blade.php
+│       └── welcome.blade.php
 ├── routes/
 │   ├── auth.php
 │   ├── console.php
@@ -45,6 +58,7 @@ grail/
 ├── storage/
 └── tests/
     ├── Feature/
+    │   └── Auth/
     └── Unit/
 ```
 
@@ -71,14 +85,14 @@ grail/
 
 - **11** Eloquent models
 - **14** Migrations (3 Laravel defaults + 11 domain)
-- **11** Database seeders
+- **12** Seeders (11 domain seeders + 1 `DatabaseSeeder` orchestrator)
 - **7** Factories
 - **5** Admin resource controllers (+ 1 top-level AdminController handling students & dashboard)
 - **9** Breeze auth controllers
 - **1** Custom middleware (`CheckRole`)
-- **~10** Admin Blade views + auth/profile/role dashboards
+- **21** Admin Blade views (5 top-level + 4 per resource × 4 resource dirs) + auth/profile/role dashboards
 - **9** Static HTML admin prototypes + 1 static parent prototype
-- **6** Feature test files + 1 base TestCase
+- **12** Feature test files (6 top-level + 6 in `Feature/Auth/`) + 1 Unit test + 1 base TestCase
 
 ---
 

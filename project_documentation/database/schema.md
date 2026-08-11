@@ -1,6 +1,6 @@
 # Database Schema
 
-> Last updated: 2026-08-02
+> Last updated: 2026-08-09
 > Update this file when migrations are added or modified.
 
 ---
@@ -21,6 +21,7 @@
 | email_verified_at | timestamp    | nullable                                     |
 | password          | string       | hashed                                       |
 | role              | string       | legacy: 'admin'/'teacher'/'parent'/'student' |
+| is_active         | boolean      | default `true` — account enabled flag        |
 | role_id           | unsigned int | FK → `roles.id` (added later)                |
 | remember_token    | string       |                                              |
 | timestamps        |              |                                              |
@@ -56,7 +57,7 @@
 | Column       | Type      | Notes |
 | ------------ | --------- | ----- |
 | subject_id   | bigint PK |       |
-| subject_name | string    |       |
+| subject_name | string UQ |       |
 | timestamps   |           |       |
 
 ---
@@ -69,7 +70,7 @@
 | user_id    | bigint    | FK → `users.id` |
 | first_name | string    |                 |
 | last_name  | string    |                 |
-| email      | string    |                 |
+| email      | string UQ |                 |
 | phone      | string    | nullable        |
 | deleted_at | timestamp | soft delete     |
 | timestamps |           |                 |
@@ -90,22 +91,22 @@
 
 ## 4.7 `students`
 
-| Column         | Type      | Notes                          |
-| -------------- | --------- | ------------------------------ |
-| student_id     | bigint PK |                                |
-| user_id        | bigint    | FK → `users.id` (nullable)     |
-| parent_user_id | bigint    | FK → `users.id` (nullable)     |
-| first_name     | string    |                                |
-| last_name      | string    |                                |
-| date_of_birth  | date      |                                |
-| gender         | enum      | 'Male'/'Female'                |
-| student_number | string UQ |                                |
-| class_id       | bigint    | FK → `school_classes.class_id` |
-| guardian_name  | string    | nullable                       |
-| guardian_phone | string    | nullable                       |
-| enrolment_date | date      | nullable                       |
-| deleted_at     | timestamp | soft delete                    |
-| timestamps     |           |                                |
+| Column         | Type      | Notes                                     |
+| -------------- | --------- | ----------------------------------------- |
+| student_id     | bigint PK |                                           |
+| user_id        | bigint    | FK → `users.id` (nullable)                |
+| parent_user_id | bigint    | FK → `users.id` (nullable)                |
+| first_name     | string    |                                           |
+| last_name      | string    |                                           |
+| date_of_birth  | date      |                                           |
+| gender         | enum      | 'Male'/'Female'                           |
+| student_number | string UQ |                                           |
+| class_id       | bigint    | FK → `school_classes.class_id` (nullable) |
+| guardian_name  | string    | nullable                                  |
+| guardian_phone | string    | nullable                                  |
+| enrolment_date | date      | NOT NULL                                  |
+| deleted_at     | timestamp | soft delete                               |
+| timestamps     |           |                                           |
 
 ---
 
@@ -117,7 +118,7 @@
 | student_id       | bigint    | FK → `students.student_id`             |
 | class_subject_id | bigint    | FK → `class_subjects.class_subject_id` |
 | date             | date      |                                        |
-| status           | string    | 'Present'/'Absent'/'Late'              |
+| status           | enum      | 'Present'/'Absent'/'Late'              |
 | recorded_by      | bigint    | FK → `teachers.teacher_id`             |
 | timestamps       |           |                                        |
 
@@ -130,9 +131,9 @@
 | grade_id         | bigint PK |                                        |
 | student_id       | bigint    | FK → `students.student_id`             |
 | class_subject_id | bigint    | FK → `class_subjects.class_subject_id` |
-| assessment_type  | string    | 'CA' or 'EXAM'                         |
+| assessment_type  | enum      | 'CA' or 'EXAM'                         |
 | score            | decimal   |                                        |
-| max_score        | decimal   |                                        |
+| max_score        | decimal   | default 100.00                         |
 | term             | string    |                                        |
 | academic_year    | integer   |                                        |
 | recorded_by      | bigint    | FK → `teachers.teacher_id`             |
@@ -146,15 +147,15 @@
 | ------------- | --------- | ---------------------------------------- |
 | fee_id        | bigint PK |                                          |
 | student_id    | bigint    | FK → `students.student_id`               |
-| description   | string    |                                          |
+| description   | string    | nullable                                 |
 | amount_due    | decimal   |                                          |
 | amount_paid   | decimal   | default 0                                |
 | balance       | decimal   | computed                                 |
 | due_date      | date      |                                          |
-| status        | string    | 'Pending' / 'Partially Paid' / 'Cleared' |
+| status        | enum      | 'Pending' / 'Partially Paid' / 'Cleared' |
 | term          | string    |                                          |
 | academic_year | integer   |                                          |
-| last_updated  | datetime  |                                          |
+| last_updated  | datetime  | nullable                                 |
 | timestamps    |           |                                          |
 
 ---
@@ -167,11 +168,11 @@
 | user_id     | bigint    | FK → `users.id` |
 | first_name  | string    |                 |
 | last_name   | string    |                 |
-| email       | string    |                 |
+| email       | string UQ |                 |
 | phone       | string    | nullable        |
 | address     | string    | nullable        |
 | occupation  | string    | nullable        |
-| national_id | string    | nullable        |
+| national_id | string UQ | nullable        |
 | deleted_at  | timestamp | soft delete     |
 | timestamps  |           |                 |
 

@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use App\Traits\Auditable;
 
 class Fee extends Model
 {
+    use Auditable;
+
     protected $primaryKey = 'fee_id';
 
     protected $fillable = [
@@ -37,6 +41,52 @@ class Fee extends Model
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class, 'student_id', 'student_id');
+    }
+
+    public function feeItems(): HasMany
+    {
+        return $this->hasMany(FeeItem::class, 'fee_id', 'fee_id');
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'fee_id', 'fee_id');
+    }
+
+    public function academicYear()
+    {
+        return $this->belongsTo(AcademicYear::class, 'academic_year_id', 'year_id');
+    }
+
+    public function term()
+    {
+        return $this->belongsTo(Term::class, 'term_id', 'term_id');
+    }
+
+    // ── Auto-Total ──────────────────────────────────────────────────────────
+
+    /**
+     * Recalculate amount_due from fee items and recompute balance + status.
+     */
+    public function recalculateAmountDue(): void
+    {
+        $this->amount_due = $this->feeItems()->sum('amount');
+        $this->balance    = round($this->amount_due - $this->amount_paid, 2);
+        $this->status     = $this->computeStatus();
+        $this->last_updated = Carbon::now();
+    }
+
+    /**
+     * On every save, if the fee already exists in DB, keep amount_due in sync
+     * with its line items so the header always reflects the current total.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function ($fee) {
+            if ($fee->exists && $fee->relationLoaded('feeItems')) {
+                $fee->recalculateAmountDue();
+            }
+        });
     }
 
     // ── State Machine (FR-11) ─────────────────────────────────────────────────
@@ -86,19 +136,33 @@ class Fee extends Model
 
     /**
      * Derive the correct status from the current figures.
-     * PENDING → PARTIALLY PAID → CLEARED
+     * PENDING → PARTIALLY PAID → CLEARED → OVERDUE
      */
     public function computeStatus(): string
     {
-        if ($this->amount_paid <= 0) {
-            return 'Pending';
-        }
-
         if ($this->balance <= 0) {
             return 'Cleared';
         }
 
-        return 'Partially Paid';
+        if ($this->amount_paid > 0) {
+            return 'Partially Paid';
+        }
+
+        if ($this->due_date && $this->due_date->isPast() && $this->balance > 0) {
+            return 'Overdue';
+        }
+
+        return 'Pending';
+    }
+
+    /**
+     * Compute the status and persist it so the Auditable trait captures the change.
+     */
+    public function updateStatus(): void
+    {
+        $this->status = $this->computeStatus();
+        $this->last_updated = Carbon::now();
+        $this->save();
     }
 
     // ── Scopes ────────────────────────────────────────────────────────────────

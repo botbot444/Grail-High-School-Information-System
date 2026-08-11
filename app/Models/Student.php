@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Auditable;
 
 class Student extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Auditable;
 
     protected $primaryKey = 'student_id';
 
@@ -50,6 +51,12 @@ class Student extends Model
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class, 'class_id', 'class_id');
+    }
+
+    /** Parent/guardian login account (for notifications) */
+    public function guardian()
+    {
+        return $this->belongsTo(User::class, 'parent_user_id', 'id');
     }
 
     /** All grade records for this student */

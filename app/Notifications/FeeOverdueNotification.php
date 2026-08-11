@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Notifications;
+
+use App\Models\Fee;
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
+
+class FeeOverdueNotification extends Notification
+{
+    use Queueable;
+
+    public function __construct(protected Fee $fee) {}
+
+    public function via(object $notifiable): array
+    {
+        return ['mail', 'database'];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $student = $this->fee->student;
+        $guardianName = $student->guardian?->name ?? $student->guardian_name ?? 'Guardian';
+
+        return (new MailMessage)
+            ->subject('Overdue Fee Notice: ' . $student->full_name)
+            ->greeting('Dear ' . $guardianName)
+            ->line('The following fee is now overdue:')
+            ->line('Student: ' . $student->full_name)
+            ->line('Amount Due: ZMW ' . number_format($this->fee->amount_due, 2))
+            ->line('Balance: ZMW ' . number_format($this->fee->balance, 2))
+            ->line('Due Date: ' . $this->fee->due_date->format('d M Y'))
+            ->action('View Fee Details', route('admin.fees.show', $this->fee->fee_id))
+            ->line('Please clear the outstanding balance as soon as possible.');
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'fee_id'     => $this->fee->fee_id,
+            'student'    => $this->fee->student->full_name,
+            'amount_due' => $this->fee->amount_due,
+            'due_date'   => $this->fee->due_date->format('Y-m-d'),
+        ];
+    }
+}

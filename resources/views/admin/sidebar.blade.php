@@ -87,6 +87,22 @@
                 style="{{ request()->routeIs('admin.examinations') ? 'font-variation-settings: "FILL" 1' : '' }}">assignment_turned_in</span>
             <span class="font-label-sm text-label-sm">Examinations</span>
         </a>
+
+        <!-- Fees -->
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.fees.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.fees.index') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.fees.*') ? 'font-variation-settings: "FILL" 1' : '' }}">payments</span>
+            <span class="font-label-sm text-label-sm">Fees</span>
+        </a>
+
+        <!-- Audit Logs -->
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.audit-logs.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.audit-logs.index') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.audit-logs.*') ? 'font-variation-settings: "FILL" 1' : '' }}">history</span>
+            <span class="font-label-sm text-label-sm">Audit Logs</span>
+        </a>
         <a class="flex items-center gap-3 px-3 py-2.5 text-[#dbe4ed] hover:bg-[#004493]/80 transition-colors duration-200 rounded-lg group"
             href="#">
             <span class="material-symbols-outlined">analytics</span>

@@ -31,7 +31,61 @@
                     </div>
                 </div>
 
-                {{-- ── BENTO GRID: Statistics Cards ── --}}
+                
+                {{-- ── Academic Context + Quick Actions + Collections ── --}}
+                <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end justify-between">
+                    <div>
+                        <h2 class="font-headline-md text-headline-md font-extrabold text-on-surface">
+                            Good day, {{ auth()->user()->name }}
+                        </h2>
+                        <p class="mt-1 text-sm text-on-surface-variant">
+                            @if($currentAcademicYear)
+                                {{ $currentTerm?->name ?? 'Current Term' }} · {{ $currentAcademicYear->label }}
+                                <span class="mx-2">•</span>
+                                <span class="text-xs" style="color:#1F4D3D;">
+                                    {{ $currentAcademicYear->start_date->format('M d') }} - {{ $currentAcademicYear->end_date->format('M d, Y') }}
+                                </span>
+                            @else
+                                No academic year set as current
+                            @endif
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div class="rounded-lg border bg-white p-4" style="border-color:#D9D4C8;">
+                        <p class="text-xs font-medium uppercase tracking-wide" style="color:#5C6B66;">Quick Actions</p>
+                        <div class="mt-3 flex flex-col gap-2">
+                            <a href="{{ route('admin.fees.create') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-50" style="color:#1F4D3D;">
+                                <span>➕</span> New Fee
+                            </a>
+                            <a href="{{ route('admin.students.create') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-50" style="color:#1F4D3D;">
+                                <span>👤</span> New Student
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg border bg-white p-4" style="border-color:#D9D4C8;">
+                        <p class="text-xs font-medium uppercase tracking-wide" style="color:#5C6B66;">Today's Collections</p>
+                        <p class="mt-2 font-[IBM_Plex_Mono] text-3xl" style="color:#16191C;">
+                            ZMW {{ number_format($todayCollections ?? 0, 2) }}
+                        </p>
+                        <p class="mt-1 text-xs" style="color:#5C6B66;">
+                            {{ $todayPayments ?? 0 }} payments received
+                        </p>
+                    </div>
+
+                    <div class="rounded-lg border p-4" style="border-color:#D9D4C8; background-color:#F5DEDB;">
+                        <p class="text-xs font-medium uppercase tracking-wide" style="color:#8A2A20;">Urgent Attention</p>
+                        <p class="mt-2 font-[IBM_Plex_Mono] text-3xl" style="color:#16191C;">
+                            {{ $urgentFees ?? 0 }}
+                        </p>
+                        <p class="mt-1 text-xs" style="color:#5C6B66;">
+                            Fees due within 7 days
+                        </p>
+                    </div>
+                </div>
+{{-- ── BENTO GRID: Statistics Cards ── --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
                     {{-- Card 1: Total Students --}}

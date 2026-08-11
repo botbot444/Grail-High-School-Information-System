@@ -8,6 +8,10 @@ use App\Http\Controllers\Admin\AdminParentController;
 use App\Http\Controllers\Admin\AdminTeacherController;
 use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\Admin\AdminSubjectController;
+use App\Http\Controllers\Admin\FeeController;
+use App\Http\Controllers\Admin\FeeCategoryController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -32,7 +36,7 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
         Route::get('/examinations', [AdminController::class, 'examinations'])->name('examinations');
         Route::resource('teachers', AdminTeacherController::class);
@@ -40,6 +44,30 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('classes', AdminClassController::class);
         Route::resource('subjects', AdminSubjectController::class);
         Route::resource('students', AdminController::class);
+
+        // ── Fees ──────────────────────────────────────────────────────────────
+        Route::resource('fees', FeeController::class);
+        Route::post('/fees/{fee}/payments', [PaymentController::class, 'store'])->name('fees.payments.store');
+        Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
+        Route::post('/fees/bulk-action', [FeeController::class, 'bulkAction'])->name('fees.bulk-action');
+        Route::post('/fees/{fee}/send-reminder', [FeeController::class, 'sendReminder'])->name('fees.send-reminder');
+
+        // ── Fee Categories (settings) ────────────────────────────────────────
+        Route::get('/settings/categories', [FeeCategoryController::class, 'index'])->name('categories.index');
+        Route::post('/settings/categories', [FeeCategoryController::class, 'store'])->name('categories.store');
+        Route::put('/settings/categories/{feeCategory}', [FeeCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/settings/categories/{feeCategory}', [FeeCategoryController::class, 'destroy'])->name('categories.destroy');
+
+        // ── Audit Logs ───────────────────────────────────────────────────────
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+        // ── Parent fee view (for notification CTAs) ──────────────────────────
+        Route::middleware(['auth', 'role:parent'])
+            ->prefix('parent')
+            ->name('parent.')
+            ->group(function () {
+                Route::get('/fees/{fee}', [ParentController::class, 'showFee'])->name('fees.show');
+            });
     });
 
 // Teacher Routes

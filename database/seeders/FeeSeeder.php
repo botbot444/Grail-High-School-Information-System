@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Student;
 use App\Models\Fee;
+use App\Models\AcademicYear;
+use App\Models\Term;
 
 class FeeSeeder extends Seeder
 {
@@ -14,6 +16,9 @@ class FeeSeeder extends Seeder
         $year     = now()->year;
         $term     = 'Term 1';
         $count    = 0;
+
+        $academicYear = AcademicYear::where('label', (string) $year)->first();
+        $termModel   = $academicYear ? Term::where('academic_year_id', $academicYear->year_id)->where('name', $term)->first() : null;
 
         foreach ($students as $student) {
             $exists = Fee::where([
@@ -32,50 +37,39 @@ class FeeSeeder extends Seeder
             // 50% Cleared, 30% Partially Paid, 20% Pending
             $roll = rand(1, 100);
 
-            if ($roll <= 50) {
-                // Cleared
-                Fee::create([
-                    'student_id'   => $student->student_id,
-                    'description'  => "Tuition – {$term} {$year}",
-                    'amount_due'   => $amountDue,
-                    'amount_paid'  => $amountDue,
-                    'balance'      => 0.00,
-                    'due_date'     => now()->startOfYear()->addDays(30)->format('d-m-Y'),
-                    'status'       => 'Cleared',
-                    'term'         => $term,
-                    'academic_year'=> $year,
-                    'last_updated' => now()->subDays(rand(5, 60)),
-                ]);
-            } elseif ($roll <= 80) {
-                // Partially Paid
-                $paid = round($amountDue * fake()->randomFloat(2, 0.2, 0.8), 2);
-                Fee::create([
-                    'student_id'   => $student->student_id,
-                    'description'  => "Tuition – {$term} {$year}",
-                    'amount_due'   => $amountDue,
-                    'amount_paid'  => $paid,
-                    'balance'      => round($amountDue - $paid, 2),
-                    'due_date'     => now()->startOfYear()->addDays(30)->format('d-m-Y'),
-                    'status'       => 'Partially Paid',
-                    'term'         => $term,
-                    'academic_year'=> $year,
-                    'last_updated' => now()->subDays(rand(1, 30)),
-                ]);
-            } else {
-                // Pending / Overdue
-                Fee::create([
-                    'student_id'   => $student->student_id,
-                    'description'  => "Tuition – {$term} {$year}",
-                    'amount_due'   => $amountDue,
-                    'amount_paid'  => 0.00,
-                    'balance'      => $amountDue,
-                    'due_date'     => now()->startOfYear()->addDays(30)->format('d-m-Y'),
-                    'status'       => 'Pending',
-                    'term'         => $term,
-                    'academic_year'=> $year,
-                    'last_updated' => null,
-                ]);
-            }
+            $status      = $roll <= 50 ? 'Cleared' : ($roll <= 80 ? 'Partially Paid' : 'Pending');
+            $amountPaid  = match ($status) {
+                'Cleared'        => $amountDue,
+                'Partially Paid' => round($amountDue * fake()->randomFloat(2, 0.2, 0.8), 2),
+                default          => 0.00,
+            };
+            $balance = round($amountDue - $amountPaid, 2);
+
+            $fee = Fee::create([
+                'student_id'       => $student->student_id,
+                'description'      => "Tuition – {$term} {$year}",
+                'amount_due'       => $amountDue,
+                'amount_paid'      => $amountPaid,
+                'balance'          => $balance,
+                'due_date'         => now()->startOfYear()->addDays(30)->format('d-m-Y'),
+                'status'           => $status,
+                'term'             => $term,
+                'academic_year'    => $year,
+                'academic_year_id' => $academicYear?->year_id,
+                'term_id'          => $termModel?->term_id,
+                'last_updated'     => in_array($status, ['Cleared', 'Partially Paid'])
+                    ? now()->subDays(rand(1, 60))
+                    : null,
+            ]);
+
+            // Attach a single line item so fee_items stays in sync with fees.
+            \App\Models\FeeItem::create([
+                'fee_id'    => $fee->fee_id,
+                'item_name' => 'General Fees',
+                'category'  => 'Other',
+                'amount'    => $amountDue,
+            ]);
+
             $count++;
         }
 
