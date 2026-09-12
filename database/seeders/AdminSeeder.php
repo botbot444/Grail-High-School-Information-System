@@ -19,12 +19,12 @@ class AdminSeeder extends Seeder
             [
                 'name'              => 'System Administrator',
                 'email'             => 'admin@grail.school',
-                'password'          => Hash::make('Admin@1234'),
+                'password'          => Hash::make('12345678'),
                 'role_id'           => $roleId,
                 'email_verified_at' => now(),
             ]
         );
 
-        $this->command->info('✔ Admin account seeded (admin@grail.school / Admin@1234)');
+        $this->command->info('✔ Admin account seeded (admin@grail.school / 12345678)');
     }
 }

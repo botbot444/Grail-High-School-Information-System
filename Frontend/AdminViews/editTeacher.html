@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <style>
+        @layer base {
+            html, body { margin: 0; padding: 0; }
+            body { overscroll-behavior: none; }
+            main > :first-child { margin-top: 0 !important; }
+            main > :last-child { margin-bottom: 0 !important; }
+        }
+        ::-webkit-scrollbar { display: none; }
+
+        /* Custom styles */
+        .form-input-focus:focus {
+            box-shadow: 0 0 0 2px #075bbd;
+            outline: none;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            transition: all 0.2s ease;
+        }
+
+        .subject-card, .class-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .subject-card:hover, .class-card:hover {
+            transform: translateY(-1px);
+        }
+        .subject-card.selected, .class-card.selected {
+            background: #d7e2ff;
+            border-color: #075bbd;
+            font-weight: 600;
+        }
+
+        .toast-show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+        .toast-hide {
+            transform: translateY(24px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Required field indicator */
+        .required::after {
+            content: '*';
+            color: #ba1a1a;
+            margin-left: 2px;
+        }
+
+        /* Error state */
+        .input-error {
+            border-color: #ba1a1a !important;
+            background: #fff5f5 !important;
+        }
+        .error-message {
+            color: #ba1a1a;
+            font-size: 11px;
+            margin-top: 4px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-container": "#00316d",
+                        "on-primary-fixed": "#001c39",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container": "#eceeef",
+                        "on-secondary-fixed": "#001a40",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#43474f",
+                        "tertiary": "#371400",
+                        "on-tertiary-container": "#d58a5d",
+                        "on-background": "#191c1d",
+                        "on-surface": "#191c1d",
+                        "primary-fixed": "#d3e3ff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#321200",
+                        "primary-fixed-dim": "#a4c9fe",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2e3132",
+                        "surface-dim": "#d8dadb",
+                        "tertiary-fixed": "#ffdbc9",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "inverse-primary": "#a4c9fe",
+                        "secondary": "#075bbd",
+                        "primary-container": "#003461",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary-container": "#609aff",
+                        "background": "#f8f9fa",
+                        "on-error-container": "#93000a",
+                        "primary": "#001f3d",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#572501",
+                        "outline": "#737780",
+                        "surface-container-low": "#f2f4f5",
+                        "surface": "#f8f9fa",
+                        "tertiary-fixed-dim": "#ffb68c",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#004492",
+                        "secondary-fixed-dim": "#acc7ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#3a608f",
+                        "outline-variant": "#c3c6d0",
+                        "inverse-on-surface": "#eff1f2",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#d7e2ff",
+                        "on-tertiary-fixed-variant": "#6f3812",
+                        "on-primary-fixed-variant": "#1f4876",
+                        "on-primary-container": "#799ed1"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        "space-md": "1rem",
+                        "space-2xl": "3rem",
+                        "space-sm": "0.75rem",
+                        "margin-desktop": "1.5rem",
+                        "table-row-h": "44px",
+                        gutter: "1rem",
+                        "space-2xs": "0.25rem",
+                        "space-xl": "2rem",
+                        "table-row-condensed-h": "36px",
+                        "sidebar-collapsed-w": "68px",
+                        "sidebar-w": "260px",
+                        "space-xs": "0.5rem",
+                        "margin-mobile": "1rem",
+                        "space-lg": "1.5rem"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "code-sm": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-form": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-lg": ["15px", { lineHeight: "22px", fontWeight: "400" }],
+                        "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "label-md": ["13px", { lineHeight: "18px", fontWeight: "500" }],
+                        "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-sm": ["16px", { lineHeight: "24px", fontWeight: "600" }],
+                        "display-lg-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }],
+                        "code-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "600" }],
+                        "label-form": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="fixed left-0 top-0 h-full w-sidebar-w bg-surface-container-lowest z-50 flex flex-col border-r border-outline-variant/40 select-none">
+        <div class="h-16 px-space-md flex items-center gap-space-sm border-b border-outline-variant/30">
+            <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary flex-shrink-0">
+                <span class="material-symbols-outlined text-[24px]">school</span>
+            </div>
+            <div class="flex flex-col min-w-0">
+                <span class="font-headline-sm text-headline-sm text-primary tracking-tight truncate leading-tight">Grail SIS</span>
+                <span class="font-label-form text-label-form text-on-surface-variant uppercase tracking-wider truncate">School Management</span>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto py-space-sm px-space-xs">
+            <nav class="flex flex-col gap-0.5">
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    <span class="font-body-md text-body-md">Dashboard</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">school</span>
+                    <span class="font-body-md text-body-md">Students</span>
+                </a>
+                <a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors bg-primary-container text-on-primary font-semibold shadow-sm" href="#">
+                    <span class="material-symbols-outlined text-[20px]">badge</span>
+                    <span class="font-body-md text-body-md">Teachers</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">family_restroom</span>
+                    <span class="font-body-md text-body-md">Parents</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">menu_book</span>
+                    <span class="font-body-md text-body-md">Subjects</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">meeting_room</span>
+                    <span class="font-body-md text-body-md">Classes</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
+                    <span class="font-body-md text-body-md">Attendance</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">assignment</span>
+                    <span class="font-body-md text-body-md">Examinations</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">payments</span>
+                    <span class="font-body-md text-body-md">Fees</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">bar_chart</span>
+                    <span class="font-body-md text-body-md">Reports</span>
+                </a>
+                <a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[20px]">settings</span>
+                    <span class="font-body-md text-body-md">Settings</span>
+                </a>
+            </nav>
+        </div>
+        <div class="p-space-sm border-t border-outline-variant/30">
+            <div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+                <span class="font-code-sm text-code-sm text-on-surface-variant font-mono">v2.4.0-prod</span>
+                <span class="font-label-form text-label-form px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">STABLE</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="pl-sidebar-w">
+
+        <!-- ==================== HEADER ==================== -->
+        <header class="fixed top-0 left-sidebar-w right-0 h-16 bg-surface-container-lowest border-b border-outline-variant/40 z-40 px-space-lg flex items-center justify-between">
+            <div class="flex items-center w-full max-w-md">
+                <div class="relative w-full flex items-center">
+                    <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px] pointer-events-none">search</span>
+                    <input class="w-full h-[38px] pl-10 pr-4 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Search students, teachers, records... [Ctrl + K]" type="text"/>
+                </div>
+            </div>
+            <div class="flex items-center gap-space-md">
+                <div class="hidden md:flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-secondary-fixed/50 text-on-secondary-fixed border border-secondary-fixed-dim/60">
+                    <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                    <span class="font-label-md text-label-md font-medium">AY 2024-2025 • Term 1</span>
+                </div>
+                <div class="h-6 w-px bg-outline-variant/40 hidden md:block"></div>
+                <button aria-label="Notifications" class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" type="button">
+                    <span class="material-symbols-outlined text-[22px]">notifications</span>
+                    <span class="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-error text-on-error font-code-sm text-[10px] leading-tight flex items-center justify-center font-bold">3</span>
+                </button>
+                <button aria-label="Help" class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" type="button">
+                    <span class="material-symbols-outlined text-[22px]">help_outline</span>
+                </button>
+                <div class="h-6 w-px bg-outline-variant/40"></div>
+                <div class="flex items-center gap-space-sm cursor-pointer py-1 px-1.5 rounded-lg hover:bg-surface-container-low transition-colors">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+                    </div>
+                    <div class="hidden lg:flex flex-col text-left">
+                        <span class="font-label-md text-label-md font-semibold text-on-surface leading-tight">Dr. Robert Vance</span>
+                        <span class="font-label-form text-label-form text-on-surface-variant tracking-normal leading-tight">Super Administrator</span>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant text-[18px] hidden lg:inline-block">expand_more</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==================== PAGE CONTENT ==================== -->
+        <main class="relative pt-16 bg-surface min-h-screen w-full px-space-lg py-space-lg">
+            <div class="flex flex-col w-full gap-space-lg pb-space-2xl">
+
+                <!-- ===== BREADCRUMB & TOP BAR ===== -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+                    <div class="flex flex-col gap-1">
+                        <nav class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+                            <a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+                                <span class="material-symbols-outlined text-[16px]">home</span> Dashboard
+                            </a>
+                            <span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+                            <a class="hover:text-primary transition-colors" href="#">Teachers</a>
+                            <span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+                            <span class="text-on-surface font-medium">Dr. Sarah Chen</span>
+                            <span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+                            <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-[11px] font-semibold tracking-wide uppercase">Edit</span>
+                        </nav>
+                        <div class="flex items-baseline gap-3 mt-1">
+                            <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Edit Teacher: Dr. Sarah Chen</h1>
+                            <span class="font-code-sm text-code-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">ID: TCH-2020-045</span>
+                        </div>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant">Faculty dossier, departmental load assignments, compliance status, and certified credentials.</p>
+                    </div>
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2 self-start md:self-auto flex-wrap">
+                        <button class="h-9 px-3.5 rounded bg-error/10 hover:bg-error text-error hover:text-on-error transition-colors flex items-center gap-1.5 font-label-md text-label-md font-semibold cursor-pointer" onclick="openDeleteModal()" type="button">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                            <span>Delete Teacher</span>
+                        </button>
+                        <button class="h-9 px-4 rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-medium transition-colors cursor-pointer" onclick="resetForm()" type="button">
+                            Cancel
+                        </button>
+                        <button class="h-9 px-5 rounded bg-primary hover:bg-primary-container text-on-primary shadow-sm flex items-center gap-2 font-label-md text-label-md font-semibold transition-all cursor-pointer" onclick="saveAllChanges()" type="button">
+                            <span class="material-symbols-outlined text-[18px]">save</span>
+                            <span>Save Changes</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ===== PROFILE QUICK SUMMARY BANNER ===== -->
+                <div class="w-full bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg relative overflow-hidden">
+                    <div class="absolute -right-16 -top-16 w-64 h-64 bg-primary-fixed/30 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5 z-10">
+                        <div class="relative group">
+                            <img class="w-20 h-20 rounded-full object-cover shadow-sm bg-surface-container-high" id="avatarPreview" alt="Dr. Sarah Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9_rQBlD0N8RzldOdW0dQ-muOayuh-9hUK3hO3K60i2aSjEb2fCB5B4-uS14kxUL-XPM3y9NlP1lh0DP3WX7pE1-Df2e8Ii7o3CLxUFQfCdLBuOBkQA4Fn7kNkEXPbSO4qZbZi-JfDydVoN9p4ZEvN0AtsmJ0W5-0NAcwm0xGWpj9eVV9fh8FKgjqUwneBUmA6yalGuybAF-R3C3AM8aojfk7KLthStB3bgEwvhhqwxOGRtM9hpa4U"/>
+                            <button class="absolute inset-0 bg-primary/60 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center text-on-primary transition-opacity cursor-pointer" onclick="document.getElementById('avatar-file').click()" title="Change profile avatar" type="button">
+                                <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+                            </button>
+                            <input accept="image/*" class="hidden" id="avatar-file" onchange="previewImage(event)" type="file"/>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <h2 class="font-headline-md text-headline-md text-primary tracking-tight font-bold">Dr. Sarah Chen, Ph.D.</h2>
+                                <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface font-label-md text-[12px] font-semibold">
+                                    <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+                                    <span class="w-2 h-2 rounded-full bg-secondary -ml-3.5"></span>
+                                    <span>Active Faculty</span>
+                                </div>
+                                <span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm font-medium">STEM-CHAIR</span>
+                            </div>
+                            <p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[16px] text-secondary">domain</span>
+                                <span>Head of Department • Sciences &amp; Applied Physics</span>
+                            </p>
+                            <div class="flex items-center gap-4 text-outline font-body-sm text-body-sm pt-0.5 flex-wrap">
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[15px]">badge</span>
+                                    <span>TCH-2020-045</span>
+                                </span>
+                                <span>•</span>
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[15px]">schedule</span>
+                                    <span>Last updated: 10/23/2024 at 03:45 PM</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Quick Shortcuts -->
+                    <div class="flex items-center flex-wrap gap-2 z-10 w-full lg:w-auto pt-2 lg:pt-0">
+                        <button class="flex-1 lg:flex-initial h-9 px-3.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer" type="button">
+                            <span class="material-symbols-outlined text-[18px] text-secondary">calendar_month</span>
+                            <span>Class Schedule</span>
+                        </button>
+                        <button class="flex-1 lg:flex-initial h-9 px-3.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer" type="button">
+                            <span class="material-symbols-outlined text-[18px] text-secondary">mail</span>
+                            <span>Message</span>
+                        </button>
+                        <button class="flex-1 lg:flex-initial h-9 px-3.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer" type="button">
+                            <span class="material-symbols-outlined text-[18px] text-secondary">insights</span>
+                            <span>Performance (98.4%)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ===== FORM ===== -->
+                <form class="flex flex-col gap-space-lg" id="teacherEditForm" onsubmit="event.preventDefault(); saveAllChanges();">
+
+                    <!-- ===== 2 COLUMN LAYOUT ===== -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+
+                        <!-- ===== COLUMN 1: Personal Information ===== -->
+                        <div class="lg:col-span-7 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+                            <div class="flex items-center justify-between pb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+                                        <span class="material-symbols-outlined text-[18px]">person</span>
+                                    </div>
+                                    <h3 class="font-headline-sm text-headline-sm text-primary font-bold">1. Personal Information</h3>
+                                </div>
+                                <span class="font-label-form text-label-form text-on-surface-variant uppercase">Biographical Records</span>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-space-md items-start">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="relative w-24 h-24 rounded-lg overflow-hidden bg-surface-container-high shadow-inner">
+                                        <img class="w-full h-full object-cover" id="avatarPreviewSmall" alt="Dr. Sarah Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxuK5oBLTxkJixSViiefGPPitVJxXqn6PAO4AGKvVHGgW9dFh7EsZ0vyRsQbBTh73LXZu2zFob7AX5qAnY7dxslac_735Be5g3N8TyqaHBJG-vEC1MMdE0LRGaGb6N7tpRrOnOakeU-JVQ6KKthx9x2cVEW2atCxqvYnEtXlCDKj-v1RTptVLLoqdyOsuQFigr0uYBKGYZB1LE4gC694XTjQECn-wv2XFu9TVbnkvDR0RBJcIZeDYK"/>
+                                    </div>
+                                    <button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-form text-label-form transition-colors cursor-pointer flex items-center gap-1" onclick="document.getElementById('avatar-file').click()" type="button">
+                                        <span class="material-symbols-outlined text-[14px]">upload</span>
+                                        <span>Change Photo</span>
+                                    </button>
+                                </div>
+
+                                <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-space-md w-full">
+                                    <div class="flex flex-col">
+                                        <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="firstName">First Name</label>
+                                        <input class="h-[38px] px-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="firstName" name="first_name" required type="text" value="Sarah"/>
+                                        <div class="error-message" id="firstNameError">First name is required</div>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="lastName">Last Name</label>
+                                        <input class="h-[38px] px-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="lastName" name="last_name" required type="text" value="Chen"/>
+                                        <div class="error-message" id="lastNameError">Last name is required</div>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider" for="dob">Date of Birth</label>
+                                        <input class="h-[38px] px-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="dob" name="dob" type="date" value="1985-05-22"/>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="gender">Gender</label>
+                                        <select class="h-[38px] px-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="gender" name="gender" required>
+                                            <option selected value="Female">Female</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Non-Binary">Non-Binary</option>
+                                            <option value="Prefer not to say">Prefer not to say</option>
+                                        </select>
+                                        <div class="error-message" id="genderError">Please select a gender</div>
+                                    </div>
+                                    <div class="sm:col-span-2 flex flex-col">
+                                        <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider" for="nationality">Nationality</label>
+                                        <div class="relative">
+                                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">flag</span>
+                                            <input class="w-full h-[38px] pl-10 pr-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="nationality" name="nationality" type="text" value="American"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== COLUMN 2: Contact Information ===== -->
+                        <div class="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+                            <div>
+                                <div class="flex items-center justify-between pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+                                            <span class="material-symbols-outlined text-[18px]">contact_phone</span>
+                                        </div>
+                                        <h3 class="font-headline-sm text-headline-sm text-primary font-bold">2. Contact Details</h3>
+                                    </div>
+                                    <span class="font-label-form text-label-form text-on-surface-variant uppercase">Emergency &amp; Mail</span>
+                                </div>
+                                <div class="flex flex-col gap-space-sm mt-3">
+                                    <div class="flex flex-col">
+                                        <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="email">Institutional Email</label>
+                                        <div class="relative">
+                                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">mail</span>
+                                            <input class="w-full h-[38px] pl-10 pr-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="email" name="email" required type="email" value="sarah.chen@grail.edu"/>
+                                        </div>
+                                        <div class="error-message" id="emailError">Valid email is required</div>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="phone">Direct Phone</label>
+                                        <div class="relative">
+                                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">call</span>
+                                            <input class="w-full h-[38px] pl-10 pr-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="phone" name="phone" required type="tel" value="+1 (555) 987-6543"/>
+                                        </div>
+                                        <div class="error-message" id="phoneError">Phone number is required</div>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider" for="address">Residential Address</label>
+                                        <div class="relative">
+                                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">home_pin</span>
+                                            <input class="w-full h-[38px] pl-10 pr-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="address" name="address" type="text" value="456 University Drive, Palo Alto, CA 94301"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-lg bg-surface-container-low flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-secondary text-[20px]">verified_user</span>
+                                    <span>2FA Authenticator verified via +1 (555) ••••543</span>
+                                </div>
+                                <span class="font-label-form text-label-form text-secondary font-semibold cursor-pointer hover:underline">Re-verify</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== SECTION 3: Employment Information ===== -->
+                    <div class="w-full bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+                        <div class="flex items-center justify-between pb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+                                    <span class="material-symbols-outlined text-[18px]">work</span>
+                                </div>
+                                <h3 class="font-headline-sm text-headline-sm text-primary font-bold">3. Employment &amp; Institutional Role</h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                                <span class="font-label-form text-label-form text-on-surface-variant uppercase">Full-Time Tenured</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-space-md">
+                            <!-- Employee ID (Read-only) -->
+                            <div class="flex flex-col">
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="font-label-form text-label-form text-on-surface-variant uppercase tracking-wider">Employee ID</label>
+                                    <span class="material-symbols-outlined text-[14px] text-outline" title="System immutable identifier">lock</span>
+                                </div>
+                                <div class="h-[38px] px-3 bg-surface-container-low rounded text-on-surface-variant font-code-sm text-code-sm flex items-center font-bold tracking-wide select-all cursor-not-allowed">
+                                    TCH-2020-045
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="department">Department</label>
+                                <select class="h-[38px] px-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus font-medium" id="department" name="department" required>
+                                    <option selected value="Sciences">Sciences</option>
+                                    <option value="Mathematics">Mathematics</option>
+                                    <option value="Humanities">Humanities</option>
+                                    <option value="Languages">Languages</option>
+                                    <option value="Arts">Fine Arts</option>
+                                    <option value="Physical Education">Physical Education</option>
+                                </select>
+                                <div class="error-message" id="departmentError">Department is required</div>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="position">Position Title</label>
+                                <select class="h-[38px] px-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus font-medium" id="position" name="position" required>
+                                    <option selected value="Head of Department">Head of Department</option>
+                                    <option value="Senior Lecturer">Senior Lecturer</option>
+                                    <option value="Associate Teacher">Associate Teacher</option>
+                                    <option value="Laboratory Coordinator">Laboratory Coordinator</option>
+                                    <option value="Guest Scholar">Guest Scholar</option>
+                                </select>
+                                <div class="error-message" id="positionError">Position is required</div>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider" for="employmentDate">Hiring Date</label>
+                                <input class="h-[38px] px-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="employmentDate" name="employment_date" type="date" value="2020-08-15"/>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="status">Status</label>
+                                <select class="h-[38px] px-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus font-semibold" id="status" name="status" required>
+                                    <option class="text-secondary font-semibold" selected value="Active">Active</option>
+                                    <option value="On Leave">On Sabbatical / Leave</option>
+                                    <option value="Probationary">Probationary</option>
+                                    <option value="Suspended">Suspended</option>
+                                    <option value="Terminated">Terminated</option>
+                                </select>
+                                <div class="error-message" id="statusError">Status is required</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== SECTION 4: Academic Information ===== -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+
+                        <!-- Subjects Taught -->
+                        <div class="lg:col-span-7 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+                            <div class="flex items-center justify-between pb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+                                        <span class="material-symbols-outlined text-[18px]">menu_book</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-headline-sm text-headline-sm text-primary font-bold">4. Subjects Taught</h3>
+                                        <p class="font-body-sm text-body-sm text-on-surface-variant">Select authorized discipline syllabi for Dr. Chen</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-code-sm text-[11px] font-semibold tracking-wide" id="subjectCountBadge">2 Selected</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="subjectsGrid">
+                                <!-- Subject items - Physics (checked) -->
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-secondary-fixed/40 text-on-secondary-fixed font-semibold cursor-pointer shadow-sm transition-all selected" onclick="toggleSubject(this)">
+                                    <input checked class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Physics"/>
+                                    <span class="font-body-md text-body-md">Physics</span>
+                                    <span class="material-symbols-outlined text-[14px] ml-auto text-secondary">star</span>
+                                </label>
+
+                                <!-- Chemistry (checked) -->
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-secondary-fixed/40 text-on-secondary-fixed font-semibold cursor-pointer shadow-sm transition-all selected" onclick="toggleSubject(this)">
+                                    <input checked class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Chemistry"/>
+                                    <span class="font-body-md text-body-md">Chemistry</span>
+                                    <span class="material-symbols-outlined text-[14px] ml-auto text-secondary">check</span>
+                                </label>
+
+                                <!-- Other subjects -->
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleSubject(this)">
+                                    <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Mathematics"/>
+                                    <span class="font-body-md text-body-md text-on-surface">Mathematics</span>
+                                </label>
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleSubject(this)">
+                                    <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Biology"/>
+                                    <span class="font-body-md text-body-md text-on-surface">Biology</span>
+                                </label>
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleSubject(this)">
+                                    <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Computer Science"/>
+                                    <span class="font-body-md text-body-md text-on-surface">Computer Science</span>
+                                </label>
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleSubject(this)">
+                                    <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Art"/>
+                                    <span class="font-body-md text-body-md text-on-surface">Art</span>
+                                </label>
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleSubject(this)">
+                                    <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Music"/>
+                                    <span class="font-body-md text-body-md text-on-surface">Music</span>
+                                </label>
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleSubject(this)">
+                                    <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Physical Education"/>
+                                    <span class="font-body-md text-body-md text-on-surface">Physical Education</span>
+                                </label>
+                                <label class="subject-card flex items-center gap-3 p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleSubject(this)">
+                                    <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="subjects" type="checkbox" value="Economics"/>
+                                    <span class="font-body-md text-body-md text-on-surface">Economics</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Assigned Classes -->
+                        <div class="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+                            <div class="flex items-center justify-between pb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+                                        <span class="material-symbols-outlined text-[18px]">meeting_room</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-headline-sm text-headline-sm text-primary font-bold">Assigned Cohorts</h3>
+                                        <p class="font-body-sm text-body-sm text-on-surface-variant">Classroom load assignments</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-code-sm text-[11px] font-semibold tracking-wide" id="cohortCountBadge">2 Cohorts</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="classesGrid">
+                                <!-- Grade 12-A (checked) -->
+                                <label class="class-card flex items-center justify-between p-3 rounded-lg bg-secondary-fixed/40 text-on-secondary-fixed font-semibold cursor-pointer shadow-sm transition-all selected" onclick="toggleClass(this)">
+                                    <div class="flex items-center gap-3">
+                                        <input checked class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="classes" type="checkbox" value="Grade 12-A"/>
+                                        <span class="font-body-md text-body-md">Grade 12-A</span>
+                                    </div>
+                                    <span class="font-code-sm text-[11px] font-bold text-secondary">32 Stud. • AP</span>
+                                </label>
+
+                                <!-- Grade 12-B (checked) -->
+                                <label class="class-card flex items-center justify-between p-3 rounded-lg bg-secondary-fixed/40 text-on-secondary-fixed font-semibold cursor-pointer shadow-sm transition-all selected" onclick="toggleClass(this)">
+                                    <div class="flex items-center gap-3">
+                                        <input checked class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="classes" type="checkbox" value="Grade 12-B"/>
+                                        <span class="font-body-md text-body-md">Grade 12-B</span>
+                                    </div>
+                                    <span class="font-code-sm text-[11px] font-bold text-secondary">31 Stud. • AP</span>
+                                </label>
+
+                                <!-- Other classes -->
+                                <label class="class-card flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleClass(this)">
+                                    <div class="flex items-center gap-3">
+                                        <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="classes" type="checkbox" value="Grade 10-A"/>
+                                        <span class="font-body-md text-body-md text-on-surface">Grade 10-A</span>
+                                    </div>
+                                    <span class="font-code-sm text-[11px] text-outline">28 Stud.</span>
+                                </label>
+                                <label class="class-card flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleClass(this)">
+                                    <div class="flex items-center gap-3">
+                                        <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="classes" type="checkbox" value="Grade 10-B"/>
+                                        <span class="font-body-md text-body-md text-on-surface">Grade 10-B</span>
+                                    </div>
+                                    <span class="font-code-sm text-[11px] text-outline">30 Stud.</span>
+                                </label>
+                                <label class="class-card flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleClass(this)">
+                                    <div class="flex items-center gap-3">
+                                        <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="classes" type="checkbox" value="Grade 11-A"/>
+                                        <span class="font-body-md text-body-md text-on-surface">Grade 11-A</span>
+                                    </div>
+                                    <span class="font-code-sm text-[11px] text-outline">26 Stud.</span>
+                                </label>
+                                <label class="class-card flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all" onclick="toggleClass(this)">
+                                    <div class="flex items-center gap-3">
+                                        <input class="w-4 h-4 rounded text-secondary focus:ring-secondary cursor-pointer" name="classes" type="checkbox" value="Grade 11-B"/>
+                                        <span class="font-body-md text-body-md text-on-surface">Grade 11-B</span>
+                                    </div>
+                                    <span class="font-code-sm text-[11px] text-outline">29 Stud.</span>
+                                </label>
+                            </div>
+
+                            <div class="mt-auto pt-3 flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant bg-surface-container-low p-3 rounded-lg">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px] text-secondary">analytics</span>
+                                    <span>Current Weekly Load: <strong>18.5 Teaching Hours</strong></span>
+                                </div>
+                                <span class="font-label-form text-label-form text-secondary uppercase font-semibold">Optimal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== SECTION 5: Professional Information ===== -->
+                    <div class="w-full bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+                        <div class="flex items-center justify-between pb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+                                    <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+                                </div>
+                                <h3 class="font-headline-sm text-headline-sm text-primary font-bold">5. Professional Credentials &amp; Academic Research</h3>
+                            </div>
+                            <span class="font-label-form text-label-form text-on-surface-variant uppercase">Accreditation Board Compliant</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                            <div class="flex flex-col">
+                                <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="qualifications">Qualifications &amp; Degrees</label>
+                                <textarea class="p-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none resize-none form-input-focus" id="qualifications" name="qualifications" rows="3" required>Ph.D. in Physics from Stanford University, M.Sc. in Education from Harvard</textarea>
+                                <div class="error-message" id="qualificationsError">Qualifications are required</div>
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider" for="specialization">Academic Specialization</label>
+                                <textarea class="p-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none resize-none form-input-focus" id="specialization" name="specialization" rows="3">Quantum Physics, Science Education</textarea>
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider required" for="yearsExperience">Years of Teaching Experience</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">history_edu</span>
+                                    <input class="w-full h-[38px] pl-10 pr-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus font-medium" id="yearsExperience" max="50" min="0" name="years_experience" type="number" value="12" required/>
+                                </div>
+                                <div class="error-message" id="yearsExperienceError">Years of experience is required</div>
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="font-label-form text-label-form text-on-surface-variant mb-1 uppercase tracking-wider" for="certifications">Certifications &amp; Accreditations</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">verified</span>
+                                    <input class="w-full h-[38px] pl-10 pr-3 bg-surface-container-lowest rounded text-on-surface font-body-md text-body-md focus:bg-surface-container-low transition-colors outline-none form-input-focus" id="certifications" name="certifications" type="text" value="National Board Certification, STEM Leadership Certificate"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== STICKY ACTION BAR ===== -->
+                    <div class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-md mt-2">
+                        <div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+                            <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+                            <span>Auto-save draft backed up at 03:49 PM. Uncommitted changes ready.</span>
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+                            <button class="h-9 px-4 rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-medium transition-colors cursor-pointer" onclick="resetForm()" type="button">
+                                Discard Changes
+                            </button>
+                            <button class="h-9 px-4 rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-medium transition-colors cursor-pointer" onclick="location.reload()" type="button">
+                                Cancel
+                            </button>
+                            <button class="h-9 px-6 rounded bg-primary hover:bg-primary-container text-on-primary shadow-sm flex items-center gap-2 font-label-md text-label-md font-semibold transition-all cursor-pointer" type="submit" id="submitBtn">
+                                <span class="material-symbols-outlined text-[18px]">save</span>
+                                <span>Save Changes</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- ===== DELETE MODAL ===== -->
+                <div class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" id="deleteModal">
+                    <div class="fixed inset-0 bg-primary/40 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
+                    <div class="relative w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-2xl p-space-xl z-10 flex flex-col gap-space-md transform transition-all scale-100">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-full bg-error-container text-error flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-[28px]">warning</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <h3 class="font-headline-md text-headline-md text-primary font-bold">Delete Teacher</h3>
+                                <p class="font-body-md text-body-md text-on-surface">Are you sure you want to delete <span class="font-semibold text-primary">Dr. Sarah Chen</span>?</p>
+                            </div>
+                        </div>
+
+                        <div class="p-space-sm rounded-lg bg-error-container/30 text-on-error-container font-body-sm text-body-sm flex items-start gap-2">
+                            <span class="material-symbols-outlined text-[18px] text-error flex-shrink-0 mt-0.5">error</span>
+                            <span>This action cannot be undone and will permanently remove all associated records from the institutional registry.</span>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <span class="font-label-form text-label-form text-on-surface-variant uppercase tracking-wider">Itemized Deletion Impact:</span>
+                            <ul class="flex flex-col gap-1.5 text-on-surface-variant font-body-sm text-body-sm bg-surface-container-low p-3 rounded-lg">
+                                <li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px] text-error">close</span>
+                                    <span>Teacher profile and personal verified credentials</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px] text-error">close</span>
+                                    <span>Assigned active classes (<strong>Grade 12-A, Grade 12-B</strong>)</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px] text-error">close</span>
+                                    <span>4 years of employment and institutional attendance history</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px] text-error">close</span>
+                                    <span>Associated institutional user account (sarah.chen@grail.edu) &amp; system permissions</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-2">
+                            <button class="h-9 px-4 rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-medium transition-colors cursor-pointer" onclick="closeDeleteModal()" type="button">
+                                Cancel
+                            </button>
+                            <button class="h-9 px-5 rounded bg-error hover:bg-[#941515] text-on-error font-label-md text-label-md font-semibold flex items-center gap-2 transition-all shadow-sm cursor-pointer" onclick="confirmDeletePermanently()" type="button">
+                                <span class="material-symbols-outlined text-[18px]">delete_forever</span>
+                                <span>Yes, Delete Permanently</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== TOAST NOTIFICATION ===== -->
+                <div class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none" id="toastNotification">
+                    <div class="bg-primary text-on-primary px-4 py-3 rounded-lg shadow-xl flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-on-primary">
+                            <span class="material-symbols-outlined text-[16px]">done</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-label-md text-label-md font-bold" id="toastTitle">Changes saved successfully!</span>
+                            <span class="font-body-sm text-[12px] text-on-primary-container" id="toastMessage">Teacher dossier and class allocations updated.</span>
+                        </div>
+                        <button class="text-on-primary-container hover:text-on-primary ml-2 pointer-events-auto" onclick="hideToast()" type="button">
+                            <span class="material-symbols-outlined text-[16px]">close</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // =============================================
+        // 1. TOAST NOTIFICATIONS
+        // =============================================
+        function showToast(title, message) {
+            const toast = document.getElementById('toastNotification');
+            if (title) document.getElementById('toastTitle').textContent = title;
+            if (message) document.getElementById('toastMessage').textContent = message;
+            
+            toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                hideToast();
+            }, 4000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toastNotification');
+            toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+        }
+
+        // =============================================
+        // 2. DELETE MODAL
+        // =============================================
+        function openDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function confirmDeletePermanently() {
+            closeDeleteModal();
+            showToast('Teacher Record Deleted', 'Dr. Sarah Chen has been removed from active faculty.');
+            setTimeout(() => {
+                window.location.hash = 'teachers';
+            }, 1500);
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+            }
+        });
+
+        // =============================================
+        // 3. AVATAR PREVIEW
+        // =============================================
+        function previewImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('File exceeds 2MB. Please choose a smaller image.');
+                    input.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('avatarPreview');
+                    const previewSmall = document.getElementById('avatarPreviewSmall');
+                    if (preview) preview.src = e.target.result;
+                    if (previewSmall) previewSmall.src = e.target.result;
+                    showToast('Avatar Updated', 'New image queued for commit.');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // =============================================
+        // 4. SUBJECT TOGGLE
+        // =============================================
+        function toggleSubject(labelElement) {
+            const checkbox = labelElement.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                const event = new Event('change');
+                checkbox.dispatchEvent(event);
+                updateSubjectBadge();
+                updateSubjectStyling(labelElement, checkbox.checked);
+            }
+        }
+
+        function updateSubjectStyling(labelElement, isChecked) {
+            if (isChecked) {
+                labelElement.classList.add('bg-secondary-fixed/40', 'text-on-secondary-fixed', 'font-semibold', 'shadow-sm', 'selected');
+                labelElement.classList.remove('bg-surface-container-lowest', 'text-on-surface');
+                // Add checkmark if not present
+                const icon = labelElement.querySelector('.material-symbols-outlined.ml-auto');
+                if (!icon) {
+                    const check = document.createElement('span');
+                    check.className = 'material-symbols-outlined text-[14px] ml-auto text-secondary';
+                    check.textContent = 'check';
+                    labelElement.appendChild(check);
+                }
+            } else {
+                labelElement.classList.remove('bg-secondary-fixed/40', 'text-on-secondary-fixed', 'font-semibold', 'shadow-sm', 'selected');
+                labelElement.classList.add('bg-surface-container-lowest', 'text-on-surface');
+                const icon = labelElement.querySelector('.material-symbols-outlined.ml-auto');
+                if (icon) icon.remove();
+            }
+        }
+
+        function updateSubjectBadge() {
+            const count = document.querySelectorAll('input[name="subjects"]:checked').length;
+            const badge = document.getElementById('subjectCountBadge');
+            if (badge) badge.textContent = `${count} Selected`;
+        }
+
+        // =============================================
+        // 5. CLASS TOGGLE
+        // =============================================
+        function toggleClass(labelElement) {
+            const checkbox = labelElement.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                const event = new Event('change');
+                checkbox.dispatchEvent(event);
+                updateClassBadge();
+                updateClassStyling(labelElement, checkbox.checked);
+            }
+        }
+
+        function updateClassStyling(labelElement, isChecked) {
+            if (isChecked) {
+                labelElement.classList.add('bg-secondary-fixed/40', 'text-on-secondary-fixed', 'font-semibold', 'shadow-sm', 'selected');
+                labelElement.classList.remove('bg-surface-container-lowest', 'text-on-surface');
+            } else {
+                labelElement.classList.remove('bg-secondary-fixed/40', 'text-on-secondary-fixed', 'font-semibold', 'shadow-sm', 'selected');
+                labelElement.classList.add('bg-surface-container-lowest', 'text-on-surface');
+            }
+        }
+
+        function updateClassBadge() {
+            const count = document.querySelectorAll('input[name="classes"]:checked').length;
+            const badge = document.getElementById('cohortCountBadge');
+            if (badge) badge.textContent = `${count} Cohorts`;
+        }
+
+        // =============================================
+        // 6. FORM VALIDATION
+        // =============================================
+        function validateForm() {
+            let isValid = true;
+            
+            // Required fields
+            const requiredFields = document.querySelectorAll('#teacherEditForm [required]');
+            requiredFields.forEach(field => {
+                const errorId = field.id + 'Error';
+                const errorEl = document.getElementById(errorId);
+                if (!field.value.trim()) {
+                    field.classList.add('input-error');
+                    if (errorEl) errorEl.classList.add('show');
+                    isValid = false;
+                } else {
+                    field.classList.remove('input-error');
+                    if (errorEl) errorEl.classList.remove('show');
+                }
+            });
+
+            // Email validation
+            const email = document.getElementById('email');
+            if (email && email.value.trim() && !email.value.includes('@')) {
+                email.classList.add('input-error');
+                document.getElementById('emailError').classList.add('show');
+                isValid = false;
+            }
+
+            // Subject selection validation
+            const subjectsSelected = document.querySelectorAll('input[name="subjects"]:checked').length;
+            if (subjectsSelected === 0) {
+                document.getElementById('subjectsGrid').classList.add('border-error', 'border-2', 'p-2', 'rounded-lg');
+                isValid = false;
+            } else {
+                document.getElementById('subjectsGrid').classList.remove('border-error', 'border-2', 'p-2', 'rounded-lg');
+            }
+
+            return isValid;
+        }
+
+        // Clear errors on input
+        document.querySelectorAll('#teacherEditForm input, #teacherEditForm select, #teacherEditForm textarea').forEach(field => {
+            field.addEventListener('input', function() {
+                this.classList.remove('input-error');
+                const errorId = this.id + 'Error';
+                const errorEl = document.getElementById(errorId);
+                if (errorEl) errorEl.classList.remove('show');
+            });
+            field.addEventListener('change', function() {
+                this.classList.remove('input-error');
+                const errorId = this.id + 'Error';
+                const errorEl = document.getElementById(errorId);
+                if (errorEl) errorEl.classList.remove('show');
+            });
+        });
+
+        // =============================================
+        // 7. SAVE CHANGES
+        // =============================================
+        function saveAllChanges() {
+            if (!validateForm()) {
+                showToast('Validation Error', 'Please fix the highlighted fields before saving.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = `
+                <span class="material-symbols-outlined text-[18px] spinner">progress_activity</span>
+                <span>Saving...</span>
+            `;
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                submitBtn.innerHTML = `
+                    <span class="material-symbols-outlined text-[18px]">save</span>
+                    <span>Save Changes</span>
+                `;
+                submitBtn.disabled = false;
+                showToast('Changes saved successfully!', 'Dr. Sarah Chen faculty dossier has been committed.');
+            }, 1500);
+        }
+
+        // =============================================
+        // 8. RESET FORM
+        // =============================================
+        function resetForm() {
+            if (confirm('Are you sure you want to discard all changes? This cannot be undone.')) {
+                const form = document.getElementById('teacherEditForm');
+                form.reset();
+                
+                // Reset subject and class styling
+                document.querySelectorAll('.subject-card, .class-card').forEach(card => {
+                    const checkbox = card.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        if (checkbox.checked) {
+                            card.classList.add('bg-secondary-fixed/40', 'text-on-secondary-fixed', 'font-semibold', 'shadow-sm', 'selected');
+                            card.classList.remove('bg-surface-container-lowest', 'text-on-surface');
+                        } else {
+                            card.classList.remove('bg-secondary-fixed/40', 'text-on-secondary-fixed', 'font-semibold', 'shadow-sm', 'selected');
+                            card.classList.add('bg-surface-container-lowest', 'text-on-surface');
+                        }
+                    }
+                });
+                
+                updateSubjectBadge();
+                updateClassBadge();
+                
+                // Clear errors
+                document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+                document.querySelectorAll('.error-message.show').forEach(el => el.classList.remove('show'));
+                document.getElementById('subjectsGrid').classList.remove('border-error', 'border-2', 'p-2', 'rounded-lg');
+                
+                showToast('Modifications Discarded', 'Form fields restored to their initial database values.');
+            }
+        }
+
+        // =============================================
+        // 9. INITIALIZE ON LOAD
+        // =============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSubjectBadge();
+            updateClassBadge();
+            
+            // Ensure pre-checked subjects and classes have correct styling
+            document.querySelectorAll('.subject-card input:checked').forEach(cb => {
+                const card = cb.closest('.subject-card');
+                if (card) {
+                    card.classList.add('bg-secondary-fixed/40', 'text-on-secondary-fixed', 'font-semibold', 'shadow-sm', 'selected');
+                    card.classList.remove('bg-surface-container-lowest', 'text-on-surface');
+                }
+            });
+            document.querySelectorAll('.class-card input:checked').forEach(cb => {
+                const card = cb.closest('.class-card');
+                if (card) {
+                    card.classList.add('bg-secondary-fixed/40', 'text-on-secondary-fixed', 'font-semibold', 'shadow-sm', 'selected');
+                    card.classList.remove('bg-surface-container-lowest', 'text-on-surface');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

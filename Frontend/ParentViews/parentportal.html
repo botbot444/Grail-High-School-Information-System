@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Portal - Grail SIS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9ff;
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Sidebar transition */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+        
+        /* Main content transition */
+        .main-transition {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        
+        /* Card shadow */
+        .card-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c2c6d1;
+            border-radius: 10px;
+        }
+        
+        /* Sidebar collapsed state */
+        .sidebar-collapsed {
+            transform: translateX(-100%);
+        }
+        
+        .sidebar-expanded {
+            transform: translateX(0);
+        }
+        
+        /* Overlay for mobile */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 39;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Active nav item */
+        .nav-active {
+            background-color: #0070ea;
+            color: #fefcff;
+            border-right: 4px solid #fefcff;
+            font-weight: 700;
+        }
+        
+        .nav-active .material-symbols-outlined {
+            color: #fefcff;
+        }
+        
+        /* Hover effects */
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Tab active state */
+        .tab-active {
+            border-bottom: 3px solid #0059bb;
+            color: #003461;
+            font-weight: 600;
+        }
+        
+        /* Chart bar animation */
+        .chart-bar {
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Hide scrollbar */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Mobile Overlay -->
+<div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside id="sidebar" class="sidebar-transition fixed top-0 left-0 h-full w-64 bg-[#003461] z-40 flex flex-col overflow-y-auto custom-scrollbar sidebar-expanded md:translate-x-0">
+    <!-- Sidebar Header -->
+    <div class="flex items-center justify-between px-6 h-16 border-b border-white/10 flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-white">school</span>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-sm tracking-wider">Grail SIS</h1>
+                <p class="text-white/60 text-[10px] uppercase tracking-widest">Parent Portal</p>
+            </div>
+        </div>
+        <!-- Close button (mobile only) -->
+        <button onclick="toggleSidebar()" class="md:hidden text-white/70 hover:text-white">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-3 py-4 space-y-1">
+        <!-- Home -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:text-white transition-all duration-200" onclick="switchTab('dashboard')">
+            <span class="material-symbols-outlined text-[22px]">home</span>
+            <span class="text-sm font-medium">Dashboard</span>
+        </a>
+        
+        <!-- My Children (Active) -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg nav-active transition-all duration-200" onclick="switchTab('children')">
+            <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">family_restroom</span>
+            <span class="text-sm font-medium">My Children</span>
+        </a>
+        
+        <!-- Attendance -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:text-white transition-all duration-200" onclick="switchTab('attendance')">
+            <span class="material-symbols-outlined text-[22px]">calendar_today</span>
+            <span class="text-sm font-medium">Attendance</span>
+        </a>
+        
+        <!-- Performance -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:text-white transition-all duration-200" onclick="switchTab('performance')">
+            <span class="material-symbols-outlined text-[22px]">monitoring</span>
+            <span class="text-sm font-medium">Performance</span>
+        </a>
+        
+        <!-- Reports -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:text-white transition-all duration-200" onclick="switchTab('reports')">
+            <span class="material-symbols-outlined text-[22px]">description</span>
+            <span class="text-sm font-medium">Reports</span>
+        </a>
+        
+        <!-- Assignments -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:text-white transition-all duration-200" onclick="switchTab('assignments')">
+            <span class="material-symbols-outlined text-[22px]">assignment</span>
+            <span class="text-sm font-medium">Assignments</span>
+        </a>
+        
+        <!-- Announcements -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:text-white transition-all duration-200" onclick="switchTab('announcements')">
+            <span class="material-symbols-outlined text-[22px]">campaign</span>
+            <span class="text-sm font-medium">Announcements</span>
+        </a>
+        
+        <!-- Messages -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:text-white transition-all duration-200" onclick="switchTab('messages')">
+            <span class="material-symbols-outlined text-[22px]">chat</span>
+            <span class="text-sm font-medium">Messages</span>
+        </a>
+        
+        <!-- Settings -->
+        <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:text-white transition-all duration-200" onclick="switchTab('settings')">
+            <span class="material-symbols-outlined text-[22px]">settings</span>
+            <span class="text-sm font-medium">Settings</span>
+        </a>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="px-4 py-4 border-t border-white/10 flex-shrink-0">
+        <div class="flex items-center gap-3 px-2 py-2 rounded-lg bg-white/5">
+            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-white/70 text-[18px]">person</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-white text-sm font-medium truncate">Sarah Mitchell</p>
+                <p class="text-white/60 text-[10px]">Parent Account</p>
+            </div>
+            <button class="text-white/60 hover:text-white">
+                <span class="material-symbols-outlined text-[18px]">logout</span>
+            </button>
+        </div>
+    </div>
+</aside>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div id="mainContent" class="main-transition md:ml-64 min-h-screen flex flex-col">
+    
+    <!-- ==================== HEADER ==================== -->
+    <header class="fixed top-0 right-0 left-0 md:left-64 z-30 bg-white border-b border-gray-200 shadow-sm h-16 flex items-center px-4 md:px-6">
+        <!-- Left side: Hamburger + Title -->
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+            <button onclick="toggleSidebar()" class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors md:hidden">
+                <span class="material-symbols-outlined text-gray-600">menu</span>
+            </button>
+            <span class="text-lg font-bold text-[#003461] hidden md:block">Parent Dashboard</span>
+            <span class="text-lg font-bold text-[#003461] md:hidden">Grail SIS</span>
+        </div>
+
+        <!-- Right side: Actions -->
+        <div class="flex items-center gap-2 md:gap-4">
+            <!-- Search (desktop) -->
+            <div class="hidden md:flex items-center bg-gray-50 rounded-full px-3 py-1.5 border border-gray-200">
+                <span class="material-symbols-outlined text-gray-400 text-[18px]">search</span>
+                <input type="text" placeholder="Search..." class="bg-transparent border-none focus:ring-0 text-sm w-40 lg:w-56 outline-none">
+            </div>
+
+            <!-- Notifications -->
+            <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                <span class="material-symbols-outlined text-gray-600">notifications</span>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+
+            <!-- Messages -->
+            <button class="p-1.5 rounded-full hover:bg-gray-100 transition-colors hidden sm:block">
+                <span class="material-symbols-outlined text-gray-600">mail</span>
+            </button>
+
+            <!-- Divider -->
+            <div class="hidden sm:block w-px h-8 bg-gray-200"></div>
+
+            <!-- User Profile -->
+            <div class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors">
+                <div class="w-8 h-8 rounded-full bg-[#003461] flex items-center justify-center text-white text-xs font-bold">
+                    SM
+                </div>
+                <span class="text-sm font-medium text-gray-700 hidden sm:block">Sarah</span>
+                <span class="material-symbols-outlined text-gray-400 text-[18px] hidden sm:block">expand_more</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== PAGE CONTENT ==================== -->
+    <main class="flex-1 pt-16 pb-8 px-4 md:px-6">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- ======================================== -->
+            <!-- TAB: DASHBOARD -->
+            <!-- ======================================== -->
+            <div id="tab-dashboard" class="tab-content">
+                <!-- Welcome Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Hello, Sarah 👋</h2>
+                        <p class="text-gray-500 mt-1">Overview for: <span class="font-semibold text-[#003461]">Julian Mitchell, Grade 10</span></p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <button class="px-4 py-2 bg-gray-100 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg flex items-center gap-2 hover:bg-gray-200 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">calendar_view_month</span>
+                            View Schedule
+                        </button>
+                        <button class="px-4 py-2 bg-[#0059bb] text-white text-sm font-medium rounded-lg flex items-center gap-2 hover:bg-[#004a9e] transition-colors shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">download</span>
+                            Download Progress Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <!-- Attendance -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 card-shadow">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-500 font-medium">Attendance Rate</span>
+                            <span class="w-9 h-9 bg-blue-50 text-[#003461] rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
+                            </span>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">94.2%</p>
+                        <p class="text-xs text-green-600 font-medium mt-1">↑ 1.2% from last term</p>
+                    </div>
+
+                    <!-- GPA -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 card-shadow">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-500 font-medium">Current GPA</span>
+                            <span class="w-9 h-9 bg-gray-100 text-[#003461] rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[20px]">grade</span>
+                            </span>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">3.85</p>
+                        <p class="text-xs text-green-600 font-medium mt-1">↑ 0.12 from last term</p>
+                    </div>
+
+                    <!-- Assignments -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 card-shadow">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-500 font-medium">Pending Assignments</span>
+                            <span class="w-9 h-9 bg-red-50 text-red-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[20px]">assignment_late</span>
+                            </span>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">3</p>
+                        <p class="text-xs text-gray-500 mt-1">2 due this week</p>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 card-shadow">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-500 font-medium">Upcoming Events</span>
+                            <span class="w-9 h-9 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[20px]">event</span>
+                            </span>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">2</p>
+                        <p class="text-xs text-gray-500 mt-1">Next: PTA Meeting Nov 14</p>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                    <!-- Performance Trend -->
+                    <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-gray-200 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Performance Trend</h3>
+                                <p class="text-sm text-gray-500">Academic growth throughout the semester</p>
+                            </div>
+                            <select class="bg-gray-50 border border-gray-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Fall Semester 2023</option>
+                                <option>Spring Semester 2023</option>
+                            </select>
+                        </div>
+                        <!-- Simple chart -->
+                        <div class="h-48 flex items-end justify-between gap-2 pt-2">
+                            <div class="flex flex-col items-center gap-1 flex-1">
+                                <div class="w-full bg-blue-500 rounded-t-sm chart-bar" style="height: 65%; transition-delay: 0.1s;"></div>
+                                <span class="text-xs text-gray-500">Aug</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1 flex-1">
+                                <div class="w-full bg-blue-500 rounded-t-sm chart-bar" style="height: 72%; transition-delay: 0.2s;"></div>
+                                <span class="text-xs text-gray-500">Sep</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1 flex-1">
+                                <div class="w-full bg-blue-500 rounded-t-sm chart-bar" style="height: 85%; transition-delay: 0.3s;"></div>
+                                <span class="text-xs text-gray-500">Oct</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1 flex-1">
+                                <div class="w-full bg-blue-500 rounded-t-sm chart-bar" style="height: 90%; transition-delay: 0.4s;"></div>
+                                <span class="text-xs text-gray-500">Nov</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1 flex-1">
+                                <div class="w-full bg-blue-400 rounded-t-sm chart-bar" style="height: 60%; transition-delay: 0.5s;"></div>
+                                <span class="text-xs text-gray-500">Dec</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Results -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-900">Recent Results</h3>
+                            <a href="#" class="text-sm text-[#0059bb] hover:underline">View All</a>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Advanced Calculus</p>
+                                    <p class="text-xs text-gray-500">Midterm Exam</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-bold text-[#003461]">A-</p>
+                                    <p class="text-xs text-gray-500">92/100</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Molecular Biology</p>
+                                    <p class="text-xs text-gray-500">Practical Test</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-bold text-[#003461]">B+</p>
+                                    <p class="text-xs text-gray-500">88/100</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">World History</p>
+                                    <p class="text-xs text-gray-500">Essay Review</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-bold text-[#003461]">A</p>
+                                    <p class="text-xs text-gray-500">95/100</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Announcements -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200 card-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">Latest Announcements</h3>
+                        <button class="text-gray-400 hover:text-gray-600">
+                            <span class="material-symbols-outlined text-[20px]">more_horiz</span>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                            <div class="h-1.5 w-full bg-[#003461] rounded-full mb-3"></div>
+                            <span class="text-[10px] font-semibold bg-blue-50 text-[#003461] px-2 py-0.5 rounded">ADMIN</span>
+                            <h4 class="font-semibold text-gray-900 mt-2">Campus Safety Policy Update</h4>
+                            <p class="text-sm text-gray-500 mt-1 line-clamp-2">Please review the updated guidelines for campus entry...</p>
+                            <p class="text-xs text-gray-400 mt-3">2 hours ago</p>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                            <div class="h-1.5 w-full bg-[#0059bb] rounded-full mb-3"></div>
+                            <span class="text-[10px] font-semibold bg-blue-50 text-[#003461] px-2 py-0.5 rounded">ACADEMIC</span>
+                            <h4 class="font-semibold text-gray-900 mt-2">Winter Break Schedule</h4>
+                            <p class="text-sm text-gray-500 mt-1 line-clamp-2">The official calendar for the upcoming winter holidays...</p>
+                            <p class="text-xs text-gray-400 mt-3">Yesterday</p>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                            <div class="h-1.5 w-full bg-gray-600 rounded-full mb-3"></div>
+                            <span class="text-[10px] font-semibold bg-gray-100 text-gray-700 px-2 py-0.5 rounded">FACULTY</span>
+                            <h4 class="font-semibold text-gray-900 mt-2">Math Olympiad Registration</h4>
+                            <p class="text-sm text-gray-500 mt-1 line-clamp-2">Registration for the National Math Olympiad is now open...</p>
+                            <p class="text-xs text-gray-400 mt-3">3 days ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- TAB: MY CHILDREN -->
+            <!-- ======================================== -->
+            <div id="tab-children" class="tab-content hidden">
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">My Children</h2>
+                        <p class="text-gray-500 mt-1">Manage profiles, academic performance, and attendance records for your linked students.</p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <button class="px-4 py-2 bg-gray-100 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg flex items-center gap-2 hover:bg-gray-200 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">print</span>
+                            Print Reports
+                        </button>
+                        <button class="px-4 py-2 bg-[#0059bb] text-white text-sm font-medium rounded-lg flex items-center gap-2 hover:bg-[#004a9e] transition-colors shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            Link New Student
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Child Switcher (shows when multiple children) -->
+                <div class="bg-white p-3 rounded-xl border border-gray-200 card-shadow mb-4 flex items-center gap-3 flex-wrap">
+                    <span class="text-sm text-gray-500 font-medium">Switch Child:</span>
+                    <button class="px-4 py-1.5 bg-[#003461] text-white text-sm rounded-full font-medium">Julian Mitchell</button>
+                    <button class="px-4 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-full font-medium hover:bg-gray-200 transition-colors">Maya Mitchell</button>
+                </div>
+
+                <!-- Children Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Child 1: Julian -->
+                    <div class="bg-white rounded-xl border border-gray-200 card-shadow overflow-hidden hover:border-blue-300 transition-colors">
+                        <div class="p-5 flex gap-4">
+                            <div class="relative flex-shrink-0">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXEj7eKCVYqcXZ5Vj3xjLInn0ZDXjVldVxntmMhbtYwQPxtYe3BaLyZ-XH4W9s2_xJ3P212kPLFPXV3nRFMRttJJyiA0rf9Q_x2RU-WzlQrS49E5lSaNs1vfAQiIKfBddGxrrCRu-C4sdkQ4madGDZFYhaCtDVNHEobP62f7DqghLCeJ9_SU5lBYkBXIE31KT9bNpZQaUsukaAyoGRtnNup2KE8hda6rKlt4O3v8CT4e3peXM5lktBvoG9ZdlUNypvNVvS1QT0KRE" alt="Julian" class="w-28 h-28 rounded-xl object-cover border-2 border-gray-200">
+                                <div class="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white w-7 h-7 rounded-full flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white text-[14px]" style="font-variation-settings: 'FILL' 1;">check</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+                                        <h3 class="text-xl font-bold text-[#003461] mt-1">Julian Mitchell</h3>
+                                        <p class="text-sm text-gray-500">Grade 10 • Section B</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[10px] text-gray-500 uppercase">Admin #</p>
+                                        <p class="text-sm font-bold text-gray-900">2024001</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 mt-4">
+                                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <p class="text-[10px] text-gray-500 uppercase">GPA Score</p>
+                                        <div class="flex items-baseline gap-1">
+                                            <p class="text-xl font-bold text-[#003461]">3.85</p>
+                                            <span class="text-xs text-green-600 font-bold">↑ 0.1</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <p class="text-[10px] text-gray-500 uppercase">Attendance</p>
+                                        <div class="flex items-baseline gap-1">
+                                            <p class="text-xl font-bold text-[#003461]">94.2%</p>
+                                            <div class="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                <div class="h-full bg-[#0059bb]" style="width: 94.2%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200 p-3 bg-gray-50/50 grid grid-cols-2 sm:grid-cols-4 gap-1">
+                            <button class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-blue-50 hover:text-[#003461] transition-all group">
+                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">person</span>
+                                <span class="text-[10px] text-gray-500 group-hover:text-[#003461]">View Profile</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-blue-50 hover:text-[#003461] transition-all group">
+                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">analytics</span>
+                                <span class="text-[10px] text-gray-500 group-hover:text-[#003461]">View Results</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-blue-50 hover:text-[#003461] transition-all group">
+                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">event_available</span>
+                                <span class="text-[10px] text-gray-500 group-hover:text-[#003461]">Attendance</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-blue-50 hover:text-[#003461] transition-all group">
+                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">assignment</span>
+                                <span class="text-[10px] text-gray-500 group-hover:text-[#003461]">Assignments</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Child 2: Maya -->
+                    <div class="bg-white rounded-xl border border-gray-200 card-shadow overflow-hidden hover:border-blue-300 transition-colors">
+                        <div class="p-5 flex gap-4">
+                            <div class="relative flex-shrink-0">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPq9Lbzn8dCXHjKtemjrKBMFVTVmAjh45RKQ1XdxytzRGsPuXXeMFCWGa_Eu8BqWXNiRKuozDg-AFlVgsc4Eatgr7meH0J4amqGjvxn44U8A8GtWvZilKEoKoje0obxCgr-F0K88zfiyzD7AoIcNT7baPTMSrz0VbHKMj_p8hasCrCeNSqwBBrR8r88VLxv7nk9giy0eF1Inkain8poD_czJI0cv-qiDVunaAvsJhxf3mXPO7QFEcTLyqproR02YtMyMIxqOU6EvE" alt="Maya" class="w-28 h-28 rounded-xl object-cover border-2 border-gray-200">
+                                <div class="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white w-7 h-7 rounded-full flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white text-[14px]" style="font-variation-settings: 'FILL' 1;">check</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+                                        <h3 class="text-xl font-bold text-[#003461] mt-1">Maya Mitchell</h3>
+                                        <p class="text-sm text-gray-500">Grade 7 • Section A</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[10px] text-gray-500 uppercase">Admin #</p>
+                                        <p class="text-sm font-bold text-gray-900">2024045</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 mt-4">
+                                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <p class="text-[10px] text-gray-500 uppercase">GPA Score</p>
+                                        <div class="flex items-baseline gap-1">
+                                            <p class="text-xl font-bold text-[#003461]">3.92</p>
+                                            <span class="text-xs text-green-600 font-bold">MAX</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <p class="text-[10px] text-gray-500 uppercase">Attendance</p>
+                                        <div class="flex items-baseline gap-1">
+                                            <p class="text-xl font-bold text-[#003461]">98.1%</p>
+                                            <div class="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                <div class="h-full bg-[#0059bb]" style="width: 98.1%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200 p-3 bg-gray-50/50 grid grid-cols-2 sm:grid-cols-4 gap-1">
+                            <button class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-blue-50 hover:text-[#003461] transition-all group">
+                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">person</span>
+                                <span class="text-[10px] text-gray-500 group-hover:text-[#003461]">View Profile</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-blue-50 hover:text-[#003461] transition-all group">
+                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">analytics</span>
+                                <span class="text-[10px] text-gray-500 group-hover:text-[#003461]">View Results</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-blue-50 hover:text-[#003461] transition-all group">
+                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">event_available</span>
+                                <span class="text-[10px] text-gray-500 group-hover:text-[#003461]">Attendance</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-blue-50 hover:text-[#003461] transition-all group">
+                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">assignment</span>
+                                <span class="text-[10px] text-gray-500 group-hover:text-[#003461]">Assignments</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Assignments Table -->
+                <div class="mt-6 bg-white rounded-xl border border-gray-200 card-shadow overflow-hidden">
+                    <div class="p-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/50">
+                        <h3 class="font-semibold text-[#003461]">Upcoming Assignments</h3>
+                        <button class="text-sm text-[#0059bb] hover:underline">View Calendar</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Student</th>
+                                    <th class="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Assignment</th>
+                                    <th class="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Due Date</th>
+                                    <th class="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-full bg-[#003461] text-white flex items-center justify-center text-[10px] font-bold">JM</div>
+                                            <span class="text-sm">Julian Mitchell</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">Calc II: Taylor Series</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">Mathematics</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">Oct 24, 2024</td>
+                                    <td class="px-4 py-3">
+                                        <span class="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded-md">Pending</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-full bg-[#0059bb] text-white flex items-center justify-center text-[10px] font-bold">MM</div>
+                                            <span class="text-sm">Maya Mitchell</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">Cell Biology Diagram</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">General Science</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">Oct 22, 2024</td>
+                                    <td class="px-4 py-3">
+                                        <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-md">Submitted</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- TAB: ATTENDANCE (Placeholder) -->
+            <!-- ======================================== -->
+            <div id="tab-attendance" class="tab-content hidden">
+                <div class="bg-white rounded-xl border border-gray-200 card-shadow p-8 text-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-300">calendar_today</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mt-4">Attendance Overview</h3>
+                    <p class="text-gray-500 mt-2">Detailed attendance tracking coming soon.</p>
+                    <p class="text-sm text-gray-400 mt-1">Current attendance rate: <span class="font-bold text-[#003461]">94.2%</span></p>
+                </div>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- TAB: PERFORMANCE (Placeholder) -->
+            <!-- ======================================== -->
+            <div id="tab-performance" class="tab-content hidden">
+                <div class="bg-white rounded-xl border border-gray-200 card-shadow p-8 text-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-300">monitoring</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mt-4">Academic Performance</h3>
+                    <p class="text-gray-500 mt-2">Subject-wise performance analysis coming soon.</p>
+                    <p class="text-sm text-gray-400 mt-1">Current GPA: <span class="font-bold text-[#003461]">3.85</span></p>
+                </div>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- TAB: REPORTS (Placeholder) -->
+            <!-- ======================================== -->
+            <div id="tab-reports" class="tab-content hidden">
+                <div class="bg-white rounded-xl border border-gray-200 card-shadow p-8 text-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-300">description</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mt-4">Reports</h3>
+                    <p class="text-gray-500 mt-2">Download report cards and academic summaries.</p>
+                    <button class="mt-4 px-6 py-2 bg-[#0059bb] text-white text-sm font-medium rounded-lg hover:bg-[#004a9e] transition-colors">
+                        Download Report Card
+                    </button>
+                </div>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- TAB: ASSIGNMENTS (Placeholder) -->
+            <!-- ======================================== -->
+            <div id="tab-assignments" class="tab-content hidden">
+                <div class="bg-white rounded-xl border border-gray-200 card-shadow p-8 text-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-300">assignment</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mt-4">Assignments</h3>
+                    <p class="text-gray-500 mt-2">View all assignments and submit work.</p>
+                    <p class="text-sm text-gray-400 mt-1">3 pending assignments</p>
+                </div>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- TAB: ANNOUNCEMENTS (Placeholder) -->
+            <!-- ======================================== -->
+            <div id="tab-announcements" class="tab-content hidden">
+                <div class="bg-white rounded-xl border border-gray-200 card-shadow p-8 text-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-300">campaign</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mt-4">Announcements</h3>
+                    <p class="text-gray-500 mt-2">School announcements and updates.</p>
+                    <p class="text-sm text-gray-400 mt-1">3 new announcements</p>
+                </div>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- TAB: MESSAGES (Placeholder) -->
+            <!-- ======================================== -->
+            <div id="tab-messages" class="tab-content hidden">
+                <div class="bg-white rounded-xl border border-gray-200 card-shadow p-8 text-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-300">chat</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mt-4">Messages</h3>
+                    <p class="text-gray-500 mt-2">Direct messaging with teachers and staff.</p>
+                    <p class="text-sm text-gray-400 mt-1">2 unread messages</p>
+                </div>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- TAB: SETTINGS (Placeholder) -->
+            <!-- ======================================== -->
+            <div id="tab-settings" class="tab-content hidden">
+                <div class="bg-white rounded-xl border border-gray-200 card-shadow p-8 text-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-300">settings</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mt-4">Settings</h3>
+                    <p class="text-gray-500 mt-2">Manage your account preferences and security.</p>
+                    <div class="mt-4 flex flex-wrap justify-center gap-3">
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">Change Password</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">Notification Preferences</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">Privacy Settings</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-gray-400 py-4 border-t border-gray-200 bg-white">
+        © 2026 Grail Student Information System. All rights reserved.
+    </footer>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+    // ===== SIDEBAR TOGGLE =====
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const mainContent = document.getElementById('mainContent');
+        
+        if (window.innerWidth < 768) {
+            // Mobile: slide in/out
+            sidebar.classList.toggle('sidebar-expanded');
+            sidebar.classList.toggle('sidebar-collapsed');
+            overlay.classList.toggle('active');
+        } else {
+            // Desktop: collapse/expand
+            const isCollapsed = sidebar.style.width === '0px' || sidebar.style.width === '';
+            if (isCollapsed) {
+                sidebar.style.width = '256px';
+                sidebar.style.transform = 'translateX(0)';
+                mainContent.style.marginLeft = '256px';
+                document.querySelector('header').style.left = '256px';
+                document.querySelector('header').style.width = 'calc(100% - 256px)';
+            } else {
+                sidebar.style.width = '0px';
+                sidebar.style.transform = 'translateX(-100%)';
+                mainContent.style.marginLeft = '0px';
+                document.querySelector('header').style.left = '0px';
+                document.querySelector('header').style.width = '100%';
+            }
+        }
+    }
+
+    // Close sidebar on resize to desktop
+    window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        
+        if (window.innerWidth >= 768) {
+            sidebar.classList.remove('sidebar-collapsed');
+            sidebar.classList.add('sidebar-expanded');
+            overlay.classList.remove('active');
+            
+            // Reset desktop state
+            sidebar.style.width = '';
+            sidebar.style.transform = '';
+            document.getElementById('mainContent').style.marginLeft = '';
+            document.querySelector('header').style.left = '';
+            document.querySelector('header').style.width = '';
+        } else {
+            // On mobile, ensure sidebar starts collapsed
+            if (!sidebar.classList.contains('sidebar-collapsed') && !sidebar.classList.contains('sidebar-expanded')) {
+                sidebar.classList.add('sidebar-collapsed');
+            }
+        }
+    });
+
+    // ===== TAB SWITCHING =====
+    function switchTab(tabName) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.add('hidden');
+        });
+        
+        // Show selected tab
+        const targetTab = document.getElementById('tab-' + tabName);
+        if (targetTab) {
+            targetTab.classList.remove('hidden');
+        }
+        
+        // Update nav active state
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('nav-active');
+        });
+        
+        // Find the clicked nav item and activate it
+        const navItems = document.querySelectorAll('.nav-item');
+        const navMap = {
+            'dashboard': 0,
+            'children': 1,
+            'attendance': 2,
+            'performance': 3,
+            'reports': 4,
+            'assignments': 5,
+            'announcements': 6,
+            'messages': 7,
+            'settings': 8
+        };
+        
+        const index = navMap[tabName];
+        if (index !== undefined && navItems[index]) {
+            navItems[index].classList.add('nav-active');
+        }
+        
+        // Close sidebar on mobile after navigation
+        if (window.innerWidth < 768) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.remove('sidebar-expanded');
+            sidebar.classList.add('sidebar-collapsed');
+            overlay.classList.remove('active');
+        }
+    }
+
+    // ===== ANIMATE CHART BARS ON LOAD =====
+    document.addEventListener('DOMContentLoaded', function() {
+        const bars = document.querySelectorAll('.chart-bar');
+        bars.forEach(bar => {
+            const height = bar.style.height;
+            bar.style.height = '0%';
+            setTimeout(() => {
+                bar.style.height = height;
+            }, 300);
+        });
+        
+        // Set default tab
+        switchTab('dashboard');
+    });
+
+    // ===== CLOSE SIDEBAR WITH ESC KEY =====
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            if (window.innerWidth < 768 && sidebar.classList.contains('sidebar-expanded')) {
+                sidebar.classList.remove('sidebar-expanded');
+                sidebar.classList.add('sidebar-collapsed');
+                overlay.classList.remove('active');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

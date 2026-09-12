@@ -26,7 +26,7 @@ class StudentSeeder extends Seeder
             [
                 'name'              => 'Demo Student',
                 'email'             => 'student@grail.school',
-                'password'          => Hash::make('Student@1234'),
+                'password'          => Hash::make('12345678'),
                 'role_id'           => $studentRoleId,
                 'email_verified_at' => now(),
             ]
@@ -37,7 +37,7 @@ class StudentSeeder extends Seeder
             [
                 'name'              => 'Demo Parent',
                 'email'             => 'parent@grail.school',
-                'password'          => Hash::make('Parent@1234'),
+                'password'          => Hash::make('12345678'),
                 'role_id'           => $parentRoleId,
                 'email_verified_at' => now(),
             ]
@@ -92,7 +92,7 @@ class StudentSeeder extends Seeder
         }
 
         $this->command->info("✔ {$count} students seeded.");
-        $this->command->info('  Demo accounts: student@grail.school / Student@1234');
-        $this->command->info('  Parent:        parent@grail.school  / Parent@1234');
+        $this->command->info('  Demo accounts: student@grail.school / 12345678');
+        $this->command->info('  Parent:        parent@grail.school  / 12345678');
     }
 }

@@ -50,7 +50,7 @@
                             <div class="input-group">
                                 <label>Password</label>
 
-                                <input type="password" name="password" placeholder="Admin@1234" required>
+                                <input type="password" name="password" placeholder="12345678" required>
                             </div>
 
                             <button type="submit" class="login-button">

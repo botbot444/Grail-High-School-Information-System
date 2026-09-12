@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Grade extends Model
 {
-    use Auditable;
+    use Auditable, HasFactory;
 
     protected $primaryKey = 'grade_id';
 
@@ -21,6 +22,8 @@ class Grade extends Model
         'max_score',
         'term',
         'academic_year',
+        'academic_year_id',
+        'term_id',
         'recorded_by',
         'marks',
     ];
@@ -43,9 +46,23 @@ class Grade extends Model
         return $this->belongsTo(ClassSubject::class, 'class_subject_id', 'class_subject_id');
     }
 
-    public function recordedByTeacher(): BelongsTo
+        public function recordedByTeacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class, 'recorded_by', 'teacher_id');
+    }
+
+    // ── Calendar Relationships ────────────────────────────────────────────────
+
+    /** Structured academic year (Phase 3 calendar). */
+    public function academicYear(): BelongsTo
+    {
+        return $this->belongsTo(AcademicYear::class, 'academic_year_id', 'year_id');
+    }
+
+    /** Structured term (Phase 3 calendar). */
+    public function term(): BelongsTo
+    {
+        return $this->belongsTo(Term::class, 'term_id', 'term_id');
     }
 
     // ── Attribute Mapping ─────────────────────────────────────────────────────

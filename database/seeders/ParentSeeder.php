@@ -23,7 +23,7 @@ class ParentSeeder extends Seeder
             [
                 'name'              => 'Demo Parent',
                 'email'             => 'parent@grail.school',
-                'password'          => Hash::make('Parent@1234'),
+                'password'          => Hash::make('12345678'),
                 'role_id'           => $roleId,
                 'email_verified_at' => now(),
             ]
@@ -57,7 +57,7 @@ class ParentSeeder extends Seeder
                 [
                     'name'              => "{$firstName} {$lastName}",
                     'email'             => $email,
-                    'password'          => Hash::make('Parent@1234'),
+                    'password'          => Hash::make('12345678'),
                     'role_id'           => $roleId,
                     'email_verified_at' => now(),
                 ]
@@ -84,6 +84,6 @@ class ParentSeeder extends Seeder
         }
 
         $this->command->info("✔ {$count} parent profiles seeded.");
-        $this->command->info('  Demo: parent@grail.school / Parent@1234');
+        $this->command->info('  Demo: parent@grail.school / 12345678');
     }
 }

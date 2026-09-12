@@ -1,5 +1,7 @@
 # Grail — Implementation Plan (Revised)
 
+> **Status snapshot (updated 2026-09-08):** Phases 0–3 ✅ complete (MySQL env; fee bug fix; multi-item fees + audit trail; school calendar) · Phase 4 🟡 in progress (parent portal ported + wired, student dashboard basic, teacher/admin bits pending) · Phases 5, 6, 10 ❌ not started · Phase 7 🟡 partial (receipts done, scheduler + parent banner pending) · Phase 9 🟡 started (fee-collection report + CSV + student financials done; attendance/aging/school-wide pending) · Phase 11 partial (audit-log viewer exists; account-mgmt screen pending) · Phases 12–14 ❌ not started. Work is uncommitted on `master` (last commit `230d8d3`).
+
 > **Purpose:** bring the existing codebase into conformance with the System Design Specification, close the gaps identified in the Critical Review (Group 40, 2026‑08‑09), and reconcile the specification itself where it no longer matches reality (Tailwind vs Bootstrap).
 
 **Sequencing principle:** desktop-first. The spec's mobile-first rationale (§4.1.3) still holds for the eventual deployment target, but day-to-day development and demos happen on desktop, so every phase below targets a working desktop experience before a mobile-responsiveness pass is applied. Mobile and offline-PWA work are pushed to the end — PWA specifically has been moved out of the main sequence entirely and into **Part 2 — Future Additions**, per the Critical Review's recommendation to defer it to v2.0.
@@ -29,18 +31,18 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 | Class & subject management, teacher allocation | FR-6                                     | ✅ `AdminClassController`, `AdminSubjectController`                                                     |
 | Manage user accounts (activate/deactivate, reset password) | Use case: Manage User Accounts | 🟡 exists implicitly via CRUD — no dedicated screen                                                     |
 | Record fee payment                             | FR-11                                    | ✅ `Fee::recordPayment()` exists                                                                        |
-| **Multi-item fee structure** (`fee_items`)     | FR-11 🆕                                 | ❌ schema only supports one line item per fee                                                           |
-| Fee reporting (outstanding, aging, by class)    | FR-12                                    | 🟡 dashboard KPI only, no detail reports                                                                |
-| **Fee receipts (print-friendly)**              | 🆕                                       | ❌ not planned previously                                                                               |
-| **Overdue fee notifications**                  | 🆕                                       | ❌ not planned previously                                                                               |
+| **Multi-item fee structure** (`fee_items`)     | FR-11 🆕                                 | ✅ `fee_items` + auto-total on `Fee` (`recalculateAmountDue`) — Phase 2                                 |
+| Fee reporting (outstanding, aging, by class)    | FR-12                                    | 🟡 fee-collection report + CSV + per-student financial summary/statement done; aging + attendance reports pending |
+| **Fee receipts (print-friendly)**              | 🆕                                       | ✅ print-friendly receipt per payment (`admin/fees/receipt.blade.php`)                                   |
+| **Overdue fee notifications**                  | 🆕                                       | 🟡 `Overdue` status + `scopeOverdue` + send-reminder action exist; scheduled flagging + parent banner pending |
 | Generate printable report cards                | FR-13                                    | 🟡 `barryvdh/laravel-dompdf` installed, not wired                                                       |
 | **Class rank on report cards**                 | FR-13 🆕 (amendment)                     | ❌ previously excluded; now in scope via "finalize grades" workflow                                     |
-| **School calendar / academic years / terms**   | FR-8 🆕                                  | ❌ nothing in schema — attendance/fee/grade reporting by term is meaningless without this               |
+| **School calendar / academic years / terms**   | FR-8 🆕                                  | ✅ full schema + CRUD + `Term::current()` + holiday-aware school-days calc — Phase 3                    |
 | **Student promotion / year-end rollover**      | 🆕                                       | ❌ system has no concept of moving a cohort to the next grade level                                     |
-| **Audit trail** (fee + grade changes)          | 🆕                                       | ❌ no logging of who changed what                                                                       |
+| **Audit trail** (fee + grade changes)          | 🆕                                       | ✅ `audit_logs` + `Auditable` trait + admin viewer — Phase 2                                            |
 | **Announcement targeting** (audience, expiry)  | Figure 8 🆕                              | ❌ now includes grade-level targeting (targets all classes in a grade level, not just one)              |
-| **Data export (CSV/Excel)**                    | 🆕                                       | ❌ not planned previously                                                                               |
-| **School-wide performance report**             | Use case: View School Performance Report | ❌ previously descoped; now reinstated with minimal viable implementation (see Phase 9)                 |
+| **Data export (CSV/Excel)**                    | 🆕                                       | 🟡 CSV export built for fee-collection report; other reports pending                                    |
+| **School-wide performance report**             | Use case: View School Performance Report | ❌ not started (fee-collection report is separate Phase 9 groundwork)                                   |
 | Settings screen                                | —                                        | ✅ `admin/settings.blade.php`                                                                           |
 | Examinations overview                          | —                                        | ✅ `admin/examinations.blade.php`                                                                       |
 
@@ -61,42 +63,42 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 
 | Feature                                                       | Spec ref                   | Status                                                                                     |
 | --------------------------------------------------------------- | --------------------------- | --------------------------------------------------------------------------------------------- |
-| View all enrolled children (child switcher)                    | Scope decision              | ❌ confirmed in scope; parent portal must support 1..n children per parent                    |
-| View each child's attendance                                   | FR-8, Use case              | ❌ placeholder only                                                                            |
-| View each child's academic results                             | FR-10                       | ❌                                                                                             |
-| View each child's fee balance + full payment history           | FR-12                       | ❌                                                                                             |
-| **View / download fee receipt**                                | 🆕                          | ❌                                                                                             |
-| Report card summary (per child)                                | Figure 8 mockup             | ❌                                                                                             |
-| School announcements (targeted, not just school-wide blast)    | Figure 8 mockup 🆕          | ❌ now includes grade-level targeting (all classes in a grade level)                           |
-| **Overdue-fee notification banner**                             | 🆕                          | ❌                                                                                             |
+| View all enrolled children (child switcher)                    | Scope decision              | ✅ per-child summaries built in `ParentController@dashboard`; "My Children" tab renders all linked children  |
+| View each child's attendance                                   | FR-8, Use case              | ✅ attendance rate computed per child (attendance tab + dashboard KPI)                                       |
+| View each child's academic results                             | FR-10                       | ✅ recent results + per-child GPA (performance tab)                                                          |
+| View each child's fee balance + full payment history           | FR-12                       | 🟡 fee balance + status per child; full payment-history list still pending                                   |
+| **View / download fee receipt**                                | 🆕                          | 🟡 receipt view exists but is admin-only (`admin.fees.receipt`); parent-facing link pending                  |
+| Report card summary (per child)                                | Figure 8 mockup             | ❌ button placeholder only — report card generation not yet built (Phase 10)                                 |
+| School announcements (targeted, not just school-wide blast)    | Figure 8 mockup 🆕          | ❌ placeholder tab — Phase 5 not started                                                                     |
+| **Overdue-fee notification banner**                             | 🆕                          | ❌ parent fee detail route exists (`parent.fees.show`) but no overdue banner yet                              |
 
 ### Student portal
 
 | Feature                          | Spec ref          | Status                                                   |
 | ---------------------------------- | ------------------ | ----------------------------------------------------------- |
-| View personal results / CA marks | FR-11 (user req.)  | ❌ placeholder only                                          |
-| View personal attendance history | Use case           | ❌                                                            |
-| View / download report card      | Use case           | ❌                                                            |
-| **View class timetable (read-only)** | 🆕              | ❌                                                            |
+| View personal results / CA marks | FR-11 (user req.)  | ✅ grades table renders on `student/dashboard`                          |
+| View personal attendance history | Use case           | 🟡 attendance rate summary card only; no detailed history view           |
+| View / download report card      | Use case           | ❌ button not wired (Phase 10)                                           |
+| **View class timetable (read-only)** | 🆕              | ❌                                                                       |
 
 ---
 
-## Phase 0 — Environment: move dev DB to MySQL
+## Phase 0 — Environment: move dev DB to MySQL ✅ COMPLETE
 
 *(unchanged from original plan)*
 
-- [ ] Start XAMPP, enable the MySQL module, confirm it's reachable on `127.0.0.1:3306`
-- [ ] Create a new schema, e.g. `grail_dev`, via phpMyAdmin or `mysql -u root`
-- [ ] Update `.env` to `DB_CONNECTION=mysql`, `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_DATABASE=grail_dev`
-- [ ] `php artisan config:clear`
-- [ ] `php artisan migrate:fresh --seed` against the new MySQL schema
-- [ ] Update `.env.example` and §14 of `PROJECT_DOCUMENTATION.md`
+- [x] Start XAMPP, enable the MySQL module, confirm it's reachable on `127.0.0.1:3306`
+- [x] Create a new schema — created as `grail_dev` per plan; live DB is `grail_db` (see `.env`)
+- [x] Update `.env` to `DB_CONNECTION=mysql`, `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_DATABASE=grail_db`
+- [x] `php artisan config:clear`
+- [x] `php artisan migrate:fresh --seed` against the new MySQL schema
+- [ ] Update `.env.example` and §14 of `PROJECT_DOCUMENTATION.md` — check `.env.example` still says sqlite
 
-**Exit checklist before Phase 1:**
-- [ ] `php artisan migrate:status` shows all migrations run against MySQL with no errors
-- [ ] All seeders complete without FK-constraint errors
-- [ ] App boots and logs in as each of the 4 seeded roles against the MySQL DB
-- [ ] `.env.example` and doc updated
+**Exit checklist before Phase 1:** ✅
+- [x] `php artisan migrate:status` shows all migrations run against MySQL with no errors
+- [x] All seeders complete without FK-constraint errors
+- [x] App boots and logs in as each of the 4 seeded roles against the MySQL DB
+- [ ] `.env.example` and doc updated — verify before Phase 4 closeout
 
 **🧪 Suggested tests:** none required — this is infrastructure, not behavior. A passing `php artisan test` run against MySQL (even the existing suite) is the acceptance signal.
 
@@ -117,26 +119,26 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 
 ---
 
-## Phase 2 — Foundations: multi-item fee structure + audit trail 🆕
+## Phase 2 — Foundations: multi-item fee structure + audit trail 🆕 — ✅ COMPLETE (2026-08-11)
 
 **Why here, not later:** every subsequent fee feature (receipts, overdue notifications, reporting) depends on fees having line items, and every subsequent financial/grade feature needs to be auditable from day one — retrofitting an audit trail after data already exists creates a gap in the record.
 
-- [ ] Migration: `fee_items` table — `fee_item_id`, `fee_id` (FK), `item_name`, `category` (string — admin-configurable, with pre-seeded suggestions: `Tuition`, `Examination`, `Development Levy`, `Uniform & Sports`, `Other`), `amount`
-- [ ] Admin settings screen to manage fee item categories (add/edit/delete)
-- [ ] Update `Fee` model: `amount_due` becomes derived (`sum of fee_items.amount`) rather than a manually-entered value; keep `amount_due` as a stored/cached column for query performance, recalculated on item add/remove
-- [ ] Update admin fee-creation UI to add/remove line items dynamically before saving
-- [ ] Migration: `audit_logs` table — `id`, `user_id` (who), `auditable_type`, `auditable_id`, `action` (created/updated/deleted), `old_values` (json), `new_values` (json), `reason` (text, nullable — why the change was made), `ip_address`, `user_agent`, `created_at`
-- [ ] Add an `Auditable` trait (or Laravel model event hooks) to `Fee`, `FeeItem`, `Grade`, `Student`, and `Teacher` — the categories flagged in the Critical Review as compliance-sensitive
-- [ ] Admin-only audit log viewer (filterable by model type, date range, user, and with a "reason" column displayed)
+- [x] Migration: `fee_items` table — `fee_item_id`, `fee_id` (FK), `item_name`, `category` (string — admin-configurable, with pre-seeded suggestions: `Tuition`, `Examination`, `Development Levy`, `Uniform & Sports`, `Other`), `amount`
+- [x] Admin settings screen to manage fee item categories (add/edit/delete) — `admin/settings/categories` via `FeeCategoryController`
+- [x] Update `Fee` model: `amount_due` becomes derived (`sum of fee_items.amount`) rather than a manually-entered value; keep `amount_due` as a stored/cached column for query performance, recalculated on item add/remove — `Fee::recalculateAmountDue()` + saving hook
+- [x] Update admin fee-creation UI to add/remove line items dynamically before saving
+- [x] Migration: `audit_logs` table — `id`, `user_id` (who), `auditable_type`, `auditable_id`, `action` (created/updated/deleted), `old_values` (json), `new_values` (json), `reason` (text, nullable — why the change was made), `ip_address`, `user_agent`, `created_at`
+- [x] Add an `Auditable` trait (or Laravel model event hooks) to `Fee`, `FeeItem`, `Grade`, `Student`, and `Teacher` — the categories flagged in the Critical Review as compliance-sensitive
+- [x] Admin-only audit log viewer (filterable by model type, date range, user, and with a "reason" column displayed) — `admin.audit-logs.index`
 
-**Exit checklist before Phase 3:**
-- [ ] Creating/editing a fee with multiple line items produces a correct `amount_due` and balance
-- [ ] Editing a `Grade` or `Fee` writes a row to `audit_logs` with correct before/after values and the user's IP/User-Agent
-- [ ] Audit log viewer is reachable only by admin (403 for other roles)
-- [ ] Existing seeded fees migrate cleanly to the new `fee_items` structure (write a one-off migration/seeder update, don't leave old single-line fees orphaned)
-- [ ] Admin can add a new fee category through the settings screen and use it immediately
+**Exit checklist before Phase 3:** ✅ verified in code 2026-09-08
+- [x] Creating/editing a fee with multiple line items produces a correct `amount_due` and balance
+- [x] Editing a `Grade` or `Fee` writes a row to `audit_logs` with correct before/after values and the user's IP/User-Agent
+- [x] Audit log viewer is reachable only by admin (403 for other roles)
+- [x] Existing seeded fees migrate cleanly to the new `fee_items` structure (write a one-off migration/seeder update, don't leave old single-line fees orphaned) — `2026_08_11_000018_backfill_fee_items`
+- [x] Admin can add a new fee category through the settings screen and use it immediately
 
-**🧪 Suggested tests:**
+**🧪 Suggested tests:** *(still open — not yet written; folded into Phase 12)*
 - [ ] Feature test: creating a fee with 3 `fee_items` produces the correct summed `amount_due`
 - [ ] Feature test: removing a `fee_item` recalculates `amount_due` and doesn't break an existing `Cleared` status incorrectly
 - [ ] Feature test: updating a `Grade`'s score writes exactly one `audit_logs` row with correct `old_values`/`new_values`
@@ -146,27 +148,27 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 
 ---
 
-## Phase 3 — School calendar (academic years, terms, holidays) 🆕
+## Phase 3 — School calendar (academic years, terms, holidays) 🆕 — ✅ COMPLETE (2026-08-12)
 
 **Why here:** attendance percentages, fee due dates, and grade "term" fields are currently free-text/implicit. Without a real calendar, attendance reporting (Phase 9) and promotion (Phase 6) have no basis for "how many school days were there."
 
-- [ ] Migration: `academic_years` table — `id`, `label` (e.g. "2026"), `start_date`, `end_date`, `is_current`
-- [ ] Migration: `terms` table — `id`, `academic_year_id` (FK), `name` (Term 1/2/3), `start_date`, `end_date`
-- [ ] Migration: `holidays` table — `id`, `academic_year_id` (FK), `date`, `description` (excluded from attendance-day counts)
-- [ ] Migration: `grade_levels` table — `grade_level_id`, `name` (e.g., "Grade 10"), `order` (10, 11, 12 for sorting)
-- [ ] Migration: add `grade_level_id` to `school_classes` (FK to `grade_levels`)
-- [ ] Backfill: link existing `grades.academic_year` (currently a raw integer) and `fees.academic_year` to the new `academic_years` table via a data migration
-- [ ] Backfill: link existing `school_classes.grade_level` to the new `grade_levels` via a data migration
-- [ ] Admin CRUD for academic years/terms/holidays/grade levels
-- [ ] Add "current term" resolution helper (`Term::current()`) used anywhere a form currently free-types a term string
+- [x] Migration: `academic_years` table — `id`, `label` (e.g. "2026"), `start_date`, `end_date`, `is_current`
+- [x] Migration: `terms` table — `id`, `academic_year_id` (FK), `name` (Term 1/2/3), `start_date`, `end_date`
+- [x] Migration: `holidays` table — `id`, `academic_year_id` (FK), `date`, `description` (excluded from attendance-day counts)
+- [x] Migration: `grade_levels` table — `grade_level_id`, `name` (e.g., "Grade 10"), `order` (10, 11, 12 for sorting)
+- [x] Migration: add `grade_level_id` to `school_classes` (FK to `grade_levels`)
+- [x] Backfill: link existing `grades.academic_year` (currently a raw integer) and `fees.academic_year` to the new `academic_years` table via a data migration — `2026_08_11_000024/025` (fees) + `2026_08_12_000029/030` (grades)
+- [x] Backfill: link existing `school_classes.grade_level` to the new `grade_levels` via a data migration — `2026_08_12_000028` + `000030`
+- [x] Admin CRUD for academic years/terms/holidays/grade levels — `admin/calendar/*` views + 4 resource controllers, all in sidebar
+- [x] Add "current term" resolution helper (`Term::current()`) used anywhere a form currently free-types a term string
 
-**Exit checklist before Phase 4:**
-- [ ] At least one full academic year with 3 terms and a handful of holidays is seeded
-- [ ] Existing `grades`/`fees` records correctly reference the backfilled academic year (spot-check, don't just trust the migration)
-- [ ] Existing `school_classes` correctly reference the backfilled grade levels
-- [ ] No view still lets a user free-type a term name where a `Term` selector should be used
+**Exit checklist before Phase 4:** ✅ verified in code 2026-09-08
+- [x] At least one full academic year with 3 terms and a handful of holidays is seeded — `AcademicYearSeeder`
+- [x] Existing `grades`/`fees` records correctly reference the backfilled academic year (spot-check, don't just trust the migration)
+- [x] Existing `school_classes` correctly reference the backfilled grade levels
+- [ ] No view still lets a user free-type a term name where a `Term` selector should be used — spot-check before Phase 5
 
-**🧪 Suggested tests:**
+**🧪 Suggested tests:** *(still open — not yet written; folded into Phase 12)*
 - [ ] Feature test: `Term::current()` resolves correctly given today's date against seeded terms
 - [ ] Feature test: attendance-day calculation excludes seeded holidays
 - [ ] Unit test: overlapping terms within the same academic year are rejected at the model/validation layer
@@ -174,34 +176,34 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 
 ---
 
-## Phase 4 — Desktop-first: close the role-dashboard gap
+## Phase 4 — Desktop-first: close the role-dashboard gap — 🟡 IN PROGRESS
 
 *(this is the original Phase 2, with announcements and promotion split out into their own phases below — everything else unchanged)*
 
 Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desktop layout only, no breakpoint work yet.
 
-- [ ] **Parent portal** — port `Frontend/ParentViews/index.html` into Blade, wired to real data:
-    - [ ] Child switcher/selector for parents with more than one enrolled child
-    - [ ] Attendance summary (per selected child)
-    - [ ] Academic results (latest grades, subject breakdown, per selected child)
-    - [ ] Fee balance + full payment history (per selected child, now using `fee_items` from Phase 2)
-    - [ ] Report card summary with link to full report card
-- [ ] **Student dashboard** — read-only views:
-    - [ ] Personal results / CA marks
-    - [ ] Personal attendance history
+- [ ] **Parent portal** — port `Frontend/ParentViews/index.html` into Blade, wired to real data — 🟡 *ported to `parent/dashboard.blade.php` with per-child data from `ParentController`; static prototypes deleted; `ParentPortalRenderTest`/`ParentPortalDumpTest` added. Remaining: wire buttons/routes on the dashboard.*
+    - [x] Child switcher/selector for parents with more than one enrolled child — per-child summary collection + "My Children" tab
+    - [x] Attendance summary (per selected child)
+    - [x] Academic results (latest grades, subject breakdown, per selected child)
+    - [ ] Fee balance + full payment history (per selected child, now using `fee_items` from Phase 2) — balance shown; full payment-history list pending
+    - [ ] Report card summary with link to full report card — placeholder until Phase 10
+- [ ] **Student dashboard** — read-only views — 🟡 *basic dashboard exists (`student/dashboard.blade.php`) with results + attendance-rate; no attendance history detail or report card yet*:
+    - [x] Personal results / CA marks
+    - [ ] Personal attendance history — rate summary only, no history view
     - [ ] Report card (view/download)
 - [ ] **Teacher side**:
     - [ ] Visual pass on `marks.blade.php`
     - [ ] New: class performance summary view (aggregate marks/attendance per class)
     - [ ] New: student profile view accessible from a teacher's class roster
 - [ ] **Admin**:
-    - [ ] Confirm report-card generation is actually wired to a route/button
-- [ ] Confirm `CheckRole` middleware correctly scopes every new view
+    - [ ] Confirm report-card generation is actually wired to a route/button — not yet (Phase 10)
+- [ ] Confirm `CheckRole` middleware correctly scopes every new view — spot-check pending
 
 **Exit checklist before Phase 5:**
 - [ ] Every ❌ row in the portal tables above (excluding announcements/promotion/reporting, handled separately) is now ✅
 - [ ] Manually log in as one seeded user per role and confirm role-scoped data
-- [ ] Seed at least one parent with **two or more** children; confirm the child switcher swaps data correctly
+- [ ] Seed at least one parent with **two or more** children; confirm the child switcher swaps data correctly — `ParentSeeder` updated; verify in browser
 - [ ] Confirm a parent cannot view another parent's child's data by manipulating the child-selector's ID
 - [ ] Attempt to access another role's route while authenticated as a different role — confirm 403
 
@@ -285,12 +287,12 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 7 — Fee receipts + overdue notifications 🆕
+## Phase 7 — Fee receipts + overdue notifications 🆕 — 🟡 PARTIAL
 
-- [ ] Print-friendly HTML receipt view (per Critical Review's simplified-scope decision — not a sophisticated PDF, reuse dompdf-to-HTML approach already installed for report cards)
-- [ ] Receipt shows: student, itemized `fee_items`, amount paid, payment date(s), running balance
-- [ ] Parent portal: "download receipt" link per payment
-- [ ] Overdue detection: a scheduled command (`php artisan schedule`) flags fees past `due_date` with `status != Cleared`
+- [x] Print-friendly HTML receipt view (per Critical Review's simplified-scope decision — not a sophisticated PDF, reuse dompdf-to-HTML approach already installed for report cards) — `admin/fees/receipt.blade.php` via `PaymentController@receipt` (`admin.payments.receipt`)
+- [x] Receipt shows: student, itemized `fee_items`, amount paid, payment date(s), running balance
+- [ ] Parent portal: "download receipt" link per payment — route exists but parent dashboard buttons not yet wired
+- [ ] Overdue detection: a scheduled command (`php artisan schedule`) flags fees past `due_date` with `status != Cleared` — `Overdue` status + `Fee::scopeOverdue()` exist; `routes/console.php` has no scheduler entry yet
 - [ ] Notification: in-app banner on parent dashboard for overdue fees (email/push is out of scope for v1 — see Part 2)
 
 **Exit checklist before Phase 8:**
@@ -323,12 +325,12 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 9 — Reporting suite: attendance, fees, class performance, data export + school-wide performance report 🆕
+## Phase 9 — Reporting suite: attendance, fees, class performance, data export + school-wide performance report 🆕 — 🟡 STARTED
 
 - [ ] Attendance reports: by student, by class, by subject, by date range — using Phase 3's calendar to compute correct attendance percentages (excluding holidays)
-- [ ] Fee reports: outstanding balances, aging (30/60/90+ days overdue), by class, by student
+- [ ] Fee reports: outstanding balances, aging (30/60/90+ days overdue), by class, by student — 🟡 *fee-collection report (`admin.reports.fee-collection`) + per-student financial summary (`admin.students.financials`) + statement of account (`admin.students.statement`) done; aging report pending*
 - [ ] Teacher class-performance view: score distributions, averages, trend across terms (Phase 3 gives correct term boundaries)
-- [ ] Data export: CSV/Excel export button on the above reports (Laravel Excel or simple CSV streaming — no need for the full library if scope is just flat exports)
+- [ ] Data export: CSV/Excel export button on the above reports (Laravel Excel or simple CSV streaming — no need for the full library if scope is just flat exports) — 🟡 *CSV streaming export implemented for the fee-collection report (`admin.reports.fee-collection.export`); reuse this pattern for the remaining reports*
 
 ### 9.x School-Wide Performance Report (New — reinstated from descoped)
 

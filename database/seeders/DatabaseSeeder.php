@@ -32,6 +32,8 @@ class DatabaseSeeder extends Seeder
             FeeSeeder::class,
             FeeCategorySeeder::class,
             AuditLogSeeder::class,
+            GradeLevelSeeder::class,
+            AcademicYearSeeder::class,
         ]);
     }
 }

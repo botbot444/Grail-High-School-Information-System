@@ -54,6 +54,10 @@ Additional implementation notes (Phase 1 — 2026-08-05):
 - Teacher sees only their `ClassSubject` assignments.
 - Single form captures both **marks (0–100)** and **attendance (P/A/L)** for every student in the selected class.
 - `storeMarks` uses `updateOrCreate` keyed by `(student_id, class_subject_id[, date])`.
+- Admin teacher create/edit workflows keep independent assignments separate:
+    - `teacher_subjects` stores the subjects assigned to a teacher.
+    - `school_classes.teacher_id` stores homeroom class assignments.
+    - Creating or editing a teacher does not generate `ClassSubject` rows by combining those two selections.
 
 ---
 

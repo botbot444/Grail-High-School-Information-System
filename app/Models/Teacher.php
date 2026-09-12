@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Teacher extends Model
 {
-    use SoftDeletes, Auditable;
+    use SoftDeletes, Auditable, HasFactory;
 
     protected $primaryKey = 'teacher_id';
 
@@ -40,6 +42,19 @@ class Teacher extends Model
     public function classSubjects(): HasMany
     {
         return $this->hasMany(ClassSubject::class, 'teacher_id', 'teacher_id');
+    }
+
+    /** Subjects this teacher is qualified or assigned to teach */
+    public function subjects(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Subject::class,
+            'teacher_subjects',
+            'teacher_id',
+            'subject_id',
+            'teacher_id',
+            'subject_id'
+        )->withTimestamps();
     }
 
     /** Attendance records this teacher has recorded */

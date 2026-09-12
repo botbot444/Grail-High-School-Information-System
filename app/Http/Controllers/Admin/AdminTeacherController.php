@@ -8,7 +8,6 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\SchoolClass;
 use App\Models\Subject;
-use App\Models\ClassSubject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,13 +15,22 @@ class AdminTeacherController extends Controller
 {
     public function index()
     {
-        $teachers = Teacher::with(['user', 'classSubjects.subject', 'classSubjects.schoolClass'])
+        $teachers = Teacher::with(['user', 'subjects', 'homeroomClasses', 'classSubjects.subject', 'classSubjects.schoolClass'])
             ->paginate(20);
 
         $teacherCount = Teacher::count();
-        $activeTeachers = Teacher::whereHas('classSubjects')->count();
-        $pendingSetup = Teacher::whereDoesntHave('classSubjects')->count();
-        $assignedClasses = Teacher::whereHas('classSubjects')->count();
+        $activeTeachers = Teacher::where(function ($query) {
+            $query->whereHas('subjects')
+                ->orWhereHas('homeroomClasses')
+                ->orWhereHas('classSubjects');
+        })->count();
+        $pendingSetup = Teacher::whereDoesntHave('subjects')
+            ->whereDoesntHave('homeroomClasses')
+            ->whereDoesntHave('classSubjects')
+            ->count();
+        $assignedClasses = Teacher::where(function ($query) {
+            $query->whereHas('homeroomClasses')->orWhereHas('classSubjects');
+        })->count();
 
         return view('admin.teachers.index', compact('teachers', 'teacherCount', 'activeTeachers', 'pendingSetup', 'assignedClasses'));
     }
@@ -76,18 +84,8 @@ class AdminTeacherController extends Controller
                     ->update(['teacher_id' => $teacher->teacher_id]);
             }
 
-            // Assign subject teaching duties for selected subjects and classes
-            $subjectIds = $validated['subject_ids'] ?? [];
-            if (!empty($validated['class_ids']) && !empty($subjectIds)) {
-                foreach ($validated['class_ids'] as $classId) {
-                    foreach ($subjectIds as $subjectId) {
-                        ClassSubject::updateOrCreate(
-                            ['class_id' => $classId, 'subject_id' => $subjectId],
-                            ['teacher_id' => $teacher->teacher_id]
-                        );
-                    }
-                }
-            }
+            // Subject assignments are independent of homeroom class assignments.
+            $teacher->subjects()->sync($validated['subject_ids'] ?? []);
 
             return redirect()->route('admin.teachers.index')
                 ->with('notification', 'Teacher created successfully!');
@@ -98,7 +96,7 @@ class AdminTeacherController extends Controller
 
     public function show(Teacher $teacher)
     {
-        $teacher->load('user', 'classSubjects.subject', 'classSubjects.schoolClass');
+        $teacher->load('user', 'subjects', 'homeroomClasses', 'classSubjects.subject', 'classSubjects.schoolClass');
 
         return view('admin.teachers.show', compact('teacher'));
     }
@@ -108,7 +106,7 @@ class AdminTeacherController extends Controller
         $classes = SchoolClass::all();
         $subjects = Subject::all();
         $assignedClasses = SchoolClass::where('teacher_id', $teacher->teacher_id)->pluck('class_id')->toArray();
-        $assignedSubjects = $teacher->classSubjects->pluck('subject_id')->unique()->toArray();
+        $assignedSubjects = $teacher->subjects()->pluck('subjects.subject_id')->toArray();
 
         return view('admin.teachers.edit', compact('teacher', 'classes', 'subjects', 'assignedClasses', 'assignedSubjects'));
     }
@@ -150,28 +148,8 @@ class AdminTeacherController extends Controller
                     ->update(['teacher_id' => $teacher->teacher_id]);
             }
 
-            // Sync subject teaching assignments for the selected classes
-            $selectedSubjects = $validated['subject_ids'] ?? [];
-            $selectedPairs = [];
-            if (!empty($newClassIds) && !empty($selectedSubjects)) {
-                foreach ($newClassIds as $classId) {
-                    foreach ($selectedSubjects as $subjectId) {
-                        $selectedPairs[] = "{$classId}:{$subjectId}";
-                        ClassSubject::updateOrCreate(
-                            ['class_id' => $classId, 'subject_id' => $subjectId],
-                            ['teacher_id' => $teacher->teacher_id]
-                        );
-                    }
-                }
-            }
-
-            // Remove any existing teacher assignments that are no longer selected
-            foreach ($teacher->classSubjects as $assignment) {
-                $pair = "{$assignment->class_id}:{$assignment->subject_id}";
-                if (!in_array($pair, $selectedPairs, true)) {
-                    $assignment->delete();
-                }
-            }
+            // Subject assignments are independent of homeroom class assignments.
+            $teacher->subjects()->sync($validated['subject_ids'] ?? []);
 
             return redirect()->route('admin.teachers.show', $teacher)
                 ->with('notification', 'Teacher updated successfully!');

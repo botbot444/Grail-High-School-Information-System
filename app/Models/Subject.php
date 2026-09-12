@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subject extends Model
 {
+    use HasFactory;
+
     protected $primaryKey = 'subject_id';
 
     protected $fillable = [
@@ -33,5 +36,18 @@ class Subject extends Model
     public function classSubjects(): HasMany
     {
         return $this->hasMany(ClassSubject::class, 'subject_id', 'subject_id');
+    }
+
+    /** Teachers assigned to this subject independently of a class */
+    public function teachers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Teacher::class,
+            'teacher_subjects',
+            'subject_id',
+            'teacher_id',
+            'subject_id',
+            'teacher_id'
+        )->withTimestamps();
     }
 }

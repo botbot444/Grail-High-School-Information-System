@@ -24,7 +24,7 @@ class TeacherSeeder extends Seeder
             [
                 'name'              => 'Demo Teacher',
                 'email'             => 'teacher@grail.school',
-                'password'          => Hash::make('Teacher@1234'),
+                'password'          => Hash::make('12345678'),
                 'role_id'           => $roleId,
                 'email_verified_at' => now(),
             ]
@@ -52,7 +52,7 @@ class TeacherSeeder extends Seeder
                 [
                     'name'              => "{$firstName} {$lastName}",
                     'email'             => $email,
-                    'password'          => Hash::make('Teacher@1234'),
+                    'password'          => Hash::make('12345678'),
                     'role_id'           => $roleId,
                     'email_verified_at' => now(),
                 ]

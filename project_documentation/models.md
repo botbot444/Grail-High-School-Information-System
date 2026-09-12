@@ -52,6 +52,7 @@ All located in `app/Models/`. Custom primary keys are used (e.g. `student_id`, `
 - **Relationships**:
     - `classes()` — BelongsToMany
     - `classSubjects()` — HasMany
+    - `teachers()` — BelongsToMany via `teacher_subjects`
 
 ---
 
@@ -64,9 +65,16 @@ All located in `app/Models/`. Custom primary keys are used (e.g. `student_id`, `
     - `user()`
     - `homeroomClasses()`
     - `classSubjects()`
+    - `subjects()` — BelongsToMany via `teacher_subjects`, independent of homeroom classes
     - `recordedAttendance()`
     - `recordedGrades()`
 - **Accessor**: `full_name`
+
+### `teacher_subjects`
+
+- Stores independent teacher-to-subject assignments used by the admin teacher create/edit workflows.
+- Homeroom assignments remain stored in `school_classes.teacher_id`.
+- Class-specific teaching and mark-entry assignments remain stored in `class_subjects`.
 
 ---
 

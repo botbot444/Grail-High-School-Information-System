@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SchoolClass extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $primaryKey = 'class_id';
 
@@ -55,9 +56,30 @@ class SchoolClass extends Model
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    /** Full display name, e.g. "10A – Grade 10" */
+        /** Full display name, e.g. "10A – Grade 10" */
     public function getDisplayNameAttribute(): string
     {
         return "{$this->class_name} – {$this->grade_level}";
+    }
+
+    // ── Calendar Relationships ────────────────────────────────────────────────
+
+    /**
+     * Structured grade level for this class (Phase 3 calendar).
+     * Backward compatible: grade_level_id is nullable and populated from the
+     * legacy textual grade_level column during the data migration.
+     */
+    public function gradeLevel(): BelongsTo
+    {
+        return $this->belongsTo(GradeLevel::class, 'grade_level_id', 'grade_level_id');
+    }
+
+    /**
+     * Resolved grade level name — prefers the structured relation when linked,
+     * falling back to the legacy grade_level column for unmigrated classes.
+     */
+    public function getGradeLevelNameAttribute(): string
+    {
+        return $this->gradeLevel ? $this->gradeLevel->name : $this->grade_level;
     }
 }

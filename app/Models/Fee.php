@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Fee extends Model
 {
-    use Auditable;
+    use Auditable, HasFactory;
 
     protected $primaryKey = 'fee_id';
 
@@ -24,6 +25,8 @@ class Fee extends Model
         'status',
         'term',
         'academic_year',
+        'academic_year_id',
+        'term_id',
         'last_updated',
     ];
 

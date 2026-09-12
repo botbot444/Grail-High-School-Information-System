@@ -12,6 +12,11 @@ use App\Http\Controllers\Admin\FeeController;
 use App\Http\Controllers\Admin\FeeCategoryController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\AcademicYearController;
+use App\Http\Controllers\Admin\TermController;
+use App\Http\Controllers\Admin\HolidayController;
+use App\Http\Controllers\Admin\GradeLevelController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -60,6 +65,23 @@ Route::middleware(['auth', 'role:admin'])
 
         // ── Audit Logs ───────────────────────────────────────────────────────
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+        // --- School Calendar (Phase 3) ---
+        Route::resource('academic-years', AcademicYearController::class);
+        Route::resource('terms', TermController::class);
+        Route::resource('holidays', HolidayController::class);
+        Route::resource('grade-levels', GradeLevelController::class);
+
+
+        // ── Reports & Analytics (Phase 4) ────────────────────────────────────
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/fee-collection', [ReportController::class, 'feeCollection'])->name('fee-collection');
+            Route::get('/fee-collection/export', [ReportController::class, 'exportFeeCollection'])->name('fee-collection.export');
+        });
+
+        // ── Student financials & statements (Phase 4) ───────────────────────
+        Route::get('/students/{student}/financials', [ReportController::class, 'studentFinancials'])->name('students.financials');
+        Route::get('/students/{student}/statement', [ReportController::class, 'statement'])->name('students.statement');
 
         // ── Parent fee view (for notification CTAs) ──────────────────────────
         Route::middleware(['auth', 'role:parent'])

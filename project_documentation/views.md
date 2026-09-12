@@ -28,7 +28,7 @@ All templates live under `resources/views/`.
 - `parents/` — parent management views
 - `students/` — student CRUD (index, create, edit, show) with the create form now styled from the frontend prototype
 - `subjects/` — subject management views
-- `teachers/` — teacher management views
+- `teachers/` — teacher management views, including the prototype-based edit form limited to supported profile and assignment fields
 
 ---
 

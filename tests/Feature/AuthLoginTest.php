@@ -12,6 +12,6 @@ class AuthLoginTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('admin@grail.school');
-        $response->assertSee('Admin@1234');
+        $response->assertSee('12345678');
     }
 }

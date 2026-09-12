@@ -14,6 +14,7 @@ All located in `tests/`.
 | File                                | Purpose                                     |
 | ----------------------------------- | ------------------------------------------- |
 | `AdminStudentParentLinkTest.php`    | Admin student-parent linking                |
+| `AdminTeacherEditPageTest.php`      | Admin teacher edit page and update workflow |
 | `AuthLoginTest.php`                 | Authentication login flow                   |
 | `ExampleTest.php`                   | General feature test example                |
 | `LoginCsrfProtectionTest.php`       | CSRF protection on login                    |

@@ -6,10 +6,10 @@
 
     <div id="view-admin" class="app-view" style="display:flex;">
 
-                @include('admin.sidebar')
+        @include('admin.sidebar')
         @include('admin.header')
 
-<div class="main-content main-transition pt-[72px]" id="mainContent">
+        <div class="main-content main-transition pt-[72px]" id="mainContent">
             <div style="margin-bottom: 25px; display:flex; justify-content:space-between; align-items:center;">
                 <h2 style="color: #177aa4;">{{ $teacher->full_name }}</h2>
                 <div style="display:flex; gap: 8px;">
@@ -40,12 +40,13 @@
 
                     <dt style="font-weight:700; color:#475569;">Homeroom Classes</dt>
                     <dd>
-                        @php
-                            $homerooms = \App\Models\SchoolClass::where('teacher_id', $teacher->teacher_id)->get();
-                        @endphp
+                        @php($homerooms = $teacher->homeroomClasses)
                         @if ($homerooms->isNotEmpty())
+                            @php(
+    $assignedClasses = $homerooms->concat($teacher->classSubjects->pluck('schoolClass'))->filter()->unique('class_id')
+)
                             <ul style="list-style:none;padding:0;margin:0;">
-                                @foreach ($homerooms as $c)
+                                @foreach ($assignedClasses as $c)
                                     <li>{{ $c->display_name }}</li>
                                 @endforeach
                             </ul>
@@ -56,11 +57,13 @@
 
                     <dt style="font-weight:700; color:#475569;">Subjects</dt>
                     <dd>
-                        @if ($teacher->classSubjects->isNotEmpty())
+                        @php(
+    $assignedSubjects = $teacher->subjects->concat($teacher->classSubjects->pluck('subject'))->filter()->unique('subject_id')
+)
+                        @if ($assignedSubjects->isNotEmpty())
                             <ul style="list-style:none;padding:0;margin:0;">
-                                @foreach ($teacher->classSubjects as $assignment)
-                                    <li>{{ $assignment->subject?->subject_name ?? 'N/A' }} —
-                                        {{ $assignment->schoolClass?->class_name ?? 'N/A' }}</li>
+                                @foreach ($assignedSubjects as $subject)
+                                    <li>{{ $subject->subject_name }}</li>
                                 @endforeach
                             </ul>
                         @else

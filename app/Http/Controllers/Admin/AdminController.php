@@ -131,8 +131,25 @@ class AdminController extends Controller
      */
     public function edit(Student $student)
     {
-        $classes = \App\Models\SchoolClass::all();
-        return view('admin.students.edit', compact('student', 'classes'));
+        // Relations used by the view: class (with homeroom teacher) for the
+        // class dropdown, linked accounts for the read-only info panel, and
+        // attendance records to compute the attendance-rate stat.
+        $student->load('schoolClass.teacher', 'user', 'parentUser');
+
+        $classes = SchoolClass::with('teacher')->get();
+
+        // Attendance rate = (Present + Late) / total recorded sessions.
+        // Late still counts as attended. Returns null when there are no
+        // records yet so the view can show an em-dash instead of "0%".
+        $total = $student->attendance()->count();
+        $attendanceRate = null;
+
+        if ($total > 0) {
+            $attended = $student->attendance()->whereIn('status', ['Present', 'Late'])->count();
+            $attendanceRate = round(($attended / $total) * 100, 1);
+        }
+
+        return view('admin.students.edit', compact('student', 'classes', 'attendanceRate'));
     }
 
     /**
@@ -145,7 +162,6 @@ class AdminController extends Controller
             'last_name' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:Male,Female',
-            'student_number' => 'required|string|max:50|unique:students,student_number,' . $student->student_id . ',student_id',
             'class_id' => 'required|exists:school_classes,class_id',
             'guardian_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:20',

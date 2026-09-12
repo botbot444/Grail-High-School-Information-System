@@ -132,13 +132,18 @@
                     <tbody class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant">
                         @forelse ($teachers as $teacher)
                             @php
-                                $statusText = $teacher->classSubjects->isNotEmpty() ? 'Active' : 'Pending Setup';
-                                $statusClasses = $teacher->classSubjects->isNotEmpty()
+                                $hasAssignments =
+                                    $teacher->subjects->isNotEmpty() ||
+                                    $teacher->homeroomClasses->isNotEmpty() ||
+                                    $teacher->classSubjects->isNotEmpty();
+                                $statusText = $hasAssignments ? 'Active' : 'Pending Setup';
+                                $statusClasses = $hasAssignments
                                     ? 'bg-green-50 text-green-700 border-green-100'
                                     : 'bg-amber-50 text-amber-700 border-amber-100';
-                                $statusDot = $teacher->classSubjects->isNotEmpty() ? 'bg-green-600' : 'bg-amber-500';
-                                $classNames = $teacher->classSubjects
-                                    ->pluck('schoolClass.class_name')
+                                $statusDot = $hasAssignments ? 'bg-green-600' : 'bg-amber-500';
+                                $classNames = $teacher->homeroomClasses
+                                    ->concat($teacher->classSubjects->pluck('schoolClass'))
+                                    ->pluck('class_name')
                                     ->filter()
                                     ->unique()
                                     ->take(3)
@@ -161,12 +166,19 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if ($teacher->classSubjects->isNotEmpty())
+                                    @php
+                                        $subjects = $teacher->subjects
+                                            ->concat($teacher->classSubjects->pluck('subject'))
+                                            ->filter()
+                                            ->unique('subject_id')
+                                            ->values();
+                                    @endphp
+                                    @if ($subjects->isNotEmpty())
                                         <div class="flex flex-wrap gap-1">
-                                            @foreach ($teacher->classSubjects->take(2) as $assignment)
+                                            @foreach ($subjects->take(2) as $subject)
                                                 <span
                                                     class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold">
-                                                    {{ $assignment->subject?->subject_name ?? 'N/A' }}
+                                                    {{ $subject->subject_name }}
                                                 </span>
                                             @endforeach
                                         </div>
