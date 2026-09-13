@@ -73,9 +73,8 @@
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h2 style="color: #177aa4;">My Subjects & Grades</h2>
-                    <button class="btn" style="background: #177aa4; color: white; padding: 8px 15px;">
-                        <i class="fa-solid fa-download"></i> Download Report Card
-                    </button>
+                    <a class="btn" href="{{ route('student.timetable') }}"
+                        style="background: #177aa4; color: white; padding: 8px 15px;">My Timetable</a>
                 </div>
 
                 <table>

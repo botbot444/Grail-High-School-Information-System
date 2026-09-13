@@ -1,7 +1,7 @@
 # Grail - High School Information System
 
 > **Project Documentation Hub**
-> Last updated: 2026-08-02
+> Last updated: 2026-09-13
 > This is the entry point for all project documentation. Each file below covers a specific concern so you can read and update only what you need.
 
 ---
@@ -11,17 +11,19 @@
 | File                                                                   | Purpose                                                                                         | Update When                              |
 | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------- |
 | [architecture.md](architecture.md)                                     | Directory structure, tech stack, file counts                                                    | Project structure or dependencies change |
-| [database/schema.md](database/schema.md)                               | All 11 database tables: columns, types, FKs, notes                                              | Migrations are added/modified            |
+| [database/schema.md](database/schema.md)                               | Database tables: columns, types, FKs, notes                                                     | Migrations are added/modified            |
 | [database/seeders-and-factories.md](database/seeders-and-factories.md) | Seeders and factories                                                                           | Seeders or factories change              |
-| [models.md](models.md)                                                 | All 11 Eloquent models (PKs, fillable, casts, relationships, scopes, accessors, business logic) | Models are added/modified                |
+| [models.md](models.md)                                                 | Eloquent models (PKs, fillable, casts, relationships, scopes, accessors, business logic)        | Models are added/modified                |
 | [controllers.md](controllers.md)                                       | All controllers (top-level, Admin, Parent, Student, Auth)                                       | Controllers are added/modified           |
 | [routes.md](routes.md)                                                 | Full route table (methods, URIs, names, middleware)                                             | Routes are added/modified                |
 | [middleware-and-error-handling.md](middleware-and-error-handling.md)   | CheckRole middleware + custom 419 handling                                                      | Middleware or error handling changes     |
 | [views.md](views.md)                                                   | Blade templates, components, layouts, role dashboards                                           | Views are added/modified                 |
-| [frontend-prototypes.md](frontend-prototypes.md)                       | Static HTML/CSS/JS prototypes (AdminViews, ParentViews)                                         | Frontend prototypes change               |
-| [business-logic.md](business-logic.md)                                 | Fee state machine, grade letter calc, role auth, marks entry                                    | Business logic changes                   |
+| [frontend-prototypes.md](frontend-prototypes.md)                       | Static HTML/CSS/JS prototypes (AdminViews, ParentViews, teacher Stitch screens)                 | Frontend prototypes change               |
+| [business-logic.md](business-logic.md)                                 | Fee state machine, grade letter calc, role auth, marks entry, portals                           | Business logic changes                   |
 | [setup-and-conventions.md](setup-and-conventions.md)                   | Environment/setup steps, known conventions/gotchas                                              | Setup process or conventions change      |
 | [tests.md](tests.md)                                                   | Test suite overview                                                                             | Tests are added/modified                 |
+
+The living implementation checklist is [`implementation_plan.md`](../implementation_plan.md) at the repo root (not part of this hub’s numbered files).
 
 ---
 
@@ -48,7 +50,7 @@ php artisan serve    # in another
 | Framework  | Laravel 12.x                                    |
 | Frontend   | Blade, Tailwind CSS 3, Alpine.js                |
 | Build tool | Vite 6                                          |
-| Database   | MySQL                                           |
+| Database   | MySQL (SQLite supported for local development)  |
 | Auth       | Laravel Breeze                                  |
 | PDF        | barryvdh/laravel-dompdf 3.1                     |
 | PWA        | vite-plugin-pwa (installed, not yet configured) |

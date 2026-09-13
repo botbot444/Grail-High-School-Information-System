@@ -1,6 +1,6 @@
 # Business Logic
 
-> Last updated: 2026-08-02
+> Last updated: 2026-09-13
 > Update this file when business logic changes.
 
 ---
@@ -59,9 +59,20 @@ Additional implementation notes (Phase 1 — 2026-08-05):
     - `school_classes.teacher_id` stores homeroom class assignments.
     - Creating or editing a teacher does not generate `ClassSubject` rows by combining those two selections.
 
+The teacher **portal dashboard** (`TeacherController@dashboard`) and **My Classes** (`classes()`) aggregate roster size, pending exam marks, and attendance from the teacher’s `ClassSubject` rows plus homeroom classes. Dedicated timetable / attendance / performance / announcements / settings URLs still render `teacher.placeholder`.
+
 ---
 
-## 12.5 Authentication & Authorization Flow
+## 12.5 Parent portal
+
+- Children are `Student` rows with `parent_user_id` = the logged-in user’s id.
+- Selected child: query `child_id`, else `session('selected_child_id')`, else first child. `switchChild` only persists an owned `student_id`.
+- `showFee` 404s unless the fee’s student is a linked child, then redirects to `parent.fees`.
+- Attendance, performance, reports, assignments, and fees all scope to the selected child. Reports summarise grades/attendance per term (not PDF report cards). Assignments list recent scored grade rows (there is no pending-homework model).
+
+---
+
+## 12.6 Authentication & Authorization Flow
 
 1. User visits `/login` (Breeze `AuthenticatedSessionController`).
 2. On success → `/dashboard` → `DashboardController@index` dispatches to role-specific dashboard.

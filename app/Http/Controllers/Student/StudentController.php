@@ -3,10 +3,32 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\Term;
+use App\Models\TimetableSlot;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
+    public function timetable(Request $request)
+    {
+        $student = \App\Models\Student::where('user_id', auth()->id())
+            ->with('schoolClass.gradeLevel.periods')
+            ->firstOrFail();
+        $terms = Term::with('academicYear')->orderByDesc('start_date')->get();
+        $term = $request->filled('term_id')
+            ? $terms->firstWhere('term_id', (int) $request->term_id)
+            : Term::current();
+        $term ??= $terms->first();
+        $slots = $student->class_id && $term
+            ? TimetableSlot::with(['subject', 'teacher', 'period'])
+                ->where('school_class_id', $student->class_id)
+                ->where('term_id', $term->term_id)
+                ->get()
+            : collect();
+
+        return view('student.timetable', compact('student', 'terms', 'term', 'slots'));
+    }
+
     /**
      * Student Portal Dashboard - Show academic progress
      */

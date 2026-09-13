@@ -38,6 +38,11 @@ class Subject extends Model
         return $this->hasMany(ClassSubject::class, 'subject_id', 'subject_id');
     }
 
+    public function timetableSlots(): HasMany
+    {
+        return $this->hasMany(TimetableSlot::class, 'subject_id', 'subject_id');
+    }
+
     /** Teachers assigned to this subject independently of a class */
     public function teachers(): BelongsToMany
     {

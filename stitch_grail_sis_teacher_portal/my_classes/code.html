@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"tertiary":"#000513","tertiary-container":"#001d45","on-tertiary":"#ffffff","inverse-surface":"#2e3132","surface-bright":"#f8f9fa","on-tertiary-container":"#4884e8","surface-tint":"#476081","surface-container":"#eceeef","outline":"#74777e","secondary-fixed-dim":"#acc7ff","primary-fixed":"#d3e4ff","inverse-primary":"#afc8ee","on-primary-fixed-variant":"#2f4868","on-secondary":"#ffffff","background":"#f8f9fa","primary-container":"#001f3d","on-tertiary-fixed-variant":"#004492","primary":"#000511","primary-fixed-dim":"#afc8ee","surface-dim":"#d8dadb","surface-container-low":"#f2f4f5","surface-container-highest":"#e1e3e4","surface-variant":"#e1e3e4","error":"#ba1a1a","on-secondary-fixed":"#001a40","on-surface-variant":"#43474e","on-background":"#191c1d","on-primary-fixed":"#001c38","secondary-fixed":"#d8e2ff","on-primary-container":"#6f88ab","on-error":"#ffffff","surface":"#f8f9fa","secondary-container":"#619aff","on-secondary-fixed-variant":"#004492","outline-variant":"#c4c6ce","error-container":"#ffdad6","inverse-on-surface":"#eff1f2","on-secondary-container":"#00316d","secondary":"#085bbd","on-surface":"#191c1d","on-primary":"#ffffff","tertiary-fixed-dim":"#acc7ff","surface-container-high":"#e7e8e9","on-error-container":"#93000a","on-tertiary-fixed":"#001a40","surface-container-lowest":"#ffffff","tertiary-fixed":"#d7e2ff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-lg":"1.5rem","space-sm":"0.5rem","margin":"2rem","space-xs":"0.25rem","gutter":"1.5rem","margin-mobile":"1rem","space-md":"1rem","gutter-mobile":"0.75rem","space-xl":"2rem"},"fontFamily":{"data-lg":["JetBrains Mono"],"label-sm":["Inter"],"label-md":["Inter"],"title-sm":["Inter"],"title-md":["Inter"],"headline-lg":["Inter"],"body-sm":["Inter"],"data-md":["JetBrains Mono"],"body-lg":["Inter"],"headline-sm":["Inter"],"headline-md":["Inter"],"data-sm":["JetBrains Mono"],"headline-lg-mobile":["Inter"],"body-md":["Inter"]},"fontSize":{"data-lg":["18px",{"lineHeight":"24px","fontWeight":"500"}],"label-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.03em","fontWeight":"600"}],"label-md":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"500"}],"title-sm":["14px",{"lineHeight":"20px","fontWeight":"600"}],"title-md":["16px",{"lineHeight":"24px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"data-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-sm":["20px",{"lineHeight":"28px","fontWeight":"600"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"data-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"headline-lg-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.015em","fontWeight":"700"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}]}}}}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-[260px] bg-primary-container z-50 flex flex-col justify-between py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-md px-space-md"><div class="flex items-center gap-space-sm px-space-xs py-space-xs"><div class="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-on-primary"><span class="material-symbols-outlined text-[22px]">shield</span></div><div class="flex flex-col"><span class="font-title-md text-title-md text-on-primary tracking-tight">Grail SIS</span><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-secondary-container"></span><span class="font-label-sm text-label-sm text-on-primary-container uppercase tracking-wider">Teacher Portal</span></div></div></div><nav class="flex flex-col gap-1" data-active-classes="bg-tertiary-container text-on-primary font-title-sm"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors bg-tertiary-container text-on-primary font-title-sm" data-path="my-classes" href="#"><span class="material-symbols-outlined text-[20px]">class</span><span class="font-body-md text-body-md">My Classes</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="attendance" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span class="font-body-md text-body-md">Attendance</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="marks-and-grades" href="#"><span class="material-symbols-outlined text-[20px]">edit_note</span><span class="font-body-md text-body-md">Marks &amp; Grades</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="class-performance" href="#"><span class="material-symbols-outlined text-[20px]">query_stats</span><span class="font-body-md text-body-md">Class Performance</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="students" href="#"><span class="material-symbols-outlined text-[20px]">school</span><span class="font-body-md text-body-md">Students</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="timetable" href="#"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span class="font-body-md text-body-md">Timetable</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="announcements" href="#"><span class="material-symbols-outlined text-[20px]">campaign</span><span class="font-body-md text-body-md">Announcements</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="messages" href="#"><span class="material-symbols-outlined text-[20px]">mail</span><span class="font-body-md text-body-md">Messages</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-tertiary-container hover:text-on-primary transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="px-space-md"><div class="bg-tertiary-container rounded-lg p-space-sm flex items-center justify-between text-on-primary-container"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">wifi</span><span class="font-label-sm text-label-sm">Cloud Synced</span></div><span class="font-label-sm text-label-sm text-on-primary">v2.4</span></div></div></aside><div class="pl-[260px]"><header class="fixed top-0 left-[260px] right-0 z-40 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-[72px] px-space-xl flex items-center justify-between gap-space-lg"><div class="flex-1 max-w-xl"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[20px]">search</span><input class="w-full h-10 pl-10 pr-4 rounded bg-surface-container-low font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest shadow-[0_0_0_2px_#085bbd] transition-all" placeholder="Search students, classes, assignments..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-high text-on-surface-variant font-label-md text-label-md"><span class="material-symbols-outlined text-[16px] text-secondary">event_note</span><span>AY 2024-2025 • Term 1</span></div><button aria-label="Notifications" class="relative p-2 rounded-full hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 w-4 h-4 rounded-full bg-error text-on-error font-label-sm text-[10px] flex items-center justify-center leading-none font-bold">3</span></button><button aria-label="Help &amp; Resources" class="p-2 rounded-full hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[22px]">help</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col text-left"><span class="font-title-sm text-title-sm text-on-surface leading-tight">Dr. Sarah Chen</span><span class="font-body-sm text-body-sm text-on-surface-variant">Senior Teacher</span></div></div></div></div><div class="h-10 px-space-xl bg-surface-container-low flex items-center gap-2 font-label-md text-label-md text-on-surface-variant"><a class="hover:text-secondary flex items-center gap-1" href="#"><span class="material-symbols-outlined text-[16px]">school</span>Grail SIS</a><span>/</span><a class="hover:text-secondary" href="#">Teacher Portal</a><span>/</span><span class="text-on-surface font-title-sm text-title-sm">Active View</span></div></header><main class="w-full pt-[112px] bg-background min-h-screen px-space-xl py-space-lg"><div class="flex flex-col w-full">
+<!-- Top Command & Action Bar -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md mb-space-xl">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Academic Roster</span>
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-data-sm">6 SECTIONS ACTIVE</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">My Classes</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Manage your assigned classes, section statistics, and active student rosters.</p>
+</div>
+<!-- Filter Toolset -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Grade Filter -->
+<div class="relative min-w-[130px]">
+<select class="w-full h-10 appearance-none bg-surface-container-lowest text-on-surface font-label-md text-label-md pl-3 pr-8 rounded shadow-sm focus:outline-none focus:bg-surface-container-lowest transition-all cursor-pointer hover:bg-surface-container-low" id="gradeFilter" onchange="filterCards()">
+<option value="all">All Grades</option>
+<option value="10">Grade 10</option>
+<option value="11">Grade 11</option>
+<option value="12">Grade 12</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-outline pointer-events-none text-[18px]">keyboard_arrow_down</span>
+</div>
+<!-- Subject Filter -->
+<div class="relative min-w-[140px]">
+<select class="w-full h-10 appearance-none bg-surface-container-lowest text-on-surface font-label-md text-label-md pl-3 pr-8 rounded shadow-sm focus:outline-none focus:bg-surface-container-lowest transition-all cursor-pointer hover:bg-surface-container-low" id="subjectFilter" onchange="filterCards()">
+<option value="all">All Subjects</option>
+<option value="Physics">Physics</option>
+<option value="Chemistry">Chemistry</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-outline pointer-events-none text-[18px]">keyboard_arrow_down</span>
+</div>
+<!-- Term Selector -->
+<div class="relative min-w-[170px]">
+<select class="w-full h-10 appearance-none bg-surface-container-lowest text-on-surface font-label-md text-label-md pl-3 pr-8 rounded shadow-sm focus:outline-none focus:bg-surface-container-lowest transition-all cursor-pointer hover:bg-surface-container-low">
+<option selected="">Term 1 - 2024/25</option>
+<option>Term 2 - 2024/25</option>
+<option>Term 3 - 2024/25</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-outline pointer-events-none text-[18px]">calendar_today</span>
+</div>
+<!-- Simulator toggle button for QA / Demonstration -->
+<button class="h-10 px-3 flex items-center gap-1.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors shadow-sm" id="toggleEmptyBtn" onclick="toggleEmptyState()" title="Toggle Empty View Simulation">
+<span class="material-symbols-outlined text-[18px] text-secondary">visibility</span>
+<span id="toggleText">Simulate Empty</span>
+</button>
+</div>
+</div>
+<!-- KPI Overview Strip -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-md mb-space-xl">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-space-md relative overflow-hidden">
+<div class="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">groups</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Total Students</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">176 Enrolled</span>
+</div>
+<div class="absolute right-0 bottom-0 opacity-10 text-primary pointer-events-none">
+<span class="material-symbols-outlined text-[72px] -mb-3 -mr-3">groups</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-space-md relative overflow-hidden">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[24px]">analytics</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Cohort Mean</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">80.7%</span>
+</div>
+<div class="absolute right-0 bottom-0 opacity-10 text-primary pointer-events-none">
+<span class="material-symbols-outlined text-[72px] -mb-3 -mr-3">analytics</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-space-md relative overflow-hidden">
+<div class="w-12 h-12 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">event_available</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Attendance Rate</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">94.5%</span>
+</div>
+<div class="absolute right-0 bottom-0 opacity-10 text-secondary pointer-events-none">
+<span class="material-symbols-outlined text-[72px] -mb-3 -mr-3">event_available</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-space-md relative overflow-hidden">
+<div class="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined text-[24px]">domain</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Campuses &amp; Labs</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">3 Facilities</span>
+</div>
+<div class="absolute right-0 bottom-0 opacity-10 text-tertiary pointer-events-none">
+<span class="material-symbols-outlined text-[72px] -mb-3 -mr-3">domain</span>
+</div>
+</div>
+</div>
+<!-- Primary Class Grid (3 columns on lg/xl) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg" id="classesGrid">
+<!-- Card 1: Grade 10-A -->
+<div class="class-card group bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden" data-grade="10" data-subject="Physics">
+<div class="p-space-lg flex-1">
+<!-- Top Badges & Meta -->
+<div class="flex items-start justify-between gap-2 mb-space-md">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px] text-secondary">science</span>
+              Physics
+            </span>
+</div>
+<span class="font-label-sm text-label-sm font-data-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">SEC-10A</span>
+</div>
+<!-- Class Title & Location -->
+<div class="mb-space-md">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Grade 10-A</h2>
+<span class="font-label-sm text-label-sm text-outline font-data-sm">AY24-T1</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Rm 204 • North Hall</span>
+</div>
+</div>
+<!-- Metric Sparkline / Visual Indicators -->
+<div class="bg-surface-container-low rounded-lg p-space-sm mb-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase font-medium">Class Average</span>
+<span class="font-data-md text-data-md font-bold text-primary">78%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500" style="width: 78%"></div>
+</div>
+</div>
+<!-- Key Data Matrix -->
+<div class="grid grid-cols-3 gap-2 text-center py-2 bg-surface-bright rounded">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Roster</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">28</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Avg Grade</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">B+</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Attendance</span>
+<span class="font-data-lg text-data-lg font-bold text-secondary">94%</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="bg-surface-container-low px-space-md py-space-sm flex items-center justify-between gap-1">
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-secondary font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Roster</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Marks</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded bg-secondary hover:bg-on-secondary-container text-on-primary font-label-md text-label-md transition-colors flex items-center justify-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Attend</span>
+</a>
+</div>
+</div>
+<!-- Card 2: Grade 10-B -->
+<div class="class-card group bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden" data-grade="10" data-subject="Physics">
+<div class="p-space-lg flex-1">
+<!-- Top Badges & Meta -->
+<div class="flex items-start justify-between gap-2 mb-space-md">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px] text-secondary">science</span>
+              Physics
+            </span>
+</div>
+<span class="font-label-sm text-label-sm font-data-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">SEC-10B</span>
+</div>
+<!-- Class Title & Location -->
+<div class="mb-space-md">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Grade 10-B</h2>
+<span class="font-label-sm text-label-sm text-outline font-data-sm">AY24-T1</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Rm 205 • North Hall</span>
+</div>
+</div>
+<!-- Metric Sparkline / Visual Indicators -->
+<div class="bg-surface-container-low rounded-lg p-space-sm mb-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase font-medium">Class Average</span>
+<span class="font-data-md text-data-md font-bold text-primary">76%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500" style="width: 76%"></div>
+</div>
+</div>
+<!-- Key Data Matrix -->
+<div class="grid grid-cols-3 gap-2 text-center py-2 bg-surface-bright rounded">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Roster</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">30</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Avg Grade</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">B</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Attendance</span>
+<span class="font-data-lg text-data-lg font-bold text-secondary">92%</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="bg-surface-container-low px-space-md py-space-sm flex items-center justify-between gap-1">
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-secondary font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Roster</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Marks</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded bg-secondary hover:bg-on-secondary-container text-on-primary font-label-md text-label-md transition-colors flex items-center justify-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Attend</span>
+</a>
+</div>
+</div>
+<!-- Card 3: Grade 11-A -->
+<div class="class-card group bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden" data-grade="11" data-subject="Chemistry">
+<div class="p-space-lg flex-1">
+<!-- Top Badges & Meta -->
+<div class="flex items-start justify-between gap-2 mb-space-md">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-tertiary-fixed text-tertiary-container font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">biotech</span>
+              Chemistry
+            </span>
+</div>
+<span class="font-label-sm text-label-sm font-data-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">SEC-11A</span>
+</div>
+<!-- Class Title & Location -->
+<div class="mb-space-md">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Grade 11-A</h2>
+<span class="font-label-sm text-label-sm text-outline font-data-sm">AY24-T1</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Lab 1 • STEM Wing</span>
+</div>
+</div>
+<!-- Metric Sparkline / Visual Indicators -->
+<div class="bg-surface-container-low rounded-lg p-space-sm mb-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase font-medium">Class Average</span>
+<span class="font-data-md text-data-md font-bold text-primary">82%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500" style="width: 82%"></div>
+</div>
+</div>
+<!-- Key Data Matrix -->
+<div class="grid grid-cols-3 gap-2 text-center py-2 bg-surface-bright rounded">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Roster</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">26</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Avg Grade</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">A-</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Attendance</span>
+<span class="font-data-lg text-data-lg font-bold text-secondary">96%</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="bg-surface-container-low px-space-md py-space-sm flex items-center justify-between gap-1">
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-secondary font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Roster</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Marks</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded bg-secondary hover:bg-on-secondary-container text-on-primary font-label-md text-label-md transition-colors flex items-center justify-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Attend</span>
+</a>
+</div>
+</div>
+<!-- Card 4: Grade 11-B -->
+<div class="class-card group bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden" data-grade="11" data-subject="Chemistry">
+<div class="p-space-lg flex-1">
+<!-- Top Badges & Meta -->
+<div class="flex items-start justify-between gap-2 mb-space-md">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-tertiary-fixed text-tertiary-container font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">biotech</span>
+              Chemistry
+            </span>
+</div>
+<span class="font-label-sm text-label-sm font-data-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">SEC-11B</span>
+</div>
+<!-- Class Title & Location -->
+<div class="mb-space-md">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Grade 11-B</h2>
+<span class="font-label-sm text-label-sm text-outline font-data-sm">AY24-T1</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Lab 2 • STEM Wing</span>
+</div>
+</div>
+<!-- Metric Sparkline / Visual Indicators -->
+<div class="bg-surface-container-low rounded-lg p-space-sm mb-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase font-medium">Class Average</span>
+<span class="font-data-md text-data-md font-bold text-primary">75%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500" style="width: 75%"></div>
+</div>
+</div>
+<!-- Key Data Matrix -->
+<div class="grid grid-cols-3 gap-2 text-center py-2 bg-surface-bright rounded">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Roster</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">29</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Avg Grade</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">B</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Attendance</span>
+<span class="font-data-lg text-data-lg font-bold text-secondary">90%</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="bg-surface-container-low px-space-md py-space-sm flex items-center justify-between gap-1">
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-secondary font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Roster</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Marks</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded bg-secondary hover:bg-on-secondary-container text-on-primary font-label-md text-label-md transition-colors flex items-center justify-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Attend</span>
+</a>
+</div>
+</div>
+<!-- Card 5: Grade 12-A (Special Homeroom Highlight) -->
+<div class="class-card group bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden relative" data-grade="12" data-subject="Physics">
+<!-- Distinct homeroom visual accent bar on left -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="p-space-lg flex-1 pl-space-xl">
+<!-- Top Badges & Meta with Gold/Navy Homeroom indicator -->
+<div class="flex items-start justify-between gap-2 mb-space-md">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px] text-secondary">science</span>
+              Physics
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-container text-primary-fixed font-label-sm text-label-sm font-bold shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-secondary-container">hotel_class</span>
+              Homeroom
+            </span>
+</div>
+<span class="font-label-sm text-label-sm font-data-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">SEC-12A</span>
+</div>
+<!-- Class Title & Location -->
+<div class="mb-space-md">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Grade 12-A</h2>
+<span class="font-label-sm text-label-sm text-outline font-data-sm">AY24-T1</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Rm 401 • Senior Quad</span>
+</div>
+</div>
+<!-- Metric Sparkline / Visual Indicators -->
+<div class="bg-surface-container-low rounded-lg p-space-sm mb-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase font-medium">Class Average</span>
+<span class="font-data-md text-data-md font-bold text-primary">88%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500" style="width: 88%"></div>
+</div>
+</div>
+<!-- Key Data Matrix -->
+<div class="grid grid-cols-3 gap-2 text-center py-2 bg-surface-bright rounded">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Roster</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">32</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Avg Grade</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">A</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Attendance</span>
+<span class="font-data-lg text-data-lg font-bold text-secondary">98%</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="bg-surface-container-low px-space-md py-space-sm flex items-center justify-between gap-1 pl-space-xl">
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-secondary font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Roster</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Marks</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded bg-secondary hover:bg-on-secondary-container text-on-primary font-label-md text-label-md transition-colors flex items-center justify-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Attend</span>
+</a>
+</div>
+</div>
+<!-- Card 6: Grade 12-B -->
+<div class="class-card group bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden" data-grade="12" data-subject="Physics">
+<div class="p-space-lg flex-1">
+<!-- Top Badges & Meta -->
+<div class="flex items-start justify-between gap-2 mb-space-md">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px] text-secondary">science</span>
+              Physics
+            </span>
+</div>
+<span class="font-label-sm text-label-sm font-data-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">SEC-12B</span>
+</div>
+<!-- Class Title & Location -->
+<div class="mb-space-md">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Grade 12-B</h2>
+<span class="font-label-sm text-label-sm text-outline font-data-sm">AY24-T1</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Rm 402 • Senior Quad</span>
+</div>
+</div>
+<!-- Metric Sparkline / Visual Indicators -->
+<div class="bg-surface-container-low rounded-lg p-space-sm mb-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase font-medium">Class Average</span>
+<span class="font-data-md text-data-md font-bold text-primary">85%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500" style="width: 85%"></div>
+</div>
+</div>
+<!-- Key Data Matrix -->
+<div class="grid grid-cols-3 gap-2 text-center py-2 bg-surface-bright rounded">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Roster</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">31</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Avg Grade</span>
+<span class="font-data-lg text-data-lg font-bold text-primary">A-</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Attendance</span>
+<span class="font-data-lg text-data-lg font-bold text-secondary">97%</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="bg-surface-container-low px-space-md py-space-sm flex items-center justify-between gap-1">
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-secondary font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Roster</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Marks</span>
+</a>
+<a class="flex-1 text-center py-2 px-1 rounded bg-secondary hover:bg-on-secondary-container text-on-primary font-label-md text-label-md transition-colors flex items-center justify-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Attend</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Empty State Preview Component (Controlled via script & toggle) -->
+<div class="hidden flex-col items-center justify-center text-center p-space-xl bg-surface-container-lowest rounded-xl shadow-sm my-space-lg" id="emptyState">
+<div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center text-outline mb-space-md">
+<span class="material-symbols-outlined text-[42px]">school</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">No Classes Assigned Yet</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mb-space-lg">
+      There are currently no instructional class sections mapped to your teacher profile for Term 1 (2024/25). Please reach out to the academic registrar if your schedule is incomplete.
+    </p>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors" onclick="toggleEmptyState()">
+        Reset Filter
+      </button>
+<a class="px-space-md py-2 rounded bg-secondary hover:bg-on-secondary-container text-on-primary font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+<span>Contact Registrar</span>
+</a>
+</div>
+</div>
+<!-- Editorial Helper Context Section -->
+<div class="mt-space-xl bg-surface-container-low rounded-xl p-space-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">info</span>
+</div>
+<div>
+<span class="font-title-sm text-title-sm text-primary block">Term 1 Grading Period Closes in 12 Days</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ensure all formative marks and laboratory observation notes are entered before October 31st.</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm self-end md:self-auto">
+<a class="px-3 py-1.5 rounded bg-surface-container-lowest text-primary hover:bg-surface-container-high text-label-md font-label-md transition-colors shadow-sm" href="#">
+        View Academic Calendar
+      </a>
+</div>
+</div>
+</div>
+<script>
+  function filterCards() {
+    const gradeVal = document.getElementById('gradeFilter').value;
+    const subjectVal = document.getElementById('subjectFilter').value;
+    const cards = document.querySelectorAll('.class-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const cardGrade = card.getAttribute('data-grade');
+      const cardSubject = card.getAttribute('data-subject');
+
+      const matchesGrade = (gradeVal === 'all' || cardGrade === gradeVal);
+      const matchesSubject = (subjectVal === 'all' || cardSubject === subjectVal);
+
+      if (matchesGrade && matchesSubject) {
+        card.classList.remove('hidden');
+        card.classList.add('flex');
+        visibleCount++;
+      } else {
+        card.classList.add('hidden');
+        card.classList.remove('flex');
+      }
+    });
+
+    const emptyElem = document.getElementById('emptyState');
+    const gridElem = document.getElementById('classesGrid');
+
+    if (visibleCount === 0) {
+      emptyElem.classList.remove('hidden');
+      emptyElem.classList.add('flex');
+      gridElem.classList.add('hidden');
+    } else {
+      emptyElem.classList.add('hidden');
+      emptyElem.classList.remove('flex');
+      gridElem.classList.remove('hidden');
+    }
+  }
+
+  function toggleEmptyState() {
+    const emptyElem = document.getElementById('emptyState');
+    const gridElem = document.getElementById('classesGrid');
+    const btnText = document.getElementById('toggleText');
+
+    const isCurrentlyEmpty = !emptyElem.classList.contains('hidden');
+
+    if (isCurrentlyEmpty) {
+      // Revert to full grid
+      emptyElem.classList.add('hidden');
+      emptyElem.classList.remove('flex');
+      gridElem.classList.remove('hidden');
+      btnText.textContent = 'Simulate Empty';
+      // Reset filter selects
+      document.getElementById('gradeFilter').value = 'all';
+      document.getElementById('subjectFilter').value = 'all';
+      filterCards();
+    } else {
+      // Show empty view
+      emptyElem.classList.remove('hidden');
+      emptyElem.classList.add('flex');
+      gridElem.classList.add('hidden');
+      btnText.textContent = 'Show Classes';
+    }
+  }
+</script></main></div></body></html>

@@ -1,6 +1,6 @@
 # Grail — Implementation Plan (Revised)
 
-> **Status snapshot (updated 2026-09-08):** Phases 0–3 ✅ complete (MySQL env; fee bug fix; multi-item fees + audit trail; school calendar) · Phase 4 🟡 in progress (parent portal ported + wired, student dashboard basic, teacher/admin bits pending) · Phases 5, 6, 10 ❌ not started · Phase 7 🟡 partial (receipts done, scheduler + parent banner pending) · Phase 9 🟡 started (fee-collection report + CSV + student financials done; attendance/aging/school-wide pending) · Phase 11 partial (audit-log viewer exists; account-mgmt screen pending) · Phases 12–14 ❌ not started. Work is uncommitted on `master` (last commit `230d8d3`).
+> **Status snapshot (updated 2026-09-13):** Phases 0–3 ✅ complete (MySQL env; fee bug fix; multi-item fees + audit trail; school calendar) · Phase 4 🟡 in progress (parent portal pages wired; teacher dashboard + My Classes live; remaining teacher Stitch screens are placeholders; student dashboard still basic) · Phases 5, 6, 10, 11 ❌ not started · Phase 7 🟡 partial (receipts done, scheduler + parent banner pending) · Phase 9 🟡 started (fee-collection report + CSV + student financials done; attendance/aging/school-wide pending) · Phase 12 partial (audit-log viewer exists; account-mgmt screen pending) · Phases 13–15 ❌ not started.
 
 > **Purpose:** bring the existing codebase into conformance with the System Design Specification, close the gaps identified in the Critical Review (Group 40, 2026‑08‑09), and reconcile the specification itself where it no longer matches reality (Tailwind vs Bootstrap).
 
@@ -38,6 +38,7 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 | Generate printable report cards                | FR-13                                    | 🟡 `barryvdh/laravel-dompdf` installed, not wired                                                       |
 | **Class rank on report cards**                 | FR-13 🆕 (amendment)                     | ❌ previously excluded; now in scope via "finalize grades" workflow                                     |
 | **School calendar / academic years / terms**   | FR-8 🆕                                  | ✅ full schema + CRUD + `Term::current()` + holiday-aware school-days calc — Phase 3                    |
+| **Class timetable** (grade-level periods, weekdays, term-scoped) | 🆕                                  | ❌ admin CRUD for per-grade-level periods + a days×periods timetable-builder grid per class/term — Phase 10             |
 | **Student promotion / year-end rollover**      | 🆕                                       | ❌ system has no concept of moving a cohort to the next grade level                                     |
 | **Audit trail** (fee + grade changes)          | 🆕                                       | ✅ `audit_logs` + `Auditable` trait + admin viewer — Phase 2                                            |
 | **Announcement targeting** (audience, expiry)  | Figure 8 🆕                              | ❌ now includes grade-level targeting (targets all classes in a grade level, not just one)              |
@@ -52,8 +53,9 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 | ----------------------------------------------- | -------- | -------------------------------------------------------------------- |
 | Record class attendance (single screen, P/A/L) | FR-7     | ✅ `TeacherController::storeMarks`                                   |
 | Enter examination marks / CA scores            | FR-9     | ✅ same controller, validated against `max_score`                    |
-| View class performance summary                 | Use case | ❌ no aggregate view for a teacher's classes                         |
+| View class performance summary                 | Use case | 🟡 per-class avg % and attendance on `teacher.classes`; dedicated `teacher.performance` is still a placeholder |
 | View student profile (from teacher's context)  | Use case | ❌ not present                                                       |
+| **View own timetable (all assigned classes)**  | 🆕 | ❌ Phase 10 — grid view of every class this teacher is scheduled for, across days/periods |
 | Attendance history / reporting                 | FR-8     | 🟡 data recorded; no report-by-date-range view                      |
 | **Comments on student report cards**           | FR-13 🆕 | ❌ no comment field exists on `Grade` or elsewhere                    |
 | **Batch attendance ("mark all present")**      | 🆕       | ❌ every student is marked individually                              |
@@ -66,9 +68,10 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 | View all enrolled children (child switcher)                    | Scope decision              | ✅ per-child summaries built in `ParentController@dashboard`; "My Children" tab renders all linked children  |
 | View each child's attendance                                   | FR-8, Use case              | ✅ attendance rate computed per child (attendance tab + dashboard KPI)                                       |
 | View each child's academic results                             | FR-10                       | ✅ recent results + per-child GPA (performance tab)                                                          |
-| View each child's fee balance + full payment history           | FR-12                       | 🟡 fee balance + status per child; full payment-history list still pending                                   |
-| **View / download fee receipt**                                | 🆕                          | 🟡 receipt view exists but is admin-only (`admin.fees.receipt`); parent-facing link pending                  |
-| Report card summary (per child)                                | Figure 8 mockup             | ❌ button placeholder only — report card generation not yet built (Phase 10)                                 |
+| View each child's fee balance + full payment history           | FR-12                       | ✅ `parent.fees` lists fees, balances, and payment history for the selected child                             |
+| **View / download fee receipt**                                | 🆕                          | 🟡 receipt view exists but is admin-only (`admin.payments.receipt`); parent-facing link pending                |
+| Report card summary (per child)                                | Figure 8 mockup             | 🟡 `parent.reports` shows per-term averages/attendance; printable PDF report cards still Phase 11              |
+| **View child's class timetable (read-only)**                   | 🆕                          | ❌ Phase 10                                                                                                  |
 | School announcements (targeted, not just school-wide blast)    | Figure 8 mockup 🆕          | ❌ placeholder tab — Phase 5 not started                                                                     |
 | **Overdue-fee notification banner**                             | 🆕                          | ❌ parent fee detail route exists (`parent.fees.show`) but no overdue banner yet                              |
 
@@ -78,8 +81,8 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 | ---------------------------------- | ------------------ | ----------------------------------------------------------- |
 | View personal results / CA marks | FR-11 (user req.)  | ✅ grades table renders on `student/dashboard`                          |
 | View personal attendance history | Use case           | 🟡 attendance rate summary card only; no detailed history view           |
-| View / download report card      | Use case           | ❌ button not wired (Phase 10)                                           |
-| **View class timetable (read-only)** | 🆕              | ❌                                                                       |
+| View / download report card      | Use case           | ❌ button not wired (Phase 11)                                           |
+| **View class timetable (read-only)** | 🆕              | ❌ Phase 10                                                              |
 
 ---
 
@@ -138,7 +141,7 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 - [x] Existing seeded fees migrate cleanly to the new `fee_items` structure (write a one-off migration/seeder update, don't leave old single-line fees orphaned) — `2026_08_11_000018_backfill_fee_items`
 - [x] Admin can add a new fee category through the settings screen and use it immediately
 
-**🧪 Suggested tests:** *(still open — not yet written; folded into Phase 12)*
+**🧪 Suggested tests:** *(still open — not yet written; folded into Phase 13)*
 - [ ] Feature test: creating a fee with 3 `fee_items` produces the correct summed `amount_due`
 - [ ] Feature test: removing a `fee_item` recalculates `amount_due` and doesn't break an existing `Cleared` status incorrectly
 - [ ] Feature test: updating a `Grade`'s score writes exactly one `audit_logs` row with correct `old_values`/`new_values`
@@ -168,7 +171,7 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 - [x] Existing `school_classes` correctly reference the backfilled grade levels
 - [ ] No view still lets a user free-type a term name where a `Term` selector should be used — spot-check before Phase 5
 
-**🧪 Suggested tests:** *(still open — not yet written; folded into Phase 12)*
+**🧪 Suggested tests:** *(still open — not yet written; folded into Phase 13)*
 - [ ] Feature test: `Term::current()` resolves correctly given today's date against seeded terms
 - [ ] Feature test: attendance-day calculation excludes seeded holidays
 - [ ] Unit test: overlapping terms within the same academic year are rejected at the model/validation layer
@@ -182,22 +185,24 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 
 Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desktop layout only, no breakpoint work yet.
 
-- [ ] **Parent portal** — port `Frontend/ParentViews/index.html` into Blade, wired to real data — 🟡 *ported to `parent/dashboard.blade.php` with per-child data from `ParentController`; static prototypes deleted; `ParentPortalRenderTest`/`ParentPortalDumpTest` added. Remaining: wire buttons/routes on the dashboard.*
-    - [x] Child switcher/selector for parents with more than one enrolled child — per-child summary collection + "My Children" tab
+- [x] **Parent portal** — Blade portal under `resources/views/parent/` with `layouts.parent`; routes for dashboard, children, attendance, performance, reports, assignments, fees, settings; `ParentPortalRenderTest` / `ParentPortalDumpTest`. Remaining: overdue banner, parent receipts, PDF report cards, announcements.
+    - [x] Child switcher/selector — `parent.switch-child` + `?child_id=` / session
     - [x] Attendance summary (per selected child)
     - [x] Academic results (latest grades, subject breakdown, per selected child)
-    - [ ] Fee balance + full payment history (per selected child, now using `fee_items` from Phase 2) — balance shown; full payment-history list pending
-    - [ ] Report card summary with link to full report card — placeholder until Phase 10
+    - [x] Fee balance + payment history (per selected child)
+    - [ ] Report card summary with link to full report card — term summaries exist; PDF still Phase 11
 - [ ] **Student dashboard** — read-only views — 🟡 *basic dashboard exists (`student/dashboard.blade.php`) with results + attendance-rate; no attendance history detail or report card yet*:
     - [x] Personal results / CA marks
     - [ ] Personal attendance history — rate summary only, no history view
     - [ ] Report card (view/download)
 - [ ] **Teacher side**:
-    - [ ] Visual pass on `marks.blade.php`
-    - [ ] New: class performance summary view (aggregate marks/attendance per class)
+    - [x] Teacher dashboard (`teacher.dashboard`) and My Classes (`teacher.classes`) ported from Stitch
+    - [ ] Visual pass on `marks.blade.php` from `marks_grades_entry`
+    - [ ] Dedicated class performance summary (`teacher.performance` placeholder)
     - [ ] New: student profile view accessible from a teacher's class roster
+    - [ ] Remaining Stitch screens: timetable, record attendance, roster, announcements, settings
 - [ ] **Admin**:
-    - [ ] Confirm report-card generation is actually wired to a route/button — not yet (Phase 10)
+    - [ ] Confirm report-card generation is actually wired to a route/button — not yet (Phase 11)
 - [ ] Confirm `CheckRole` middleware correctly scopes every new view — spot-check pending
 
 **Exit checklist before Phase 5:**
@@ -365,7 +370,62 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 10 — Report card enhancements + read-only timetable + class rank 🆕
+## Phase 10 — Class timetable: periods, weekdays & term-scoped schedule 🆕
+
+**Why here:** Phase 3 gave the system academic years, terms, and holidays, but nothing outside fee/grade tagging actually consumes that structure day-to-day. A real timetable — with fixed daily periods and a Monday–Friday grid, scoped to a term rather than free-floating — is the first feature where "what term is it, and what does a normal school day look like" actually does work for someone using the system. This replaces the earlier placeholder plan of a single flat `timetable_slots` table with start/end times and no period concept.
+
+**Confirmed with the team (2026-09-13):** periods are defined **per grade level**, not one global structure — e.g. Grade 5 and Grade 11 can run different period lengths/counts. Weekdays are *not* period-specific — the same period structure applies Monday through Friday for a given grade level, so `day_of_week` only lives on `timetable_slots`, never on `periods`.
+
+- [ ] Migration: `periods` table — `id`, `grade_level_id` (FK to Phase 3's `grade_levels`), `name` (e.g. "Period 1", "Break", "Lunch"), `start_time`, `end_time`, `order` (for sorting within that grade level), `is_break` (boolean — blocks out the slot visually with no subject/teacher assignable)
+- [ ] Uniqueness/overlap guard within a grade level: DB-level unique on (`grade_level_id`, `order`) plus an app-layer validation rejecting a new/edited period whose `start_time`–`end_time` overlaps another period in the same `grade_level_id`
+- [ ] Admin CRUD for periods, scoped by grade level (alongside Phase 3's calendar screens, e.g. `admin/calendar/periods?grade_level=`) — a school defines each grade level's daily period structure once and reuses it every term; editing Grade 10's periods never touches Grade 5's
+- [ ] Migration: `timetable_slots` table — `id`, `school_class_id` (FK), `subject_id` (FK), `teacher_id` (nullable FK — see below), `period_id` (FK), `day_of_week` (enum: Monday–Friday), `term_id` (FK to Phase 3's `terms`)
+- [ ] Cross-table guard: a `timetable_slot`'s `period_id` must belong to the same `grade_level_id` as its `school_class_id`'s grade level (enforced in a model-level validation/observer, since a plain FK can't express "these two foreign keys must agree") — reject at save time with a clear error, not a silent mismatch
+- [ ] Term-scoping rationale: a school's weekly schedule commonly changes mid-year (new teacher, subject reshuffle), so slots belong to a `term`, not the whole `academic_year`
+- [ ] DB-level unique constraint on (`school_class_id`, `day_of_week`, `period_id`, `term_id`) — a class can only be in one place during a given period
+- [ ] Admin timetable-builder screen: days × periods grid, one per class per term — the period columns shown are always that class's grade level's periods, pulled dynamically; each cell assigns a subject + teacher, or is left free
+- [ ] Server-side same-slot guard at save time: reject assigning a teacher to two different classes in the same `term_id` + `day_of_week` + `period_id` — skipped when `teacher_id` is null, since a slot can exist before staffing is finalized (this is the v1.0-scope check; full conflict detection including rooms is deferred to v2.0 — see Part 2, A4)
+- [ ] "Copy timetable to new term" admin action — duplicates all of a class's slots into a newly selected term, since most schools keep the same weekly pattern across terms within a year
+- [ ] Term selector on the admin builder, defaulting to `Term::current()` (Phase 3); admin can still view/edit a past or future term's timetable
+- [ ] Teacher view: "My Timetable" — a single grid showing every slot where `teacher_id` = the authenticated teacher, across all their assigned classes (which may span more than one grade level's period structure — render each class's own grid rather than forcing one shared column layout)
+- [ ] Student/parent view: read-only timetable grid for the student's own class, current term, with a term selector to look back at a past term
+- [ ] All read-only views default to `Term::current()`
+- [ ] Apply the `Auditable` trait (Phase 2) to `TimetableSlot` — a class's schedule changing affects what every role sees day-to-day, and it's the same compliance-sensitive category as `Grade`/`Fee`
+- [ ] Delete behavior: **restrict**, don't cascade — hard-deleting a `Subject`, `Teacher`, or `SchoolClass` that's referenced by any `timetable_slots` (past or present term) is blocked with a clear error; the admin either reassigns/clears the slot first or deactivates the teacher/class instead (Phase 12's `is_active` toggle) rather than deleting it outright. Historical timetable data is never silently destroyed by an unrelated delete elsewhere in the system.
+- [ ] "Clear timetable" bulk action — wipes all of a class's slots for a selected term in one go; the undo path for a bad "copy to new term," and itself audit-logged given it's a destructive bulk operation
+- [ ] Double periods (e.g. a two-period science lab): handled in v1.0 by filling two adjacent cells with the same subject/teacher — no dedicated "block" concept yet, so the two cells stay independent rows even though they represent one continuous lesson (revisit as a v1.1 enhancement if this proves annoying in practice — see Part 2, A8)
+
+**Exit checklist before Phase 11:**
+- [ ] Two different grade levels (e.g. Grade 5 and Grade 11) can have independently-defined periods — different counts and/or times — without affecting each other
+- [ ] A seeded timetable for at least one class per grade level, across a full week, aligns with that grade level's own periods and Phase 3's seeded term dates
+- [ ] Attempting to assign a period from the wrong grade level to a class's slot is rejected
+- [ ] The same-slot guard rejects double-booking a teacher across two classes in the same day/period/term, and doesn't fire when `teacher_id` is null
+- [ ] "Copy to new term" produces the correct number of slots, all pointing at the new `term_id`, and doesn't disturb the source term's slots
+- [ ] "Clear timetable" removes exactly the slots for the selected class + term, leaves every other class and term untouched, and appears in the audit log
+- [ ] Editing or deleting a `TimetableSlot` writes a correct `audit_logs` row with old/new values
+- [ ] Deleting a `Subject`, `Teacher`, or `SchoolClass` still referenced by a `timetable_slot` is blocked, not silently cascaded
+- [ ] Teacher's "My Timetable" shows only that teacher's own slots — spot-check against a teacher assigned to classes in two *different* grade levels
+- [ ] Student/parent timetable view is scoped to the student's own class (403 or empty state on a manipulated class ID, not another class's data)
+- [ ] Switching the term selector on any of the three role views shows that term's data only, never mixing terms
+
+**🧪 Suggested tests:**
+- [ ] Feature test: creating a `timetable_slot` that duplicates an existing (class, day, period, term) combination is rejected
+- [ ] Feature test: a `timetable_slot` whose `period_id` belongs to a different grade level than its `school_class_id` is rejected
+- [ ] Feature test: two grade levels can have overlapping period *names* (e.g. both have a "Period 1") without collision, since periods are scoped by `grade_level_id`
+- [ ] Unit test: creating a period whose time range overlaps an existing period in the same grade level is rejected
+- [ ] Feature test: same-slot guard rejects a teacher double-booked across two classes in the same day/period/term; does not reject when one of the slots has a null `teacher_id`
+- [ ] Feature test: "copy to new term" creates the expected slot count, all correctly re-pointed at the new term, and leaves the source term untouched
+- [ ] Feature test: "clear timetable" removes only the targeted class + term's slots and writes an audit log entry
+- [ ] Feature test: updating or deleting a `TimetableSlot` writes an `audit_logs` row with correct before/after values
+- [ ] Feature test: deleting a `Subject`/`Teacher`/`SchoolClass` still referenced by a `timetable_slot` is rejected rather than cascading
+- [ ] Feature test: teacher's timetable view returns only slots where `teacher_id` matches the authenticated teacher
+- [ ] Feature test: student/parent timetable view is scoped to the student's own class
+- [ ] Feature test: `Term::current()` correctly determines the default term shown across all three role views
+- [ ] Unit test: `is_break` periods can't have a subject/teacher assigned to them
+
+---
+
+## Phase 11 — Report card enhancements + class rank 🆕
 
 - [ ] Before building the layout, collect one real report card sample from a teacher (quick ask — email/WhatsApp) to confirm the v1.0 layout decision below still matches what schools expect
 - [ ] Report card layout (v1.0):
@@ -387,14 +447,12 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 - [ ] Term/year averaging calculation, surfaced on the report card
 - [ ] Attendance summary block on the report card (days present/absent/late for the term, using Phase 3's calendar)
 - [ ] Confirm dompdf is wired end-to-end: route → view → downloadable PDF containing all of the above
-- [ ] Read-only class timetable: simple `timetable_slots` table (`class_subject_id`, `day_of_week`, `start_time`, `end_time`) with an admin-entry screen; student/parent/teacher views are display-only (no conflict detection — that's a v2.0 concern, see Part 2)
 
-**Exit checklist before Phase 11:**
+**Exit checklist before Phase 12:**
 - [ ] A generated report card PDF contains: marks, max score, letter grade, teacher comment, attendance summary, term average, **and class rank**
 - [ ] The "Finalize" workflow correctly assigns ranks and handles ties
 - [ ] A student with no final rank shows "N/A" on the report card
 - [ ] "Unfinalize" action clears rank and logs the action in audit trail
-- [ ] A seeded timetable renders correctly on student/parent/teacher dashboards, read-only
 
 **🧪 Suggested tests:**
 - [ ] Feature test: rank calculation assigns correct ranks with and without ties
@@ -404,16 +462,15 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 - [ ] Feature test: "Unfinalize" clears rank and writes audit log
 - [ ] Feature test: report-card PDF generation succeeds and contains the teacher's comment text
 - [ ] Feature test: term average calculation matches a manual calculation against seeded scores
-- [ ] Feature test: timetable view returns only slots for the student's own class (role-scoping again)
 
 ---
 
-## Phase 11 — Admin account management & audit log UX polish 🆕
+## Phase 12 — Admin account management & audit log UX polish 🆕
 
 - [ ] Dedicated "Manage user accounts" screen: activate/deactivate (`is_active` toggle, already in schema), password reset trigger, role assignment — currently only reachable implicitly through student/teacher/parent CRUD
-- [ ] Audit log viewer UX pass: filters by date range, user, model type (built functionally in Phase 2 — this is the polish/usability pass, deferred here so it lands after there's real audit data from Phases 2–10 to filter through)
+- [ ] Audit log viewer UX pass: filters by date range, user, model type (built functionally in Phase 2 — this is the polish/usability pass, deferred here so it lands after there's real audit data from Phases 2–11 to filter through)
 
-**Exit checklist before Phase 12:**
+**Exit checklist before Phase 13:**
 - [ ] Admin can deactivate a user and confirm that user can no longer log in
 - [ ] Admin can filter the audit log by a specific user and date range and get correct results
 
@@ -423,9 +480,9 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 12 — Business-logic test consolidation
+## Phase 13 — Business-logic test consolidation
 
-*(originally Phase 4 — expanded to cover everything added in Phases 2–11, not just the original Fee/Grade scope)*
+*(originally Phase 4 — expanded to cover everything added in Phases 2–12, not just the original Fee/Grade scope)*
 
 - [ ] Feature tests for `Fee::recordPayment()` / `reversePayment()` covering every transition in Figure 6, now against multi-item fees
 - [ ] Feature tests for grade-letter thresholds and `score ≤ max_score`
@@ -433,9 +490,9 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 - [ ] Feature tests for class rank calculation and finalize grades workflow
 - [ ] Feature tests for school-wide performance report queries
 - [ ] Feature tests for grade-level announcement targeting
-- [ ] Confirm all the "🧪 Suggested tests" boxes from Phases 2–11 are actually checked off, not just aspirational
+- [ ] Confirm all the "🧪 Suggested tests" boxes from Phases 2–12 are actually checked off, not just aspirational
 
-**Exit checklist before Phase 13:**
+**Exit checklist before Phase 14:**
 - [ ] `php artisan test` passes fully against the MySQL dev DB
 - [ ] Every state-chart transition in Figure 6 has a passing test
 - [ ] No test relies on hardcoded IDs that only happen to exist because of seeder run order
@@ -445,9 +502,9 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 13 — Mobile-responsiveness pass
+## Phase 14 — Mobile-responsiveness pass
 
-*(originally Phase 5, unchanged — now covers everything built in Phases 4–11, not just the original Phase 2 scope)*
+*(originally Phase 5, unchanged — now covers everything built in Phases 4–12, not just the original Phase 2 scope)*
 
 - [ ] Parent portal → card-based, vertically-stacked layout, tested down to 360px
 - [ ] Teacher mark-entry / attendance → single-viewport, vertically-scrollable at 360px
@@ -455,8 +512,8 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 - [ ] Touch target audit (44×44px minimum)
 - [ ] 3G-throttled load-time check against the NFR target
 
-**Exit checklist before Phase 14:**
-- [ ] Every screen from Phases 4–11 renders with no *accidental* horizontal scroll at 360px
+**Exit checklist before Phase 15:**
+- [ ] Every screen from Phases 4–12 renders with no *accidental* horizontal scroll at 360px
 - [ ] Touch targets measured at 44×44px minimum on the highest-traffic screens
 - [ ] Load-time recorded for parent dashboard, teacher mark-entry, and at least one report screen under throttled 3G
 
@@ -465,7 +522,7 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 14 — Production/deployment alignment
+## Phase 15 — Production/deployment alignment
 
 *(originally Phase 7, PWA dependency removed since PWA is now in Part 2)*
 
@@ -523,13 +580,13 @@ These are the features the Critical Review explicitly recommends **deferring**, 
 - **Suggested tests:** notification dispatch test (mock the mail/push driver, assert it was called with correct recipient + content).
 
 ### A3 — Two-factor authentication
-- [ ] Session-timeout policy (Phase 14) is the interim mitigation; add 2FA once adoption is stable
+- [ ] Session-timeout policy (Phase 15) is the interim mitigation; add 2FA once adoption is stable
 - **Suggested tests:** 2FA challenge required after password step; recovery-code flow test.
 
 ### A4 — Advanced timetabling with conflict detection
-- [ ] Extend Phase 10's read-only `timetable_slots` with conflict detection (same teacher/class/room double-booked)
-- [ ] Admin-facing drag-and-drop or form-based editor
-- **Suggested tests:** conflict-detection test (overlapping slots for same teacher rejected).
+- [ ] Phase 10 ships periods, weekdays, a term-scoped `timetable_slots` table, and a basic same-slot teacher guard — this item extends that with full conflict detection: room double-booking (once rooms exist as a concept), and any cross-class checks beyond the simple per-teacher guard already in v1.0
+- [ ] Admin-facing drag-and-drop editor (v1.0 ships a form/grid-based builder, not drag-and-drop)
+- **Suggested tests:** conflict-detection test (overlapping slots for same teacher/room rejected).
 
 ### A5 — Teacher–parent messaging
 - [ ] Direct messaging thread per student, scoped to that student's assigned teachers and parent
@@ -548,6 +605,10 @@ These are the features the Critical Review explicitly recommends **deferring**, 
     - Drill-down to individual class/student level
     - Scheduled email delivery to administrators
 
+### A8 — Timetable block/double periods (v1.1 enhancement)
+- [ ] If double periods (e.g. a two-period science lab) prove annoying to manage as independent cells, add a `block_id`/span concept so adjacent slots on the builder grid merge visually and move, edit, or delete together
+- [ ] Extends the v1.0 timetable (Phase 10) rather than replacing it — existing `timetable_slots` rows stay valid; a block is just a grouping over them
+
 ---
 
 ## Decisions carried over from the original plan
@@ -555,7 +616,7 @@ These are the features the Critical Review explicitly recommends **deferring**, 
 - **Multi-child parents: in scope** for v1.0 (Phase 4).
 - **School announcements: in scope**, and now with grade-level targeting (Phase 5).
 - **School-wide performance report: reinstated** as a v1.0 feature (Phase 9). The descoping decision has been reversed.
-- **Class rank on report cards: in scope** for v1.0 via the "finalize grades" workflow (Phase 10).
+- **Class rank on report cards: in scope** for v1.0 via the "finalize grades" workflow (Phase 11).
 
 ## Resolved decisions (formerly open items)
 
@@ -565,7 +626,9 @@ These are the features the Critical Review explicitly recommends **deferring**, 
 | **Grade-level targeting for announcements** | Use polymorphic `targetable_type`/`targetable_id` on `announcements` table. Supports targeting multiple classes and/or grade levels. | Allows admins to target all classes in a grade level with one announcement, avoiding duplication. | A simpler string-based approach is preferred — swap before Phase 5 ships. |
 | **Class rank on report cards** | Implement via "finalize grades" workflow. Teacher clicks "Finalize" → system calculates ranks and locks grades. Admin can override. | Addresses the dependency concern (needs all grades finalized) while delivering the feature. The workflow is a common pattern in SIS systems. | Teachers find the finalization workflow too burdensome — can add auto-finalization after a deadline in v1.1. |
 | **School-wide performance report** | Minimal viable version: read-only report with 5 sections and CSV export. Cached for 1 hour. | Reinstates the spec's Figure 3 use case with minimal effort (2-3 days of work). Caching prevents performance issues. | Users request interactive charts or drill-down — build in v1.1. |
-| **Report card format** | v1.0 layout includes: subject/CA/exam/total/letter grade/teacher comment, attendance summary, term average, class rank, overall class-teacher comment, term dates. | The finalize grades workflow makes class rank feasible. Collected real report card sample confirms layout matches expectations. | A collected real report card sample (see Phase 10's checklist) shows a different expected layout — adjust before wiring the PDF. |
+| **Report card format** | v1.0 layout includes: subject/CA/exam/total/letter grade/teacher comment, attendance summary, term average, class rank, overall class-teacher comment, term dates. | The finalize grades workflow makes class rank feasible. Collected real report card sample confirms layout matches expectations. | A collected real report card sample (see Phase 11's checklist) shows a different expected layout — adjust before wiring the PDF. |
+| **Timetable periods: global vs. per-grade-level** | Periods (`periods` table) are scoped per `grade_level_id`, not one global structure. Weekdays are not period-specific — the same period structure applies Mon–Fri per grade level. | Different grade levels (e.g. Grade 5 vs. Grade 11) run different bell schedules at CBU's target schools; a single global period list can't represent that. | A school the team works with turns out to run identical periods across every grade level — the per-grade-level scoping still works fine in that case (it just means every grade level's `periods` rows happen to match), so no revisit needed either way. |
+| **Timetable: delete behavior, audit trail, bulk clear, double periods** | `TimetableSlot` gets the `Auditable` trait; hard-deleting a `Subject`/`Teacher`/`SchoolClass` referenced by a `timetable_slot` is restricted (not cascaded) — admin deactivates or reassigns instead; a "clear timetable" bulk action complements "copy to new term"; double periods are just two adjacent cells with matching subject/teacher, no dedicated block concept in v1.0. | Matches the existing pattern for compliance-sensitive models (Phase 2) and the existing deactivate-don't-delete pattern (Phase 12); a destructive bulk action needs an undo path; a block concept is easy to bolt on later without touching the v1.0 schema. | Double periods turn out to be common enough that cell-by-cell management is a real pain point — build the block/span concept (Part 2, A8). |
 | **MariaDB vs. real MySQL 8.0** | Keep XAMPP's bundled MariaDB. Update the spec to read "MySQL 8.0-compatible (MariaDB 10.x via XAMPP)" rather than installing genuine MySQL. | Nothing in this plan needs a MySQL-8-only feature MariaDB lacks — `audit_logs`' JSON columns work fine on MariaDB's JSON type via Laravel's `json` casts. Installing real MySQL alongside XAMPP is setup friction with no functional payoff. | A specific MySQL-8-only feature turns out to be needed later (unlikely given current scope). |
 | **Desktop-first vs. mobile-first framing** | Add one sentence to §4.1.3: "Development sequencing (desktop-first) is an engineering choice — build correctness before adapting layout — and is independent of the design priority established by the survey data, which remains mobile-first for the deployed product." | Closes the doc/plan disagreement without changing anything about how development is actually sequenced. | N/A — this is a documentation fix, not a behavior decision. |
 | **Permanently descoped features** | None. All features from the spec are either in v1.0 (including reinstated school-wide report and class rank) or deferred to v2.0 (PWA, notifications, 2FA, messaging, advanced timetabling). | The Critical Review's descoping recommendation for the school-wide report has been reversed. | A stakeholder explicitly requests removal of a feature — handle as a formal change request. |
@@ -574,8 +637,8 @@ These are the features the Critical Review explicitly recommends **deferring**, 
 
 | Item | Owner | Status |
 |------|-------|--------|
-| Collect real report card sample from a teacher (Phase 10) | Team | Pending |
-| Confirm UAT participant availability (Phase 14) | Team | Pending |
+| Collect real report card sample from a teacher (Phase 11) | Team | Pending |
+| Confirm UAT participant availability (Phase 15) | Team | Pending |
 | Verify XAMPP's MariaDB version compatibility with JSON columns | Dev Lead | Pending |
 | Decide on CSV export library (Laravel Excel vs custom streaming) | Dev Lead | Pending |
 

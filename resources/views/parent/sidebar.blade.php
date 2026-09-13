@@ -20,24 +20,60 @@
 
         <p class="px-3 pt-4 pb-1 text-[10px] uppercase tracking-[0.2em] text-[#9fb2c6] opacity-80">My Family</p>
 
-        @foreach ([
-            ['children', 'family_restroom', 'My Children'],
-            ['attendance', 'how_to_reg', 'Attendance'],
-            ['performance', 'assignment_turned_in', 'Performance'],
-            ['reports', 'description', 'Reports'],
-            ['assignments', 'assignment', 'Assignments'],
-        ] as [$tab, $icon, $label])
-            <a class="parent-tab-link flex items-center gap-3 px-3 py-2.5 text-[#dbe4ed] hover:bg-[#004493]/80 transition-colors duration-200 rounded-lg group"
-                href="#tab-{{ $tab }}" data-parent-tab="{{ $tab }}">
-                <span class="material-symbols-outlined">{{ $icon }}</span>
+        @php
+            // Route map for the "My Family" tabs — keeps the sidebar's visual markup
+// intact (icons / structure) while pointing each link at its own page route.
+$tabRoutes = [
+    'children' => 'parent.children',
+    'attendance' => 'parent.attendance',
+    'performance' => 'parent.performance',
+    'reports' => 'parent.reports',
+    'assignments' => 'parent.assignments',
+            ];
+        @endphp
+
+        @foreach (['children', 'attendance', 'performance', 'reports', 'assignments'] as $tab)
+            @php
+                $routeName = $tabRoutes[$tab] ?? 'parent.' . $tab;
+                $icon = match ($tab) {
+                    'children' => 'family_restroom',
+                    'attendance' => 'how_to_reg',
+                    'performance' => 'assignment_turned_in',
+                    'reports' => 'description',
+                    'assignments' => 'assignment',
+                    default => 'label',
+                };
+                $labels = [
+                    'children' => 'My Children',
+                    'attendance' => 'Attendance',
+                    'performance' => 'Performance',
+                    'reports' => 'Reports',
+                    'assignments' => 'Assignments',
+                ];
+                $label = $labels[$tab];
+                $isActive = request()->routeIs($routeName);
+            @endphp
+
+            <a class="{{ $isActive ? 'flex items-center gap-3 px-3 py-2.5 bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'flex items-center gap-3 px-3 py-2.5 text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+                href="{{ route($routeName) }}">
+                <span class="material-symbols-outlined"
+                    style="{{ $isActive ? 'font-variation-settings: \"FILL\" 1' : '' }}">{{ $icon }}</span>
                 <span class="font-label-sm text-label-sm">{{ $label }}</span>
             </a>
         @endforeach
 
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('parent.timetable') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('parent.timetable') }}"><span class="material-symbols-outlined">calendar_view_day</span><span
+                class="font-label-sm text-label-sm">Timetable</span></a>
+
         <p class="px-3 pt-4 pb-1 text-[10px] uppercase tracking-[0.2em] text-[#9fb2c6] opacity-80">Account</p>
-        <a class="parent-tab-link flex items-center gap-3 px-3 py-2.5 text-[#dbe4ed] hover:bg-[#004493]/80 transition-colors duration-200 rounded-lg group"
-            href="#tab-settings" data-parent-tab="settings">
-            <span class="material-symbols-outlined">settings</span>
+        @php
+            $settingsActive = request()->routeIs('parent.settings');
+        @endphp
+        <a class="{{ $settingsActive ? 'flex items-center gap-3 px-3 py-2.5 bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'flex items-center gap-3 px-3 py-2.5 text-[#dbe4ed] hover:bg-[#004493]/80' }} transition-colors duration-200 rounded-lg group"
+            href="{{ route('parent.settings') }}">
+            <span class="material-symbols-outlined"
+                style="{{ $settingsActive ? 'font-variation-settings: "FILL" 1' : '' }}">settings</span>
             <span class="font-label-sm text-label-sm">Settings</span>
         </a>
     </nav>

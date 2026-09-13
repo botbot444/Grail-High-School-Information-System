@@ -70,9 +70,9 @@
             <span class="font-label-sm text-label-sm">Subjects</span>
         </a>
 
-        <!-- Placeholder items -->
-        <a class="flex items-center gap-3 px-3 py-2.5 text-[#dbe4ed] hover:bg-[#004493]/80 transition-colors duration-200 rounded-lg group"
-            href="#">
+        <!-- Timetable -->
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.timetable.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.timetable.index') }}">
             <span class="material-symbols-outlined">calendar_month</span>
             <span class="font-label-sm text-label-sm">Timetables</span>
         </a>
@@ -131,6 +131,11 @@
             <span class="font-label-sm text-label-sm">Grade Levels</span>
         </a>
 
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.periods.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.periods.index') }}">
+            <span class="material-symbols-outlined">schedule</span>
+            <span class="font-label-sm text-label-sm">Periods</span>
+        </a>
 
         <!-- Audit Logs -->
         <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.audit-logs.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
@@ -140,9 +145,10 @@
             <span class="font-label-sm text-label-sm">Audit Logs</span>
         </a>
         <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.reports.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-    href="{{ route('admin.reports.fee-collection') }}">
-    <span class="material-symbols-outlined" style="{{ request()->routeIs('admin.reports.*') ? 'font-variation-settings: \"FILL\" 1' : '' }}">bar_chart</span>
-    <span class="font-label-sm text-label-sm">Fee Collection Report</span>
+            href="{{ route('admin.reports.fee-collection') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.reports.*') ? 'font-variation-settings: \"FILL\" 1' : '' }}">bar_chart</span>
+            <span class="font-label-sm text-label-sm">Fee Collection Report</span>
         </a>
     </nav>
     <div class="p-4 mt-auto">

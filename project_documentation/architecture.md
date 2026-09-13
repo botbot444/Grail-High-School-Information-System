@@ -1,6 +1,6 @@
 # Architecture
 
-> Last updated: 2026-08-09
+> Last updated: 2026-09-13
 > Update this file when the project structure, tech stack, or file counts change.
 
 ---
@@ -10,31 +10,38 @@
 ```
 grail/
 ├── app/
+│   ├── Helpers/              (CalendarHelper)
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── AuthController.php
 │   │   │   ├── Controller.php
-│   │   │   ├── DashboardController.php
+│   │   │   ├── DashboardController.php   (role dispatch + admin dashboard)
 │   │   │   ├── ProfileController.php
-│   │   │   ├── TeacherController.php
-│   │   │   ├── Admin/        (AdminController, AdminClassController, AdminParentController, AdminSubjectController, AdminTeacherController)
+│   │   │   ├── TeacherController.php     (teacher portal)
+│   │   │   ├── Admin/        (students, teachers, parents, classes, subjects,
+│   │   │   │                  fees, payments, categories, audit logs, reports,
+│   │   │   │                  academic years, terms, holidays, grade levels)
 │   │   │   ├── Auth/         (Breeze auth controllers)
-│   │   │   ├── Parent/       (ParentController)
+│   │   │   ├── Parent/       (ParentController — full parent portal)
 │   │   │   └── Student/      (StudentController)
 │   │   ├── Middleware/       (CheckRole.php)
-│   │   └── Requests/         (Profile + Auth requests; includes Auth/LoginRequest.php)
-│   ├── Models/               (11 Eloquent models — see models.md)
+│   │   └── Requests/         (Profile, Auth, StoreFee, StorePayment)
+│   ├── Models/               (19 Eloquent models — see models.md)
+│   ├── Notifications/        (fee reminder / overdue / payment confirmation)
+│   ├── Policies/             (PaymentPolicy, ReportPolicy)
 │   ├── Providers/
+│   ├── Traits/               (Auditable)
 │   └── View/
 ├── bootstrap/
 ├── config/
 ├── database/
-│   ├── factories/            (7 factories)
-│   ├── migrations/           (14 migration files)
-│   └── seeders/              (11 domain seeders + DatabaseSeeder orchestrator)
-├── Frontend/                 (Static HTML/CSS/JS prototypes)
+│   ├── factories/            (10 factories)
+│   ├── migrations/           (33 migration files)
+│   └── seeders/              (15 domain seeders + DatabaseSeeder orchestrator)
+├── Frontend/                 (Static HTML/CSS/JS prototypes — not served)
 │   ├── AdminViews/
 │   └── ParentViews/
+├── stitch_grail_sis_teacher_portal/  (Stitch HTML + screenshots for teacher UI)
 ├── public/
 ├── resources/
 │   └── views/                (Blade templates — see views.md)
@@ -42,7 +49,7 @@ grail/
 │       ├── auth/
 │       ├── components/
 │       ├── errors/
-│       ├── layouts/
+│       ├── layouts/          (app, guest, navigation, parent, teacher)
 │       ├── parent/
 │       ├── profile/
 │       ├── student/
@@ -72,27 +79,29 @@ grail/
 | Framework  | Laravel 12.x                                    |
 | Frontend   | Blade, Tailwind CSS 3, Alpine.js                |
 | Build tool | Vite 6                                          |
-| Database   | MySQL                                           |
+| Database   | MySQL (SQLite supported for local development)  |
 | Auth       | Laravel Breeze                                  |
 | PDF        | barryvdh/laravel-dompdf 3.1                     |
-| PWA        | vite-plugin-pwa (installed, not yet configured) |
+| PWA        | vite-plugin-pwa (installed, not wired in Vite)  |
 | Testing    | PHPUnit 11                                      |
 | Dev runner | Concurrently (artisan serve + queue + vite)     |
+
+Portal chrome (admin, parent, teacher) uses Material Symbols plus Inter / JetBrains Mono tokens defined in `tailwind.config.js`.
 
 ---
 
 ## 3. File Counts
 
-- **11** Eloquent models
-- **14** Migrations (3 Laravel defaults + 11 domain)
-- **12** Seeders (11 domain seeders + 1 `DatabaseSeeder` orchestrator)
-- **7** Factories
-- **5** Admin resource controllers (+ 1 top-level AdminController handling students & dashboard)
+- **19** Eloquent models
+- **33** Migrations (3 Laravel defaults + domain create/alter/backfill files)
+- **16** Seeders (15 domain seeders + 1 `DatabaseSeeder` orchestrator)
+- **10** Factories
+- **14** Admin controllers (students/settings plus dedicated resource controllers for staff, fees, calendar, reports)
 - **9** Breeze auth controllers
 - **1** Custom middleware (`CheckRole`)
-- **21** Admin Blade views (5 top-level + 4 per resource × 4 resource dirs) + auth/profile/role dashboards
-- **9** Static HTML admin prototypes + 1 static parent prototype
-- **12** Feature test files (6 top-level + 6 in `Feature/Auth/`) + 1 Unit test + 1 base TestCase
+- Admin, parent, teacher, student, auth, profile, and layout Blade views (see views.md)
+- Static admin/parent HTML under `Frontend/` plus Stitch teacher screens under `stitch_grail_sis_teacher_portal/`
+- **18** Feature test files (12 top-level + 6 in `Feature/Auth/`) + 1 Unit test + 1 base TestCase
 
 ---
 

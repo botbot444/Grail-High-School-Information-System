@@ -15,7 +15,7 @@
 
 ## Change management
 
-- For significant feature work or structural changes, update PROJECT_DOCUMENTATION.md to reflect the new behavior or architecture.
+- For significant feature work or structural changes, update `project_documentation/` (start at `project_documentation/README.md`) to reflect the new behavior or architecture.
 - If database changes are involved, add or update migrations and keep them consistent with the existing schema style.
 - Prefer reusing existing components, helpers, and patterns already used in the repository.
 

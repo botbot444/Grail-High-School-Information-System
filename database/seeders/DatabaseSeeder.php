@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             AuditLogSeeder::class,
             GradeLevelSeeder::class,
             AcademicYearSeeder::class,
+            TimetableSeeder::class,
         ]);
     }
 }

@@ -38,4 +38,9 @@ class GradeLevel extends Model
             'class_id'         // local key on school_classes
         );
     }
+
+    public function periods(): HasMany
+    {
+        return $this->hasMany(Period::class, 'grade_level_id', 'grade_level_id');
+    }
 }

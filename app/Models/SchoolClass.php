@@ -18,6 +18,7 @@ class SchoolClass extends Model
     protected $fillable = [
         'class_name',
         'grade_level',
+        'grade_level_id',
         'teacher_id',
     ];
 
@@ -72,6 +73,11 @@ class SchoolClass extends Model
     public function gradeLevel(): BelongsTo
     {
         return $this->belongsTo(GradeLevel::class, 'grade_level_id', 'grade_level_id');
+    }
+
+    public function timetableSlots(): HasMany
+    {
+        return $this->hasMany(TimetableSlot::class, 'school_class_id', 'class_id');
     }
 
     /**

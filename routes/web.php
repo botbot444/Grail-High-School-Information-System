@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\TermController;
 use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\Admin\GradeLevelController;
+use App\Http\Controllers\Admin\PeriodController;
+use App\Http\Controllers\Admin\TimetableController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -71,6 +73,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('terms', TermController::class);
         Route::resource('holidays', HolidayController::class);
         Route::resource('grade-levels', GradeLevelController::class);
+        Route::resource('periods', PeriodController::class);
+        Route::get('/timetable', [TimetableController::class, 'index'])->name('timetable.index');
+        Route::post('/timetable/slots', [TimetableController::class, 'store'])->name('timetable.slots.store');
+        Route::post('/timetable/copy', [TimetableController::class, 'copyToTerm'])->name('timetable.copy');
+        Route::post('/timetable/clear', [TimetableController::class, 'clear'])->name('timetable.clear');
 
 
         // ── Reports & Analytics (Phase 4) ────────────────────────────────────
@@ -83,13 +90,6 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/students/{student}/financials', [ReportController::class, 'studentFinancials'])->name('students.financials');
         Route::get('/students/{student}/statement', [ReportController::class, 'statement'])->name('students.statement');
 
-        // ── Parent fee view (for notification CTAs) ──────────────────────────
-        Route::middleware(['auth', 'role:parent'])
-            ->prefix('parent')
-            ->name('parent.')
-            ->group(function () {
-                Route::get('/fees/{fee}', [ParentController::class, 'showFee'])->name('fees.show');
-            });
     });
 
 // Teacher Routes
@@ -97,8 +97,19 @@ Route::middleware(['auth', 'role:teacher'])
     ->prefix('teacher')
     ->name('teacher.')
     ->group(function () {
+        Route::get('/dashboard', [TeacherController::class, 'dashboard'])->name('dashboard');
         Route::get('/marks', [TeacherController::class, 'marks'])->name('marks');
         Route::post('/marks', [TeacherController::class, 'storeMarks'])->name('marks.store');
+
+        // Placeholder destinations wired to the teacher dashboard sidebar/links.
+        // Each renders the shared teacher layout with a "coming soon" card until
+        // its own page is integrated from the teacher portal HTML.
+        Route::get('/classes', [TeacherController::class, 'classes'])->name('classes');
+        Route::get('/timetable', [TeacherController::class, 'timetable'])->name('timetable');
+        Route::view('/attendance', 'teacher.placeholder')->defaults('placeholder', 'Record Attendance')->name('attendance');
+        Route::view('/performance', 'teacher.placeholder')->defaults('placeholder', 'Class Performance')->name('performance');
+        Route::view('/announcements', 'teacher.placeholder')->defaults('placeholder', 'Announcements')->name('announcements');
+        Route::view('/settings', 'teacher.placeholder')->defaults('placeholder', 'Settings')->name('settings');
     });
 
 // Parent Routes
@@ -107,6 +118,17 @@ Route::middleware(['auth', 'role:parent'])
     ->name('parent.')
     ->group(function () {
         Route::get('/dashboard', [ParentController::class, 'dashboard'])->name('dashboard');
+        Route::get('/children', [ParentController::class, 'children'])->name('children');
+        Route::post('/children/switch', [ParentController::class, 'switchChild'])->name('switch-child');
+        Route::get('/attendance', [ParentController::class, 'attendance'])->name('attendance');
+        Route::get('/performance', [ParentController::class, 'performance'])->name('performance');
+        Route::get('/reports', [ParentController::class, 'reports'])->name('reports');
+        Route::get('/timetable', [ParentController::class, 'timetable'])->name('timetable');
+        Route::get('/assignments', [ParentController::class, 'assignments'])->name('assignments');
+        Route::get('/fees', [ParentController::class, 'fees'])->name('fees');
+        Route::get('/settings', [ParentController::class, 'settings'])->name('settings');
+        Route::patch('/settings', [ParentController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/fees/{fee}', [ParentController::class, 'showFee'])->name('fees.show');
     });
 
 // Student Routes
@@ -115,6 +137,7 @@ Route::middleware(['auth', 'role:student'])
     ->name('student.')
     ->group(function () {
         Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+        Route::get('/timetable', [StudentController::class, 'timetable'])->name('timetable');
     });
 
 require __DIR__.'/auth.php';

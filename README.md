@@ -40,7 +40,7 @@ php artisan serve    # in another
 
 | Role    | URL prefix | Access                                                                               |
 | ------- | ---------- | ------------------------------------------------------------------------------------ |
-| Admin   | `/admin`   | Dashboard, settings, examinations, manage teachers/parents/classes/subjects/students |
-| Teacher | `/teacher` | Mark entry (CA + exam scores) and attendance for assigned classes                    |
-| Parent  | `/parent`  | Dashboard for all linked children                                                    |
+| Admin   | `/admin`   | Dashboard, settings, examinations, calendar, fees/payments, reports, manage teachers/parents/classes/subjects/students |
+| Teacher | `/teacher` | Dashboard, my classes, mark entry and attendance; other sidebar destinations are placeholders until Stitch screens are ported |
+| Parent  | `/parent`  | Dashboard, children, attendance, performance, reports, assignments, fees, settings (scoped to linked children) |
 | Student | `/student` | Dashboard with personal results and attendance                                       |

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\GradeLevel;
+use App\Models\SchoolClass;
 use Illuminate\Database\Seeder;
 
 class GradeLevelSeeder extends Seeder
@@ -18,10 +19,14 @@ class GradeLevelSeeder extends Seeder
         ];
 
         foreach ($gradeLevels as $grade) {
-            GradeLevel::firstOrCreate(
+            $gradeLevel = GradeLevel::firstOrCreate(
                 ['name' => $grade['name']],
                 ['order' => $grade['order']]
             );
+
+            SchoolClass::where('grade_level', $grade['name'])
+                ->whereNull('grade_level_id')
+                ->update(['grade_level_id' => $gradeLevel->grade_level_id]);
         }
 
         $this->command->info('✔ Grade levels seeded (Grades 8-12).');

@@ -1,11 +1,11 @@
 # Models
 
-> Last updated: 2026-08-02
+> Last updated: 2026-09-13
 > Update this file when models are added or modified.
 
 ---
 
-All located in `app/Models/`. Custom primary keys are used (e.g. `student_id`, `teacher_id`) instead of `id`.
+All located in `app/Models/`. Custom primary keys are used on domain tables (e.g. `student_id`, `teacher_id`) instead of `id`. Several models also use the `Auditable` trait.
 
 ---
 
@@ -15,6 +15,9 @@ All located in `app/Models/`. Custom primary keys are used (e.g. `student_id`, `
 - **Casts**: `email_verified_at → datetime`, `password → hashed`
 - **Relationships**:
     - `roleModel()` — BelongsTo Role
+    - `teacher()` — HasOne Teacher
+    - `parent()` / `parentProfile()` — HasOne ParentProfile
+    - `children()` — HasMany Student via `parent_user_id`
     - `assignments()` — HasManyThrough ClassSubject via Teacher
 - **Accessors**:
     - `role_name` — reads from related Role → falls back to `role` string column
@@ -41,7 +44,8 @@ All located in `app/Models/`. Custom primary keys are used (e.g. `student_id`, `
     - `students()` — HasMany
     - `subjects()` — BelongsToMany via `class_subjects` with pivot `teacher_id`, `class_subject_id`
     - `classSubjects()` — HasMany pivot
-- **Accessor**: `display_name` → "10A – Grade 10"
+    - `gradeLevel()` — BelongsTo GradeLevel (`grade_level_id`, nullable)
+- **Accessors**: `display_name` → "10A – Grade 10"; `grade_level_name` prefers the GradeLevel relation then the legacy `grade_level` string
 
 ---
 
@@ -127,12 +131,13 @@ All located in `app/Models/`. Custom primary keys are used (e.g. `student_id`, `
 ## 5.9 `Grade` (`app/Models/Grade.php`)
 
 - **PK**: `grade_id`
-- **Fillable**: `student_id, class_subject_id, assessment_type, score, max_score, term, academic_year, recorded_by, marks`
+- **Fillable**: `student_id, class_subject_id, assessment_type, score, max_score, term, academic_year, academic_year_id, term_id, recorded_by, marks`
 - **Casts**: `score/max_score` → decimal(2), `academic_year` → integer
 - **Relationships**:
     - `student()`
     - `classSubject()`
     - `recordedByTeacher()`
+    - calendar FKs: `academic_year_id`, `term_id` (legacy `term` string + `academic_year` int kept)
 - **Business logic**:
     - `validateScore()` — score between 0 and max
     - `percentage` accessor
@@ -146,12 +151,14 @@ All located in `app/Models/`. Custom primary keys are used (e.g. `student_id`, `
 ## 5.10 `Fee` (`app/Models/Fee.php`)
 
 - **PK**: `fee_id`
-- **Fillable**: `student_id, description, amount_due, amount_paid, balance, due_date, status, term, academic_year, last_updated`
+- **Fillable**: `student_id, description, amount_due, amount_paid, balance, due_date, status, term, academic_year, academic_year_id, term_id, last_updated`
 - **Casts**: money → decimal(2), dates
+- **Relationships**: `student()`, `feeItems()`, `payments()`, `academicYear()`, `term()`
 - **State machine (FR-11)** — status is computed, never set manually:
     - `recordPayment(float $amount)` — adds to `amount_paid`, recalculates `balance`, sets status via `computeStatus()`
     - `reversePayment(float $amount)` — admin error correction
-    - `computeStatus()` → `Pending` / `Partially Paid` / `Cleared`
+    - `recalculateAmountDue()` — totals from `fee_items`
+    - `computeStatus()` → `Pending` / `Partially Paid` / `Cleared` (enum also allows `Overdue`)
 - **Scopes**: `scopePending()`, `scopePartiallyPaid()`, `scopeCleared()`, `scopeOverdue()`, `scopeForTerm()`
 - **Accessors**: `is_overdue`, `payment_progress`
 
@@ -166,6 +173,62 @@ All located in `app/Models/`. Custom primary keys are used (e.g. `student_id`, `
 - **Relationships**:
     - `user()`
     - `students()` — HasMany via `students.parent_user_id` = `user_id`
+
+---
+
+## 5.12 `AcademicYear`
+
+- **PK**: `year_id`
+- **Fillable**: `label, start_date, end_date, is_current`
+- **Relationships**: `terms()`, `holidays()`, `grades()`, `fees()`
+- **Helpers**: `scopeCurrent()`, `current()`, `setAsCurrent()`
+
+## 5.13 `Term`
+
+- **PK**: `term_id`
+- **Fillable**: `academic_year_id, name, start_date, end_date, is_current`
+- **Relationships**: `academicYear()`, `grades()`, `fees()`
+- **Helpers**: `scopeCurrent()`, `current()` (date window containing today), `school_days` accessor (weekdays minus holidays)
+
+## 5.14 `Holiday`
+
+- **PK**: `holiday_id`
+- **Fillable**: `academic_year_id, date, description`
+- **Relationships**: `academicYear()`
+
+## 5.15 `GradeLevel`
+
+- **PK**: `grade_level_id`
+- **Fillable**: `name, order`
+- **Relationships**: `classes()`, `students()` (HasManyThrough)
+
+## 5.16 `Payment`
+
+- **PK**: `payment_id`
+- **Fillable**: `fee_id, amount, payment_method, reference_number, notes, payment_date, recorded_by`
+- **Relationships**: `fee()`, `recordedBy()`
+- **Auditable**
+
+## 5.17 `FeeItem`
+
+- **PK**: `fee_item_id`
+- **Fillable**: `fee_id, item_name, category, amount`
+- **Relationships**: `fee()`
+- **Auditable**
+
+## 5.18 `FeeCategory`
+
+- **Fillable**: `name, slug, sort_order`
+- **Soft deletes**: enabled
+- **Relationships**: `feeItems()` via `category` slug
+- **Scope**: `scopeInUse()`
+
+## 5.19 `AuditLog`
+
+- **Fillable**: `user_id, auditable_type, auditable_id, action, old_values, new_values, reason, ip_address, user_agent`
+- **Casts**: `old_values` / `new_values` → array
+- **Timestamps**: `created_at` only
+- **Relationships**: `user()`, morph `auditable()`
 
 ---
 

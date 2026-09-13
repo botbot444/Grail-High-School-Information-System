@@ -59,10 +59,30 @@ class User extends Authenticatable
         return $this->hasRole('student');
     }
 
-    public function teacher(): HasOne
+        public function teacher(): HasOne
     {
         return $this->hasOne(Teacher::class, 'user_id');
     }
+
+    /** The parent profile record (table: parents, FK: user_id). */
+    public function parent(): HasOne
+    {
+        return $this->hasOne(ParentProfile::class, 'user_id');
+    }
+
+    /** Alias kept for clarity in parent-facing code. */
+    public function parentProfile(): HasOne
+    {
+        return $this->parent();
+    }
+
+    /** Students this user is the guardian of (parent_user_id = this user's id). */
+    public function children(): HasMany
+    {
+        return $this->hasMany(Student::class, 'parent_user_id', 'id');
+    }
+
+
 
     // A teacher's assigned classes or subjects
     public function assignments(): HasManyThrough

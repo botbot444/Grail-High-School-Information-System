@@ -41,6 +41,11 @@ class Term extends Model
         return $this->hasMany(Fee::class, 'term_id', 'term_id');
     }
 
+    public function timetableSlots(): HasMany
+    {
+        return $this->hasMany(TimetableSlot::class, 'term_id', 'term_id');
+    }
+
     /** Scope: only the row flagged is_current. */
     public function scopeCurrent($query)
     {

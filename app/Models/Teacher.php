@@ -69,6 +69,11 @@ class Teacher extends Model
         return $this->hasMany(Grade::class, 'recorded_by', 'teacher_id');
     }
 
+    public function timetableSlots(): HasMany
+    {
+        return $this->hasMany(TimetableSlot::class, 'teacher_id', 'teacher_id');
+    }
+
     // ── Accessors ─────────────────────────────────────────────────────────────
 
     public function getFullNameAttribute(): string
