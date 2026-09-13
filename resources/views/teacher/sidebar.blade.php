@@ -24,7 +24,6 @@
                 'performance'  => ['route' => 'teacher.performance',  'icon' => 'query_stats',        'label' => 'Class Performance'],
                 'assignments'  => ['route' => 'teacher.assignments.index', 'icon' => 'assignment',   'label' => 'Assignments'],
                 'reportcards'  => ['route' => 'teacher.report-cards.index', 'icon' => 'description', 'label' => 'Report Cards'],
-                'announcements'=> ['route' => 'teacher.announcements','icon' => 'campaign',           'label' => 'Announcements'],
             ];
         @endphp
 

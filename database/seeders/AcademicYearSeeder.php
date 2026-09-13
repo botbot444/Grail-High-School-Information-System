@@ -48,6 +48,19 @@ class AcademicYearSeeder extends Seeder
             );
         }
 
-        $this->command->info('✔ Academic year '.$year.' seeded with 3 terms.');
+        // Phase 6 needs a year to promote into. Seed the next one (not current)
+        // so the promotion screen has a valid target out of the box.
+        $nextYear = (string) ($year + 1);
+
+        AcademicYear::firstOrCreate(
+            ['label' => $nextYear],
+            [
+                'start_date' => $nextYear.'-01-01',
+                'end_date'   => $nextYear.'-12-31',
+                'is_current' => false,
+            ]
+        );
+
+        $this->command->info('✔ Academic year '.$year.' seeded with 3 terms, plus '.$nextYear.' for promotion.');
     }
 }

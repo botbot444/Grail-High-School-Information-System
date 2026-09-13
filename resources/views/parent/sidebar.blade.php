@@ -29,10 +29,11 @@ $tabRoutes = [
     'performance' => 'parent.performance',
     'reports' => 'parent.reports',
     'assignments' => 'parent.assignments',
+    'announcements' => 'parent.announcements',
             ];
         @endphp
 
-        @foreach (['children', 'attendance', 'performance', 'reports', 'assignments'] as $tab)
+        @foreach (['children', 'attendance', 'performance', 'reports', 'assignments', 'announcements'] as $tab)
             @php
                 $routeName = $tabRoutes[$tab] ?? 'parent.' . $tab;
                 $icon = match ($tab) {
@@ -41,6 +42,7 @@ $tabRoutes = [
                     'performance' => 'assignment_turned_in',
                     'reports' => 'description',
                     'assignments' => 'assignment',
+                    'announcements' => 'campaign',
                     default => 'label',
                 };
                 $labels = [
@@ -49,6 +51,7 @@ $tabRoutes = [
                     'performance' => 'Performance',
                     'reports' => 'Reports',
                     'assignments' => 'Assignments',
+                    'announcements' => 'Announcements',
                 ];
                 $label = $labels[$tab];
                 $isActive = request()->routeIs($routeName);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Concerns\RendersReportCards;
 use App\Http\Controllers\Controller;
+use App\Models\Announcement;
 use App\Models\ReportCard;
 use App\Models\Student;
 use App\Models\Term;
@@ -229,9 +230,35 @@ class StudentController extends Controller
 
     public function announcements(): View
     {
+        $service = app(\App\Services\AnnouncementService::class);
+
         return view('student.announcements', [
-            'student' => $this->currentStudent(['schoolClass']),
+            'student'       => $this->currentStudent(['schoolClass']),
+            'announcements' => $service->feedFor(auth()->user()),
         ]);
+    }
+
+    /** Mark one notice read; the feed shows it without the unread dot afterwards. */
+    public function readAnnouncement(Announcement $announcement): \Illuminate\Http\RedirectResponse
+    {
+        // Resolving through visibleTo is the access check: a notice this student
+        // is not an audience for simply is not found.
+        $visible = Announcement::visibleTo(auth()->user())
+            ->where('announcements.announcement_id', $announcement->announcement_id)
+            ->firstOrFail();
+
+        app(\App\Services\AnnouncementService::class)->markRead($visible, auth()->user());
+
+        return back();
+    }
+
+    public function readAllAnnouncements(): \Illuminate\Http\RedirectResponse
+    {
+        $count = app(\App\Services\AnnouncementService::class)->markAllRead(auth()->user());
+
+        return back()->with('notification', $count > 0
+            ? "Marked {$count} announcement(s) as read."
+            : 'Nothing new to mark.');
     }
 
     // ── Settings ──────────────────────────────────────────────────────────────

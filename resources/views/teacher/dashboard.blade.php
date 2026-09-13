@@ -213,10 +213,10 @@
                             <span class="font-title-sm text-title-sm text-on-surface leading-tight">Performance</span>
                             <span class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">Cohort analytics</span>
                         </a>
-                        <a href="{{ route('teacher.announcements') }}" class="flex flex-col items-start p-space-sm rounded-lg bg-surface-container-low hover:bg-secondary-fixed transition-colors text-left group">
-                            <span class="material-symbols-outlined text-secondary text-[22px] mb-1 group-hover:scale-105 transition-transform">campaign</span>
-                            <span class="font-title-sm text-title-sm text-on-surface leading-tight">Announcement</span>
-                            <span class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">Broadcast to parents</span>
+                        <a href="{{ route('teacher.report-cards.index') }}" class="flex flex-col items-start p-space-sm rounded-lg bg-surface-container-low hover:bg-secondary-fixed transition-colors text-left group">
+                            <span class="material-symbols-outlined text-secondary text-[22px] mb-1 group-hover:scale-105 transition-transform">description</span>
+                            <span class="font-title-sm text-title-sm text-on-surface leading-tight">Report Cards</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">Finalize &amp; comment</span>
                         </a>
                     </div>
                 </div>
