@@ -15,6 +15,21 @@ class Student extends Model
 
     protected $primaryKey = 'student_id';
 
+    public const STATUS_ENROLLED = 'Enrolled';
+
+    public const STATUS_GRADUATED = 'Graduated';
+
+    public const STATUS_TRANSFERRED = 'Transferred';
+
+    public const STATUS_WITHDRAWN = 'Withdrawn';
+
+    public const STATUSES = [
+        self::STATUS_ENROLLED    => 'Enrolled',
+        self::STATUS_GRADUATED   => 'Graduated',
+        self::STATUS_TRANSFERRED => 'Transferred',
+        self::STATUS_WITHDRAWN   => 'Withdrawn',
+    ];
+
     protected $fillable = [
         'user_id',
         'parent_user_id',
@@ -27,11 +42,14 @@ class Student extends Model
         'guardian_name',
         'guardian_phone',
         'enrolment_date',
+        'status',
+        'graduated_on',
     ];
 
     protected $casts = [
         'date_of_birth'   => 'date',
         'enrolment_date'  => 'date',
+        'graduated_on'    => 'date',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────
@@ -90,12 +108,34 @@ class Student extends Model
         return $this->hasMany(ReportCard::class, 'student_id', 'student_id');
     }
 
+    /** Promotion history (Phase 6) */
+    public function promotions(): HasMany
+    {
+        return $this->hasMany(StudentPromotion::class, 'student_id', 'student_id');
+    }
+
     // ── Scopes ────────────────────────────────────────────────────────────────
 
     /** Filter to students in a specific class */
     public function scopeInClass($query, int $classId)
     {
         return $query->where('class_id', $classId);
+    }
+
+    /** Currently enrolled — excludes graduates, transfers and withdrawals. */
+    public function scopeEnrolled($query)
+    {
+        return $query->where('status', self::STATUS_ENROLLED);
+    }
+
+    public function scopeGraduated($query)
+    {
+        return $query->where('status', self::STATUS_GRADUATED);
+    }
+
+    public function isEnrolled(): bool
+    {
+        return $this->status === self::STATUS_ENROLLED;
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────

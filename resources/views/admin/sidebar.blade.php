@@ -93,6 +93,18 @@
                 style="{{ request()->routeIs('admin.report-cards.*') ? 'font-variation-settings: "FILL" 1' : '' }}">description</span>
             <span class="font-label-sm text-label-sm">Report Cards</span>
         </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.announcements.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.announcements.index') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.announcements.*') ? 'font-variation-settings: "FILL" 1' : '' }}">campaign</span>
+            <span class="font-label-sm text-label-sm">Announcements</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.promotions.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.promotions.index') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.promotions.*') ? 'font-variation-settings: "FILL" 1' : '' }}">moving</span>
+            <span class="font-label-sm text-label-sm">Promotion</span>
+        </a>
 
         <!-- Fees -->
         <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.fees.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"

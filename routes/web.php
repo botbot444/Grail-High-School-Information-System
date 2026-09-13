@@ -24,6 +24,8 @@ use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentContro
 use App\Http\Controllers\Teacher\ReportCardController as TeacherReportCardController;
 use App\Http\Controllers\Admin\ReportCardController as AdminReportCardController;
 use App\Http\Controllers\Admin\PaymentSettingsController;
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
+use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -68,6 +70,18 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/report-cards', [AdminReportCardController::class, 'index'])->name('report-cards.index');
         Route::get('/report-cards/{student}', [AdminReportCardController::class, 'show'])->name('report-cards.show');
         Route::post('/report-cards/{class}/unfinalize', [AdminReportCardController::class, 'unfinalize'])->name('report-cards.unfinalize');
+
+        // Announcements (Phase 5) — admin authoring only.
+        Route::get('/announcements/preview', [AdminAnnouncementController::class, 'preview'])->name('announcements.preview');
+        Route::resource('announcements', AdminAnnouncementController::class)->except(['show']);
+
+        // Student promotion & year-end rollover (Phase 6).
+        Route::get('/promotions', [PromotionController::class, 'index'])->name('promotions.index');
+        Route::get('/promotions/mappings', [PromotionController::class, 'mappings'])->name('promotions.mappings');
+        Route::put('/promotions/mappings', [PromotionController::class, 'saveMappings'])->name('promotions.mappings.save');
+        Route::get('/promotions/class/{class}', [PromotionController::class, 'show'])->name('promotions.show');
+        Route::post('/promotions/class/{class}', [PromotionController::class, 'store'])->name('promotions.store');
+        Route::post('/promotions/{batch}/rollback', [PromotionController::class, 'rollback'])->name('promotions.rollback');
         Route::post('/fees/bulk-action', [FeeController::class, 'bulkAction'])->name('fees.bulk-action');
         Route::post('/fees/{fee}/send-reminder', [FeeController::class, 'sendReminder'])->name('fees.send-reminder');
 
@@ -124,7 +138,6 @@ Route::middleware(['auth', 'role:teacher'])
         Route::get('/timetable', [TeacherController::class, 'timetable'])->name('timetable');
         Route::view('/attendance', 'teacher.placeholder')->defaults('placeholder', 'Record Attendance')->name('attendance');
         Route::view('/performance', 'teacher.placeholder')->defaults('placeholder', 'Class Performance')->name('performance');
-        Route::view('/announcements', 'teacher.placeholder')->defaults('placeholder', 'Announcements')->name('announcements');
         Route::view('/settings', 'teacher.placeholder')->defaults('placeholder', 'Settings')->name('settings');
 
         // Assignments — authoring and marking.
@@ -166,6 +179,9 @@ Route::middleware(['auth', 'role:parent'])
         Route::get('/fees/{fee}', [ParentController::class, 'showFee'])->name('fees.show');
         Route::get('/payments/{payment}/receipt', [ParentController::class, 'receipt'])->name('payments.receipt');
         Route::get('/children/{student}/report-cards/{term}', [ParentController::class, 'reportCard'])->name('report-card');
+        Route::get('/announcements', [ParentController::class, 'announcements'])->name('announcements');
+        Route::post('/announcements/read-all', [ParentController::class, 'readAllAnnouncements'])->name('announcements.read-all');
+        Route::post('/announcements/{announcement}/read', [ParentController::class, 'readAnnouncement'])->name('announcements.read');
     });
 
 // Student Routes
@@ -184,10 +200,11 @@ Route::middleware(['auth', 'role:student'])
         Route::get('/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('assignments.show');
         Route::post('/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('assignments.submit');
 
-        // Awaiting their own phases: report cards (Phase 11), announcements (Phase 5).
         Route::get('/report-cards', [StudentController::class, 'reportCards'])->name('report-cards');
         Route::get('/report-cards/{term}', [StudentController::class, 'reportCard'])->name('report-card');
         Route::get('/announcements', [StudentController::class, 'announcements'])->name('announcements');
+        Route::post('/announcements/read-all', [StudentController::class, 'readAllAnnouncements'])->name('announcements.read-all');
+        Route::post('/announcements/{announcement}/read', [StudentController::class, 'readAnnouncement'])->name('announcements.read');
     });
 
 require __DIR__.'/auth.php';

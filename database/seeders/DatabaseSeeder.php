@@ -41,6 +41,8 @@ class DatabaseSeeder extends Seeder
             GradeLevelSeeder::class,
             AssignmentSeeder::class,
             TimetableSeeder::class,
+            // Needs classes and grade levels to aim at.
+            AnnouncementSeeder::class,
         ]);
     }
 }

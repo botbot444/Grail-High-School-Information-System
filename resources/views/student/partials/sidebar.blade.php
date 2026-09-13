@@ -16,7 +16,7 @@
         ['route' => 'student.timetable',     'icon' => 'calendar_month', 'label' => 'Timetable'],
         ['route' => 'student.assignments.index', 'icon' => 'assignment', 'label' => 'Assignments', 'badge' => $navDueAssignments ?? null],
         ['route' => 'student.report-cards',  'icon' => 'description',    'label' => 'Report Cards'],
-        ['route' => 'student.announcements', 'icon' => 'campaign',       'label' => 'Announcements'],
+        ['route' => 'student.announcements', 'icon' => 'campaign',       'label' => 'Announcements', 'badge' => $navUnreadNotices ?? null],
         ['route' => 'student.settings',      'icon' => 'settings',       'label' => 'Settings'],
     ];
 @endphp

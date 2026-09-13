@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\RendersReportCards;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Assignment;
+use App\Models\Announcement;
 use App\Models\Attendance;
 use App\Models\ClassSubject;
 use App\Models\Fee;
@@ -591,6 +592,44 @@ class ParentController extends Controller
             'backUrl'   => route('parent.fees', ['child_id' => $owned->student_id]),
             'backLabel' => 'Back to Fees',
         ]);
+    }
+
+    /**
+     * Phase 5 — announcements across every child.
+     *
+     * A parent with children in two grade levels sees notices aimed at both,
+     * because the visibility scope resolves their whole set of classes.
+     */
+    public function announcements()
+    {
+        $children = $this->getChildren();
+        $selected = $this->getSelectedChild($children);
+        $service  = app(\App\Services\AnnouncementService::class);
+
+        return view('parent.announcements', $this->parentLayoutVars($selected, $children, 'Announcements') + [
+            'announcements' => $service->feedFor(auth()->user()),
+            'unreadCount'   => $service->unreadCount(auth()->user()),
+        ]);
+    }
+
+    public function readAnnouncement(Announcement $announcement)
+    {
+        $visible = Announcement::visibleTo(auth()->user())
+            ->where('announcements.announcement_id', $announcement->announcement_id)
+            ->firstOrFail();
+
+        app(\App\Services\AnnouncementService::class)->markRead($visible, auth()->user());
+
+        return back();
+    }
+
+    public function readAllAnnouncements()
+    {
+        $count = app(\App\Services\AnnouncementService::class)->markAllRead(auth()->user());
+
+        return back()->with('notification', $count > 0
+            ? "Marked {$count} announcement(s) as read."
+            : 'Nothing new to mark.');
     }
 
     // ─────────────────────────────────────────────────────────────────────

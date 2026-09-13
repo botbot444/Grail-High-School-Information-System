@@ -27,6 +27,7 @@ class StudentPortalComposer
             'navStudentInitials' => $student ? $this->initials($student) : null,
             'navTerm'            => Term::current(),
             'navDueAssignments'  => $student ? $this->dueCount($student) : null,
+            'navUnreadNotices'   => $this->unreadNotices(),
         ]);
     }
 
@@ -45,6 +46,18 @@ class StudentPortalComposer
         return $this->student = Student::with('schoolClass')
             ->where('user_id', auth()->id())
             ->first();
+    }
+
+    /** Unread announcements, shown as the pill on the Announcements nav item. */
+    private function unreadNotices(): ?int
+    {
+        if (! auth()->check()) {
+            return null;
+        }
+
+        $count = app(\App\Services\AnnouncementService::class)->unreadCount(auth()->user());
+
+        return $count > 0 ? $count : null;
     }
 
     private function initials(Student $student): string
