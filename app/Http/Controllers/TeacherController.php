@@ -740,23 +740,36 @@ class TeacherController extends Controller
         $teacher = $user->teacher;
 
         if (!$teacher) {
-            return view('teacher.marks', ['assignments' => collect()])
-                ->with('notification', 'Teacher profile not found.');
+            return view('teacher.marks', [
+                'assignments' => collect(), 'terms' => collect(), 'term' => null,
+                'assignment' => null, 'students' => collect(), 'isLocked' => false,
+            ])->with('notification', 'Teacher profile not found.');
         }
-        
+
         // Get teacher's assignments with their classes and subjects
         $assignments = ClassSubject::with(['schoolClass', 'subject', 'teacher'])
             ->where('teacher_id', $teacher->teacher_id)
             ->get();
 
+        // Term selector — same calendar (Phase 3) convention as Class Performance
+        // and the roster/timetable pages, so "Enter Marks" and "Class Performance"
+        // are always looking at the same term.
+        $terms = Term::with('academicYear')->orderByDesc('start_date')->get();
+        $term = $request->filled('term_id')
+            ? $terms->firstWhere('term_id', (int) $request->term_id)
+            : Term::current();
+        $term ??= $terms->first();
+
         if ($assignments->isEmpty()) {
-            return view('teacher.marks', compact('assignments'))
-                ->with('notification', 'No assignments found for this teacher.');
+            return view('teacher.marks', [
+                'assignments' => $assignments, 'terms' => $terms, 'term' => $term,
+                'assignment' => null, 'students' => collect(), 'isLocked' => false,
+            ])->with('notification', 'No assignments found for this teacher.');
         }
 
         // Get selected assignment or use first one
         $selectedAssignmentId = $request->query('assignment_id');
-        $assignment = $selectedAssignmentId 
+        $assignment = $selectedAssignmentId
             ? $assignments->firstWhere('class_subject_id', $selectedAssignmentId)
             : $assignments->first();
 
@@ -764,43 +777,50 @@ class TeacherController extends Controller
             $assignment = $assignments->first();
         }
 
-        // Get students in the selected class
-        $students = Student::where('class_id', $assignment->schoolClass->class_id)
+        // Same (term-name, academic-year) pair storeMarks() writes with — matches
+        // whether or not a Phase 3 calendar Term is set up yet, so what's shown
+        // here is always exactly what a save would update.
+        $termLabel = $term?->name ?? 'Term 1';
+        $yearLabel = (int) ($term?->academicYear?->label ?? now()->year);
+
+        $studentModels = Student::where('class_id', $assignment->schoolClass->class_id)
             ->with('user')
+            ->orderBy('last_name')->orderBy('first_name')
+            ->get();
+
+        $grades = Grade::where('class_subject_id', $assignment->class_subject_id)
+            ->where('assessment_type', 'EXAM')
+            ->where('term', $termLabel)
+            ->where('academic_year', $yearLabel)
+            ->whereIn('student_id', $studentModels->pluck('student_id'))
             ->get()
-            ->map(function ($student) use ($assignment) {
-                // Get current grade/mark for this student in this subject (Term 1, Exam)
-                $grade = Grade::where('student_id', $student->student_id)
-                    ->where('class_subject_id', $assignment->class_subject_id)
-                    ->where('assessment_type', 'EXAM')
-                    ->where('term', 'Term 1')
-                    ->where('academic_year', now()->year)
-                    ->first();
+            ->keyBy('student_id');
 
-                // Get current attendance for this student
-                $attendance = Attendance::where('student_id', $student->student_id)
-                    ->where('class_subject_id', $assignment->class_subject_id)
-                    ->where('date', now()->toDateString())
-                    ->first();
+        $students = $studentModels->values()->map(function ($student, $i) use ($grades) {
+            $grade = $grades->get($student->student_id);
+            $mark = $grade?->score !== null ? (float) $grade->score : null;
 
-                $statusMap = [
-                    'Present' => 'P',
-                    'Absent'  => 'A',
-                    'Late'    => 'L',
-                ];
+            return [
+                'id' => $student->student_id,
+                'index' => $i + 1,
+                'name' => $student->full_name,
+                'initials' => mb_strtoupper(mb_substr($student->first_name ?? ' ', 0, 1).mb_substr($student->last_name ?? ' ', 0, 1)),
+                'mark' => $mark,
+                'letter' => $mark === null ? null : $this->performanceLetter($mark),
+            ];
+        });
 
-                return [
-                    'id' => $student->student_id,
-                    'name' => $student->full_name,
-                    'mark' => $grade?->score ?? 0,
-                    'attendance' => $statusMap[$attendance?->status] ?? 'P',
-                ];
-            });
+        $isLocked = $term
+            ? app(ReportCardService::class)->isLocked((int) $assignment->schoolClass->class_id, (int) $term->term_id)
+            : false;
 
         return view('teacher.marks', compact(
             'assignments',
+            'terms',
+            'term',
             'assignment',
-            'students'
+            'students',
+            'isLocked'
         ));
     }
 
