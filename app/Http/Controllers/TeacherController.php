@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Announcement;
 use App\Models\ClassSubject;
 use App\Models\SchoolClass;
 use App\Models\Student;
@@ -11,6 +12,7 @@ use App\Models\Term;
 use App\Models\TimetableSlot;
 use App\Models\ReportCard;
 use App\Models\AuditLog;
+use App\Services\AnnouncementService;
 use App\Services\ReportCardService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -1009,5 +1011,43 @@ class TeacherController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors('Failed to save records: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Phase 5 — teacher-side announcements.
+     *
+     * Teachers have no authoring route (that stays admin-only); this is the
+     * same read/mark-read feed the parent and student portals use, scoped by
+     * Announcement::visibleTo() to school-wide notices only, since a teacher
+     * doesn't sit in any single class/grade-level audience.
+     */
+    public function announcements()
+    {
+        $service = app(AnnouncementService::class);
+
+        return view('teacher.announcements', [
+            'announcements' => $service->feedFor(auth()->user()),
+            'unreadCount'   => $service->unreadCount(auth()->user()),
+        ]);
+    }
+
+    public function readAnnouncement(Announcement $announcement)
+    {
+        $visible = Announcement::visibleTo(auth()->user())
+            ->where('announcements.announcement_id', $announcement->announcement_id)
+            ->firstOrFail();
+
+        app(AnnouncementService::class)->markRead($visible, auth()->user());
+
+        return back();
+    }
+
+    public function readAllAnnouncements()
+    {
+        $count = app(AnnouncementService::class)->markAllRead(auth()->user());
+
+        return back()->with('notification', $count > 0
+            ? "Marked {$count} announcement(s) as read."
+            : 'Nothing new to mark.');
     }
 }

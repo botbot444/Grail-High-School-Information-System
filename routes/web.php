@@ -142,7 +142,9 @@ Route::middleware(['auth', 'role:teacher'])
         Route::get('/performance', [TeacherController::class, 'performance'])->name('performance');
         Route::post('/performance/finalize', [TeacherController::class, 'finalizeGrades'])->name('performance.finalize');
         Route::post('/performance/unfinalize-request', [TeacherController::class, 'unfinalizeRequest'])->name('performance.unfinalize-request');
-        Route::view('/announcements', 'teacher.placeholder')->defaults('placeholder', 'Announcements')->name('announcements');
+        Route::get('/announcements', [TeacherController::class, 'announcements'])->name('announcements');
+        Route::post('/announcements/read-all', [TeacherController::class, 'readAllAnnouncements'])->name('announcements.read-all');
+        Route::post('/announcements/{announcement}/read', [TeacherController::class, 'readAnnouncement'])->name('announcements.read');
         Route::get('/settings', [TeacherController::class, 'settings'])->name('settings');
 
         // Assignments — authoring and marking.
