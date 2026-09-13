@@ -40,6 +40,10 @@ class PaymentController extends Controller
     {
         $payment->load(['fee.student', 'fee.feeItems', 'recordedBy']);
 
-        return view('admin.fees.receipt', compact('payment'));
+        return view('admin.fees.receipt', [
+            'payment'   => $payment,
+            'backUrl'   => route('admin.fees.show', $payment->fee->fee_id),
+            'backLabel' => 'Back to Fee',
+        ]);
     }
 }

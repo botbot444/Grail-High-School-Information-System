@@ -67,12 +67,33 @@
                             <p class="text-xl font-extrabold text-on-surface mt-1">{{ $card['attendance'] }}%</p>
                         </div>
                     </div>
+                    {{-- Phase 11: rank + the actual report card, once finalized. --}}
+                    @if ($card['card'])
+                        <div class="px-5 pb-4 -mt-1 flex flex-wrap items-center gap-2">
+                            @if ($card['card']->rank_label)
+                                <span class="text-xs font-semibold bg-primary/10 text-primary px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size:14px">military_tech</span>
+                                    Position {{ $card['card']->rank_label }}
+                                </span>
+                            @endif
+                            <a href="{{ route('parent.report-card', [$student->student_id, $card['term']->term_id]) }}"
+                               target="_blank" rel="noopener"
+                               class="text-xs font-semibold border border-outline-variant text-on-surface-variant hover:bg-surface-container px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
+                                <span class="material-symbols-outlined" style="font-size:14px">visibility</span> View
+                            </a>
+                            <a href="{{ route('parent.report-card', [$student->student_id, $card['term']->term_id]) }}?download=1"
+                               class="text-xs font-bold bg-primary text-on-primary hover:bg-primary/90 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
+                                <span class="material-symbols-outlined" style="font-size:14px">download</span> PDF
+                            </a>
+                        </div>
+                    @endif
+
                     <div class="px-5 py-3 bg-surface-container border-t border-outline-variant flex items-center justify-between">
                         <span class="text-xs text-on-surface-variant">
                             {{ $card['class']?->display_name ?? ($card['class']?->class_name ?? '—') }}
                         </span>
-                        <span class="text-[10px] font-semibold uppercase tracking-wide text-on-surface-variant">
-                            {{ $card['term']->is_current ? 'Current term' : 'Past term' }}
+                        <span class="text-[10px] font-semibold uppercase tracking-wide {{ $card['card'] ? 'text-green-700' : 'text-on-surface-variant' }}">
+                            {{ $card['card'] ? 'Finalized' : ($card['term']->is_current ? 'Current term' : 'Not finalized') }}
                         </span>
                     </div>
                 </div>

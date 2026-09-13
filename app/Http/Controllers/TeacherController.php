@@ -502,6 +502,18 @@ class TeacherController extends Controller
             return back()->withErrors('Unauthorized assignment.');
         }
 
+        // Phase 11 — finalized terms are locked. An admin can unfinalize if a
+        // correction is genuinely needed.
+        $currentTerm = \App\Models\Term::current();
+
+        if ($currentTerm && app(\App\Services\ReportCardService::class)
+                ->isLocked((int) $assignment->class_id, (int) $currentTerm->term_id)) {
+            return back()->withErrors(
+                'Grades for this class are finalized for ' . $currentTerm->name .
+                ' and can no longer be edited. Ask an administrator to unfinalize first.'
+            );
+        }
+
         $marks = $request->input('marks', []);
         $attendance = $request->input('attendance', []);
 
@@ -525,13 +537,17 @@ class TeacherController extends Controller
                         'student_id' => $studentId,
                         'class_subject_id' => $assignmentId,
                         'assessment_type' => 'EXAM',
-                        'term' => 'Term 1',
-                        'academic_year' => now()->year,
+                        'term' => $currentTerm?->name ?? 'Term 1',
+                        'academic_year' => (int) ($currentTerm?->academicYear?->label ?? now()->year),
                     ],
                     [
                         'score' => $mark,
                         'max_score' => 100.00,
                         'recorded_by' => $teacher->teacher_id,
+                        // Populate the calendar FK so report cards and term
+                        // reporting can filter without the legacy string match.
+                        'term_id' => $currentTerm?->term_id,
+                        'academic_year_id' => $currentTerm?->academic_year_id,
                     ]
                 );
             }

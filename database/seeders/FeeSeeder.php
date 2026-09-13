@@ -12,7 +12,7 @@ class FeeSeeder extends Seeder
 {
     public function run(): void
     {
-        $students = Student::all();
+        $students = Student::with('user')->get(); // user is read below for the demo check
         $year     = now()->year;
         $term     = 'Term 1';
         $count    = 0;
@@ -37,7 +37,15 @@ class FeeSeeder extends Seeder
             // 50% Cleared, 30% Partially Paid, 20% Pending
             $roll = rand(1, 100);
 
-            $status      = $roll <= 50 ? 'Cleared' : ($roll <= 80 ? 'Partially Paid' : 'Pending');
+            // The demo student is what everyone logs in as to look around, so pin
+            // it to a part-paid fee: a cleared one hides the "How to pay" panel
+            // and makes the feature look broken.
+            $isDemo = $student->user?->email === 'student@grail.school'
+                || $student->first_name === 'Demo';
+
+            $status      = $isDemo
+                ? 'Partially Paid'
+                : ($roll <= 50 ? 'Cleared' : ($roll <= 80 ? 'Partially Paid' : 'Pending'));
             $amountPaid  = match ($status) {
                 'Cleared'        => $amountDue,
                 'Partially Paid' => round($amountDue * fake()->randomFloat(2, 0.2, 0.8), 2),

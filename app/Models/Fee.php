@@ -196,6 +196,76 @@ class Fee extends Model
         return $query->where('term', $term)->where('academic_year', $year);
     }
 
+    // ── Payment reference ─────────────────────────────────────────────────────
+
+    /**
+     * Characters used in the reference. Deliberately excludes the pairs people
+     * mistype when copying off a phone screen or a deposit slip: I/1, O/0, S/5,
+     * Z/2, B/8. 26 symbols, which is the checksum modulus.
+     */
+    private const REF_ALPHABET = 'ACDEFGHJKLMNPQRTUVWXY34679';
+
+    /**
+     * A stable per-fee reference the parent quotes when paying, e.g.
+     * GRL-0042-0117-K. Deterministic, so the same fee always yields the same
+     * code and a parent can pay in instalments against one reference.
+     *
+     * The trailing character is a check digit — a single mistyped digit, or two
+     * transposed digits, will not resolve to a different valid fee.
+     */
+    public function getPaymentReferenceAttribute(): string
+    {
+        $body = sprintf('%04d-%04d', $this->student_id, $this->fee_id);
+
+        return 'GRL-' . $body . '-' . self::checkCharacter($body);
+    }
+
+    /**
+     * Resolve a reference a bursar has typed in. Returns null when the format is
+     * wrong, the check character fails, or no such fee exists.
+     */
+    public static function findByPaymentReference(?string $reference): ?self
+    {
+        if (blank($reference)) {
+            return null;
+        }
+
+        $clean = strtoupper(preg_replace('/[^A-Z0-9]/i', '', $reference));
+
+        // GRL + 4 student digits + 4 fee digits + 1 check character
+        if (! preg_match('/^GRL(\d{4})(\d{4})([A-Z0-9])$/', $clean, $m)) {
+            return null;
+        }
+
+        [, $studentPart, $feePart, $check] = $m;
+        $body = $studentPart . '-' . $feePart;
+
+        if ($check !== self::checkCharacter($body)) {
+            return null;
+        }
+
+        return static::where('fee_id', (int) $feePart)
+            ->where('student_id', (int) $studentPart)
+            ->first();
+    }
+
+    /**
+     * Weighted modulus check character. Position weights make transpositions
+     * (the most common typing error) change the result, which a plain digit sum
+     * would not.
+     */
+    private static function checkCharacter(string $body): string
+    {
+        $digits = preg_replace('/\D/', '', $body);
+        $sum = 0;
+
+        foreach (str_split($digits) as $i => $digit) {
+            $sum += ((int) $digit) * ($i + 2);
+        }
+
+        return self::REF_ALPHABET[$sum % strlen(self::REF_ALPHABET)];
+    }
+
     // ── Accessors ─────────────────────────────────────────────────────────────
 
     public function getIsOverdueAttribute(): bool

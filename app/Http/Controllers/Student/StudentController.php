@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Student;
 
+use App\Http\Controllers\Concerns\RendersReportCards;
 use App\Http\Controllers\Controller;
+use App\Models\ReportCard;
 use App\Models\Student;
 use App\Models\Term;
 use App\Models\TimetableSlot;
@@ -17,6 +19,8 @@ use Illuminate\View\View;
  */
 class StudentController extends Controller
 {
+    use RendersReportCards;
+
     /** Resolve the signed-in user's student record, eager-loading what the page needs. */
     private function currentStudent(array $with = []): Student
     {
@@ -191,14 +195,34 @@ class StudentController extends Controller
     {
         $student = $this->currentStudent(['schoolClass']);
 
-        // Terms the student actually has grades for — the report card for each
-        // becomes downloadable once Phase 11 wires dompdf to a layout.
-        $terms = Term::with('academicYear')
-            ->whereIn('term_id', $student->grades()->whereNotNull('term_id')->distinct()->pluck('term_id'))
-            ->orderByDesc('start_date')
-            ->get();
+        // Only finalized cards are offered: an unfinalized term has no rank and
+        // its marks may still change.
+        $cards = ReportCard::where('student_id', $student->student_id)
+            ->finalized()
+            ->with('term.academicYear')
+            ->get()
+            ->sortByDesc(fn (ReportCard $card) => $card->term?->start_date)
+            ->values();
 
-        return view('student.report-cards', compact('student', 'terms'));
+        return view('student.report-cards', compact('student', 'cards'));
+    }
+
+    /** Preview or download one of this student's own finalized report cards. */
+    public function reportCard(Request $request, int $term)
+    {
+        $student = $this->currentStudent(['schoolClass.gradeLevel']);
+
+        // Resolving through the student's own finalized cards is the access
+        // check — a term id they have no finalized card for simply 404s.
+        $card = ReportCard::where('student_id', $student->student_id)
+            ->where('term_id', $term)
+            ->finalized()
+            ->with('term')
+            ->firstOrFail();
+
+        return $request->boolean('download')
+            ? $this->downloadReportCard($student, $card->term)
+            : $this->renderReportCard($student, $card->term);
     }
 
     // ── Announcements (Phase 5) ───────────────────────────────────────────────

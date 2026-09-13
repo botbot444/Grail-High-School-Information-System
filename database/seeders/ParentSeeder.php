@@ -24,7 +24,8 @@ class ParentSeeder extends Seeder
                 'name'              => 'Demo Parent',
                 'email'             => 'parent@grail.school',
                 'password'          => Hash::make('12345678'),
-                'role_id'           => $roleId,
+                'role'              => 'parent',
+                    'role_id'           => $roleId,
                 'email_verified_at' => now(),
             ]
         );
@@ -58,6 +59,7 @@ class ParentSeeder extends Seeder
                     'name'              => "{$firstName} {$lastName}",
                     'email'             => $email,
                     'password'          => Hash::make('12345678'),
+                    'role'              => 'parent',
                     'role_id'           => $roleId,
                     'email_verified_at' => now(),
                 ]

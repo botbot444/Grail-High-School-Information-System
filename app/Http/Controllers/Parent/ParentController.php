@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Parent;
 
+use App\Http\Controllers\Concerns\RendersReportCards;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
+use App\Models\Assignment;
 use App\Models\Attendance;
 use App\Models\ClassSubject;
 use App\Models\Fee;
 use App\Models\Grade;
 use App\Models\ParentProfile;
+use App\Models\ReportCard;
+use App\Models\SchoolSetting;
 use App\Models\Payment;
 use App\Models\SchoolClass;
 use App\Models\Student;
@@ -20,6 +24,8 @@ use Illuminate\Support\Carbon;
 
 class ParentController extends Controller
 {
+    use RendersReportCards;
+
     public function timetable(Request $request)
     {
         $children = $this->getChildren();
@@ -41,11 +47,16 @@ class ParentController extends Controller
                 ->get()
             : collect();
 
+        $periods = $student->schoolClass?->gradeLevel
+            ? $student->schoolClass->gradeLevel->periods()->orderBy('order')->get()
+            : collect();
+
         return view('parent.timetable', $this->parentLayoutVars($student, $children, 'Timetable') + [
             'student' => $student,
-            'terms' => $terms,
-            'term' => $term,
-            'slots' => $slots,
+            'terms'   => $terms,
+            'term'    => $term,
+            'slots'   => $slots,
+            'periods' => $periods,
         ]);
     }
 
@@ -75,9 +86,25 @@ class ParentController extends Controller
         if ($children->isEmpty()) {
             return null;
         }
-        // Explicit ?child_id= wins, then the session selection, then the first child.
-        $id = request()->input('child_id') ?: session('selected_child_id');
-        return $id ? ($children->firstWhere('student_id', (int) $id) ?? $children->first()) : $children->first();
+
+        // An explicit ?child_id= that is not this parent's child is a tampering
+        // attempt, not a typo: reject it outright rather than quietly showing a
+        // different child's data (Phase 4 exit checklist).
+        if (request()->filled('child_id')) {
+            $requested = $children->firstWhere('student_id', (int) request()->input('child_id'));
+
+            abort_if($requested === null, 403);
+
+            return $requested;
+        }
+
+        // A stale session selection (e.g. a child who has since left) falls back
+        // quietly — the parent did not ask for it on this request.
+        $sessionId = session('selected_child_id');
+
+        return $sessionId
+            ? ($children->firstWhere('student_id', (int) $sessionId) ?? $children->first())
+            : $children->first();
     }
 
     /** Current academic term (is_current) joined to its academic year. */
@@ -145,7 +172,30 @@ class ParentController extends Controller
         $vars['upcomingAssessments']  = $selected ? $selected->grades()->with('classSubject.subject')
             ->orderByDesc('created_at')->take(5)->get() : collect();
 
+        $vars['overdueFees']  = $this->overdueFees($children);
+        $vars['overdueTotal'] = (float) $vars['overdueFees']->sum(fn ($fee) => max(0, (float) $fee->amount_due - (float) $fee->amount_paid));
+
         return view('parent.dashboard', $vars);
+    }
+
+    /**
+     * Overdue fees across every child (Phase 7).
+     *
+     * Uses Fee::scopeOverdue() — past due_date with an outstanding balance —
+     * rather than trusting the stored status string, so the banner is correct
+     * even if the nightly fees:flag-overdue command has not run yet.
+     */
+    private function overdueFees($children): \Illuminate\Support\Collection
+    {
+        if ($children->isEmpty()) {
+            return collect();
+        }
+
+        return Fee::overdue()
+            ->whereIn('student_id', $children->pluck('student_id'))
+            ->with('student')
+            ->orderBy('due_date')
+            ->get();
     }
 
     /** Aggregate stats for the selected child. */
@@ -345,7 +395,14 @@ class ParentController extends Controller
         $pickedTerm = $termId ? $terms->firstWhere('term_id', $termId) : $termFilter->first();
 
         // Build a report-card summary per applicable term.
-        $reportCards = $termFilter->map(function ($term) use ($selected) {
+        // Finalized cards for this child, keyed by term, so each summary row can
+        // offer a download only where the class teacher has actually finalized.
+        $finalizedCards = ReportCard::where('student_id', $selected->student_id)
+            ->finalized()
+            ->get()
+            ->keyBy('term_id');
+
+        $reportCards = $termFilter->map(function ($term) use ($selected, $finalizedCards) {
             $grades = Grade::where('student_id', $selected->student_id)
                 ->where(function ($q) use ($term) {
                     $q->where('term_id', $term->term_id)
@@ -366,6 +423,7 @@ class ParentController extends Controller
                 'attendance'  => $attRate,
                 'class'       => $selected->schoolClass,
                 'subjects'    => $grades->where('class_subject_id', '!=', null)->groupBy('class_subject_id')->count(),
+                'card'        => $finalizedCards->get($term->term_id),
             ];
         })->filter(fn ($r) => $r['average'] > 0 || $r['attendance'] > 0)->values();
 
@@ -390,23 +448,39 @@ class ParentController extends Controller
 
         $student = Student::with(['schoolClass'])->findOrFail($selected->student_id);
 
-        // Grade rows are always scored (score is NOT NULL), so there is no "pending"
-        // work to track — this page lists the most recent recorded assessments.
-        $recent = Grade::where('student_id', $student->student_id)
-            ->with('classSubject.subject')->orderByDesc('created_at')->take(12)->get()
-            ->map(fn ($g) => [
-                'title'  => $g->classSubject->subject->subject_name ?? 'Assessment',
-                'type'   => $g->assessment_type ?? 'CA',
-                'score'  => (float) $g->score,
-                'max'    => (float) $g->max_score,
-                'pct'    => $g->percentage,
-                'date'   => optional($g->created_at)->format('M d, Y'),
-                'status' => $g->percentage >= 60 ? 'passed' : 'needs_review',
-            ]);
+        // Real assignments set for the subjects this child's class takes, with the
+        // child's own submission attached so the parent can see what is outstanding.
+        $assignments = collect();
+
+        if ($student->class_id) {
+            $assignments = Assignment::published()
+                ->forClass($student->class_id)
+                ->with([
+                    'classSubject.subject',
+                    'classSubject.teacher',
+                    'submissions' => fn ($q) => $q->where('student_id', $student->student_id),
+                ])
+                ->orderByDesc('due_at')
+                ->take(40)
+                ->get()
+                ->map(function (Assignment $assignment) {
+                    $submission = $assignment->submissions->first();
+                    $assignment->setAttribute('child_submission', $submission);
+                    $assignment->setAttribute('child_status', $assignment->statusForStudent($submission));
+
+                    return $assignment;
+                });
+        }
 
         return view('parent.assignments', $this->parentLayoutVars($selected, $children, 'Assignments') + [
-            'student'   => $student,
-            'recent'    => $recent,
+            'student'     => $student,
+            'assignments' => $assignments,
+            'counts'      => [
+                'pending'   => $assignments->where('child_status', 'Pending')->count(),
+                'overdue'   => $assignments->where('child_status', 'Overdue')->count(),
+                'submitted' => $assignments->where('child_status', 'Submitted')->count(),
+                'graded'    => $assignments->where('child_status', 'Graded')->count(),
+            ],
         ]);
     }
 
@@ -442,6 +516,9 @@ class ParentController extends Controller
             'nextDue' => $nextDue,
             'payments'=> $payments,
             'overdueCount' => $fees->where('status', 'Overdue')->count(),
+            'overdueFees'  => $this->overdueFees($children->where('student_id', $student->student_id)),
+            // Bank / mobile money details for the "How to pay" panel.
+            'settings'     => SchoolSetting::all_settings(),
         ]);
     }
 
@@ -463,6 +540,57 @@ class ParentController extends Controller
         session(['selected_child_id' => $owned->student_id]);
 
         return redirect()->route('parent.fees', ['child_id' => $owned->student_id]);
+    }
+
+    /**
+     * Phase 11 — preview or download a child's finalized report card.
+     *
+     * Ownership is enforced by resolving the card through this parent's own
+     * children, so a term id for someone else's child is a 404, not a leak.
+     */
+    public function reportCard(Request $request, int $student, int $term)
+    {
+        $owned = $this->getChildren()->firstWhere('student_id', $student);
+
+        if (! $owned) {
+            abort(404);
+        }
+
+        $card = ReportCard::where('student_id', $owned->student_id)
+            ->where('term_id', $term)
+            ->finalized()
+            ->with('term')
+            ->firstOrFail();
+
+        $owned->loadMissing('schoolClass.gradeLevel');
+
+        return $request->boolean('download')
+            ? $this->downloadReportCard($owned, $card->term)
+            : $this->renderReportCard($owned, $card->term);
+    }
+
+    /**
+     * Print-friendly receipt for a single payment (Phase 7).
+     *
+     * Reuses the same view the bursar sees. The scoping check is the important
+     * part: the payment's fee must belong to one of this parent's own children,
+     * otherwise it is a 404 — a parent guessing payment ids learns nothing.
+     */
+    public function receipt(Payment $payment)
+    {
+        $payment->load(['fee.student', 'fee.feeItems', 'recordedBy']);
+
+        $owned = $this->getChildren()->firstWhere('student_id', $payment->fee?->student_id);
+
+        if (! $owned) {
+            abort(404);
+        }
+
+        return view('admin.fees.receipt', [
+            'payment'   => $payment,
+            'backUrl'   => route('parent.fees', ['child_id' => $owned->student_id]),
+            'backLabel' => 'Back to Fees',
+        ]);
     }
 
     // ─────────────────────────────────────────────────────────────────────

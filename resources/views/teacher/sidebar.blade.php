@@ -23,6 +23,7 @@
                 'marks'        => ['route' => 'teacher.marks',        'icon' => 'edit_note',          'label' => 'Enter Marks'],
                 'performance'  => ['route' => 'teacher.performance',  'icon' => 'query_stats',        'label' => 'Class Performance'],
                 'assignments'  => ['route' => 'teacher.assignments.index', 'icon' => 'assignment',   'label' => 'Assignments'],
+                'reportcards'  => ['route' => 'teacher.report-cards.index', 'icon' => 'description', 'label' => 'Report Cards'],
                 'announcements'=> ['route' => 'teacher.announcements','icon' => 'campaign',           'label' => 'Announcements'],
             ];
         @endphp
@@ -33,7 +34,8 @@
                 $isActive  = request()->routeIs($routeName)
                     // Keep "Enter Marks" highlighted for the marks.store POST as well.
                     || ($routeName === 'teacher.marks' && request()->routeIs('teacher.marks.*'))
-                    || ($routeName === 'teacher.assignments.index' && request()->routeIs('teacher.assignments.*'));
+                    || ($routeName === 'teacher.assignments.index' && request()->routeIs('teacher.assignments.*'))
+                    || ($routeName === 'teacher.report-cards.index' && request()->routeIs('teacher.report-cards.*'));
             @endphp
             <a class="{{ $isActive ? 'flex items-center gap-3 px-3 py-2.5 bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'flex items-center gap-3 px-3 py-2.5 text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
                 href="{{ route($routeName) }}">

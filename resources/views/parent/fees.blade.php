@@ -23,6 +23,9 @@
             @endif
         </div>
 
+        {{-- ── Overdue fee notice (Phase 7). One child in view, so no name needed. ── --}}
+        @include('parent.partials.overdue-banner', ['showChild' => false])
+
         {{-- ── Summary ── --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
@@ -78,6 +81,9 @@
                 </p>
             </div>
         </div>
+
+        {{-- ── How to pay: instructions + per-fee reference (no money moves here) ── --}}
+        @include('parent.partials.how-to-pay')
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {{-- ── Fee invoices ── --}}
@@ -154,6 +160,15 @@
                             @if ($payment->reference_number)
                                 <span class="text-[10px] font-mono text-on-surface-variant bg-surface-container px-2 py-1 rounded">{{ $payment->reference_number }}</span>
                             @endif
+
+                            {{-- Phase 7: parent-facing receipt, opens the print-friendly view. --}}
+                            <a href="{{ route('parent.payments.receipt', $payment->payment_id) }}"
+                               target="_blank" rel="noopener"
+                               title="View receipt"
+                               class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-white hover:border-primary transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                                <span class="text-xs font-medium hidden sm:inline">Receipt</span>
+                            </a>
                         </li>
                     @empty
                         <li class="px-5 py-10 text-center">

@@ -84,6 +84,12 @@ class Student extends Model
         return $this->hasMany(AssignmentSubmission::class, 'student_id', 'student_id');
     }
 
+    /** Termly report cards (Phase 11) */
+    public function reportCards(): HasMany
+    {
+        return $this->hasMany(ReportCard::class, 'student_id', 'student_id');
+    }
+
     // ── Scopes ────────────────────────────────────────────────────────────────
 
     /** Filter to students in a specific class */

@@ -26,6 +26,9 @@
             </a>
         </div>
 
+        {{-- ── Overdue fee notice (Phase 7) ── --}}
+        @include('parent.partials.overdue-banner')
+
         {{-- ── Children summary cards ── --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @forelse ($children as $child)

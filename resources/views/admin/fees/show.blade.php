@@ -75,6 +75,13 @@
                             </tfoot>
                         </table>
                     </div>
+
+                    {{-- The reference the parent was told to quote when paying. --}}
+                    <div class="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-outline-variant bg-surface-container px-4 py-3">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Payment reference</span>
+                        <code class="font-mono text-sm font-bold tracking-wider text-on-surface select-all">{{ $fee->payment_reference }}</code>
+                        <span class="text-xs text-on-surface-variant">— quoted by the parent on their deposit slip or mobile money transfer</span>
+                    </div>
                 </section>
 
                 <section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">

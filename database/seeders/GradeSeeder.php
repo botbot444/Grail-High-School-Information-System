@@ -6,15 +6,21 @@ use Illuminate\Database\Seeder;
 use App\Models\Student;
 use App\Models\ClassSubject;
 use App\Models\Grade;
+use App\Models\Term;
 
 class GradeSeeder extends Seeder
 {
     public function run(): void
     {
         $students = Student::with('schoolClass.classSubjects')->get();
-        $year     = now()->year;
-        $term     = 'Term 1';
-        $count    = 0;
+
+        // Anchor the seeded marks to a real term from the Phase 3 calendar so
+        // report cards and term-scoped reports can find them by term_id, not
+        // just by the legacy term-name string.
+        $termModel = Term::with('academicYear')->orderBy('start_date')->first();
+        $year      = (int) ($termModel?->academicYear?->label ?? now()->year);
+        $term      = $termModel?->name ?? 'Term 1';
+        $count     = 0;
 
         foreach ($students as $student) {
             $classSubjects = $student->schoolClass?->classSubjects ?? collect();
@@ -43,6 +49,8 @@ class GradeSeeder extends Seeder
                         'max_score'        => $maxScore,
                         'term'             => $term,
                         'academic_year'    => $year,
+                        'term_id'          => $termModel?->term_id,
+                        'academic_year_id' => $termModel?->academicYear?->year_id,
                         'recorded_by'      => $cs->teacher_id,
                     ]);
                     $count++;
@@ -50,6 +58,6 @@ class GradeSeeder extends Seeder
             }
         }
 
-        $this->command->info("✔ {$count} grade records seeded (Term 1, {$year}).");
+        $this->command->info("✔ {$count} grade records seeded ({$term}, {$year}).");
     }
 }

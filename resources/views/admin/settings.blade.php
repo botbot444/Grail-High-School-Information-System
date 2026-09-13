@@ -30,6 +30,16 @@
                             <span class="material-symbols-outlined">model_training</span>
                             Academic Settings
                         </button>
+                        <a href="{{ route('admin.settings.payments') }}"
+                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                            <span class="material-symbols-outlined">account_balance_wallet</span>
+                            Payment Details
+                        </a>
+                        <a href="{{ route('admin.categories.index') }}"
+                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                            <span class="material-symbols-outlined">sell</span>
+                            Fee Categories
+                        </a>
                         <button
                             class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
                             <span class="material-symbols-outlined">admin_panel_settings</span>

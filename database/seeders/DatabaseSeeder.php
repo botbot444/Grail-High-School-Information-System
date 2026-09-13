@@ -21,19 +21,24 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             AdminSeeder::class,
+            // The calendar must exist before grades, fees or timetables are
+            // seeded — they anchor to a term_id, and a term cannot be resolved
+            // from a table that has not been populated yet.
+            AcademicYearSeeder::class,
             SubjectSeeder::class,
             TeacherSeeder::class,
-            ParentSeeder::class,
             SchoolClassSeeder::class,
             ClassSubjectSeeder::class,
             StudentSeeder::class,
+            // Must follow StudentSeeder: it links a parent to every student that
+            // does not have one, which finds nothing if students do not exist yet.
+            ParentSeeder::class,
             AttendanceSeeder::class,
             GradeSeeder::class,
             FeeSeeder::class,
             FeeCategorySeeder::class,
             AuditLogSeeder::class,
             GradeLevelSeeder::class,
-            AcademicYearSeeder::class,
             AssignmentSeeder::class,
             TimetableSeeder::class,
         ]);

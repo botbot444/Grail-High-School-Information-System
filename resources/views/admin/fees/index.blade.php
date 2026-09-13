@@ -32,6 +32,26 @@
             </div>
         </div>
 
+        {{-- Match a deposit slip or mobile money SMS to its fee in one step. --}}
+        <form method="GET" action="{{ route('admin.fees.lookup') }}"
+            class="mb-4 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-4">
+            <label for="reference" class="block text-xs font-semibold text-on-surface-variant mb-1">
+                Find a fee by payment reference
+            </label>
+            <div class="flex flex-wrap gap-2">
+                <input type="text" name="reference" id="reference" value="{{ request('reference') }}"
+                    placeholder="e.g. GRL-0042-0117-A"
+                    class="flex-1 min-w-[220px] rounded-lg border border-outline-variant px-3 py-2 text-sm font-mono uppercase focus:ring-2 focus:ring-primary">
+                <button type="submit"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">search</span> Find fee
+                </button>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-1.5">
+                Parents quote this when paying. Dashes, spaces and lower case are all fine.
+            </p>
+        </form>
+
         <form method="GET" action="{{ route('admin.fees.index') }}" class="mb-4 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-4">
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div>

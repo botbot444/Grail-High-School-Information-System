@@ -77,6 +77,29 @@ class Grade extends Model
         $this->score = $value;
     }
 
+    // ── Scopes ────────────────────────────────────────────────────────────────
+
+    /**
+     * Grades belonging to a term.
+     *
+     * Matches on term_id where it is populated, and otherwise falls back to the
+     * legacy (term name + academic year) pair — rows created before Phase 3's
+     * calendar landed, and anything the seeders write, carry only those.
+     */
+    public function scopeInTerm($query, Term $term)
+    {
+        return $query->where(function ($q) use ($term) {
+            $q->where('term_id', $term->term_id);
+
+            if ($term->academicYear?->label) {
+                $q->orWhere(fn ($legacy) => $legacy
+                    ->whereNull('term_id')
+                    ->where('term', $term->name)
+                    ->where('academic_year', (int) $term->academicYear->label));
+            }
+        });
+    }
+
     // ── Business Logic ────────────────────────────────────────────────────────
 
     /**

@@ -20,7 +20,8 @@ class AdminSeeder extends Seeder
                 'name'              => 'System Administrator',
                 'email'             => 'admin@grail.school',
                 'password'          => Hash::make('12345678'),
-                'role_id'           => $roleId,
+                'role'              => 'admin',
+                    'role_id'           => $roleId,
                 'email_verified_at' => now(),
             ]
         );

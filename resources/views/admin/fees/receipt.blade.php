@@ -147,8 +147,8 @@
             <button onclick="window.print()" class="btn btn-primary">
                 <i class="fa-solid fa-print"></i> Print Receipt
             </button>
-            <a href="{{ route('admin.fees.show', $payment->fee->fee_id) }}" class="btn">
-                <i class="fa-solid fa-arrow-left"></i> Back to Fee
+            <a href="{{ $backUrl ?? route('admin.fees.show', $payment->fee->fee_id) }}" class="btn">
+                <i class="fa-solid fa-arrow-left"></i> {{ $backLabel ?? 'Back to Fee' }}
             </a>
         </div>
     </div>

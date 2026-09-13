@@ -18,6 +18,32 @@ use Illuminate\Support\Facades\DB;
 
 class FeeController extends Controller
 {
+
+    /**
+     * Resolve a payment reference a parent quoted (from a deposit slip or a
+     * mobile money message) and jump straight to that fee.
+     *
+     * The reference carries a check character, so a mistyped digit is reported
+     * as invalid rather than silently landing on the wrong family's fee.
+     */
+    public function lookup(Request $request)
+    {
+        $reference = $request->query('reference');
+
+        if (blank($reference)) {
+            return redirect()->route('admin.fees.index');
+        }
+
+        $fee = Fee::findByPaymentReference($reference);
+
+        if (! $fee) {
+            return redirect()->route('admin.fees.index')
+                ->withErrors(['reference' => 'No fee matches the reference "' . $reference . '". Check it for a mistyped character.']);
+        }
+
+        return redirect()->route('admin.fees.show', $fee->fee_id)
+            ->with('notification', 'Matched reference ' . $fee->payment_reference . '.');
+    }
     protected static function feeCacheKey(): string
     {
         return 'fees_index_' . md5(serialize(auth()->id()) . request()->fullUrl());

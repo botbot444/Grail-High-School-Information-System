@@ -21,6 +21,9 @@ use App\Http\Controllers\Admin\PeriodController;
 use App\Http\Controllers\Admin\TimetableController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
+use App\Http\Controllers\Teacher\ReportCardController as TeacherReportCardController;
+use App\Http\Controllers\Admin\ReportCardController as AdminReportCardController;
+use App\Http\Controllers\Admin\PaymentSettingsController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -56,8 +59,15 @@ Route::middleware(['auth', 'role:admin'])
 
         // ── Fees ──────────────────────────────────────────────────────────────
         Route::resource('fees', FeeController::class);
+        // Declared ahead of the /fees/{fee} routes so "lookup" is not read as a fee id.
+        Route::get('/fees-lookup', [FeeController::class, 'lookup'])->name('fees.lookup');
         Route::post('/fees/{fee}/payments', [PaymentController::class, 'store'])->name('fees.payments.store');
         Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
+
+        // Report cards (Phase 11) — browse, print, and the unfinalize override.
+        Route::get('/report-cards', [AdminReportCardController::class, 'index'])->name('report-cards.index');
+        Route::get('/report-cards/{student}', [AdminReportCardController::class, 'show'])->name('report-cards.show');
+        Route::post('/report-cards/{class}/unfinalize', [AdminReportCardController::class, 'unfinalize'])->name('report-cards.unfinalize');
         Route::post('/fees/bulk-action', [FeeController::class, 'bulkAction'])->name('fees.bulk-action');
         Route::post('/fees/{fee}/send-reminder', [FeeController::class, 'sendReminder'])->name('fees.send-reminder');
 
@@ -66,6 +76,10 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/settings/categories', [FeeCategoryController::class, 'store'])->name('categories.store');
         Route::put('/settings/categories/{feeCategory}', [FeeCategoryController::class, 'update'])->name('categories.update');
         Route::delete('/settings/categories/{feeCategory}', [FeeCategoryController::class, 'destroy'])->name('categories.destroy');
+
+        // Payment instructions shown to parents (bank / mobile money details).
+        Route::get('/settings/payments', [PaymentSettingsController::class, 'edit'])->name('settings.payments');
+        Route::put('/settings/payments', [PaymentSettingsController::class, 'update'])->name('settings.payments.update');
 
         // ── Audit Logs ───────────────────────────────────────────────────────
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
@@ -122,6 +136,15 @@ Route::middleware(['auth', 'role:teacher'])
         Route::delete('/assignments/{assignment}', [TeacherAssignmentController::class, 'destroy'])->name('assignments.destroy');
         Route::get('/assignments/{assignment}/submissions', [TeacherAssignmentController::class, 'submissions'])->name('assignments.submissions');
         Route::put('/assignments/{assignment}/submissions/{submission}', [TeacherAssignmentController::class, 'grade'])->name('assignments.grade');
+
+        // Report cards (Phase 11) — comments and the finalize workflow.
+        Route::get('/report-cards', [TeacherReportCardController::class, 'index'])->name('report-cards.index');
+        Route::get('/report-cards/class/{class}', [TeacherReportCardController::class, 'show'])->name('report-cards.show');
+        Route::post('/report-cards/class/{class}/finalize', [TeacherReportCardController::class, 'finalize'])->name('report-cards.finalize');
+        Route::post('/report-cards/class/{class}/students/{student}/comment', [TeacherReportCardController::class, 'saveOverallComment'])->name('report-cards.comment');
+        Route::get('/report-cards/class/{class}/students/{student}/preview', [TeacherReportCardController::class, 'preview'])->name('report-cards.preview');
+        Route::get('/report-cards/subjects/{classSubject}', [TeacherReportCardController::class, 'subjectComments'])->name('report-cards.subjects');
+        Route::post('/report-cards/subjects/{classSubject}', [TeacherReportCardController::class, 'saveSubjectComments'])->name('report-cards.subjects.save');
     });
 
 // Parent Routes
@@ -141,6 +164,8 @@ Route::middleware(['auth', 'role:parent'])
         Route::get('/settings', [ParentController::class, 'settings'])->name('settings');
         Route::patch('/settings', [ParentController::class, 'updateSettings'])->name('settings.update');
         Route::get('/fees/{fee}', [ParentController::class, 'showFee'])->name('fees.show');
+        Route::get('/payments/{payment}/receipt', [ParentController::class, 'receipt'])->name('payments.receipt');
+        Route::get('/children/{student}/report-cards/{term}', [ParentController::class, 'reportCard'])->name('report-card');
     });
 
 // Student Routes
@@ -161,6 +186,7 @@ Route::middleware(['auth', 'role:student'])
 
         // Awaiting their own phases: report cards (Phase 11), announcements (Phase 5).
         Route::get('/report-cards', [StudentController::class, 'reportCards'])->name('report-cards');
+        Route::get('/report-cards/{term}', [StudentController::class, 'reportCard'])->name('report-card');
         Route::get('/announcements', [StudentController::class, 'announcements'])->name('announcements');
     });
 
