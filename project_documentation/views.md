@@ -81,9 +81,11 @@ Uses `layouts.teacher`. Pages:
 
 - `dashboard.blade.php` — KPIs, tasks, activity, events
 - `classes.blade.php` — rostered sections with stats
+- `roster.blade.php` — teacher-owned class roster with term-aware averages and attendance
 - `marks.blade.php` — mark + attendance entry
 - `timetable.blade.php` — read-only grids for each class scheduled for the authenticated teacher
-- `placeholder.blade.php` — “coming soon” for dedicated attendance, class performance, announcements, settings
+- `performance.blade.php` — class performance summary and grade finalization
+- `placeholder.blade.php` — “coming soon” for dedicated announcements and settings
 - `header.blade.php`, `sidebar.blade.php`
 - `timetable.blade.php` — selected child's read-only class timetable
 

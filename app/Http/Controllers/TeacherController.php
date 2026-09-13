@@ -9,10 +9,222 @@ use App\Models\Grade;
 use App\Models\Attendance;
 use App\Models\Term;
 use App\Models\TimetableSlot;
+use App\Models\ReportCard;
+use App\Models\AuditLog;
+use App\Services\ReportCardService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class TeacherController extends Controller
 {
+    public function settings()
+    {
+        return view('teacher.settings', [
+            'user' => auth()->user(),
+            'teacher' => auth()->user()->teacher,
+        ]);
+    }
+
+    public function roster(Request $request, int $class)
+    {
+        $teacher = auth()->user()->teacher;
+        abort_unless($teacher, 404);
+
+        $schoolClass = SchoolClass::with(['gradeLevel', 'classSubjects.subject'])
+            ->where('class_id', $class)
+            ->where(function ($query) use ($teacher) {
+                $query->where('teacher_id', $teacher->teacher_id)
+                    ->orWhereHas('classSubjects', fn ($subjects) => $subjects->where('teacher_id', $teacher->teacher_id));
+            })->firstOrFail();
+
+        $terms = Term::with('academicYear')->orderByDesc('start_date')->get();
+        $term = $request->filled('term_id')
+            ? $terms->firstWhere('term_id', (int) $request->term_id)
+            : Term::current();
+        $term ??= $terms->first();
+
+        $students = $schoolClass->students()
+            ->with(['user', 'parentUser'])
+            ->orderBy('last_name')->orderBy('first_name')->get();
+        $classSubjectIds = $schoolClass->classSubjects->pluck('class_subject_id');
+        $grades = $term ? Grade::inTerm($term)->whereIn('class_subject_id', $classSubjectIds)->get() : collect();
+        $attendance = $term ? Attendance::whereIn('class_subject_id', $classSubjectIds)
+            ->whereIn('student_id', $students->pluck('student_id'))
+            ->whereBetween('date', [$term->start_date, $term->end_date])
+            ->get()->groupBy('student_id') : collect();
+
+        $rows = $students->map(function ($student) use ($grades, $attendance) {
+            $studentGrades = $grades->where('student_id', $student->student_id);
+            $scores = $studentGrades->map->percentage->filter(fn ($score) => $score !== null);
+            $records = $attendance->get($student->student_id, collect())->where('status', '!=', 'Excused');
+            $present = $records->whereIn('status', ['Present', 'Late'])->count();
+
+            return [
+                'student' => $student,
+                'average' => $scores->isNotEmpty() ? round($scores->avg(), 1) : null,
+                'attendance' => $records->count() ? round(($present / $records->count()) * 100) : null,
+                'status' => $student->user?->is_active === false ? 'Inactive' : 'Active',
+            ];
+        });
+
+        return view('teacher.roster', compact('teacher', 'schoolClass', 'terms', 'term', 'rows'));
+    }
+
+    public function performance(Request $request)
+    {
+        $teacher = auth()->user()->teacher;
+        $terms = Term::with('academicYear')->orderByDesc('start_date')->get();
+        $term = $request->filled('term_id')
+            ? $terms->firstWhere('term_id', (int) $request->term_id)
+            : Term::current();
+        $term ??= $terms->first();
+
+        $assignments = $teacher
+            ? ClassSubject::with(['schoolClass.gradeLevel', 'subject', 'teacher'])
+                ->where('teacher_id', $teacher->teacher_id)
+                ->get()
+            : collect();
+        $selected = $request->filled('assignment_id')
+            ? $assignments->firstWhere('class_subject_id', (int) $request->assignment_id)
+            : $assignments->first();
+
+        if (! $selected || ! $term) {
+            return view('teacher.performance', [
+                'teacher' => $teacher, 'terms' => $terms, 'term' => $term,
+                'assignments' => $assignments, 'selectedAssignment' => $selected,
+                'subjects' => collect(), 'rankings' => collect(), 'distribution' => collect(),
+                'kpis' => null, 'isFinalized' => false, 'canFinalize' => false,
+            ]);
+        }
+
+        $class = $selected->schoolClass;
+        $classSubjects = $assignments->where('class_id', $class->class_id)->values();
+        $classSubjectIds = $classSubjects->pluck('class_subject_id');
+        $students = Student::where('class_id', $class->class_id)
+            ->orderBy('last_name')->orderBy('first_name')->get();
+        $grades = Grade::inTerm($term)
+            ->where('assessment_type', 'EXAM')
+            ->whereIn('class_subject_id', $classSubjectIds)
+            ->whereIn('student_id', $students->pluck('student_id'))
+            ->get()
+            ->keyBy(fn ($grade) => $grade->student_id.'-'.$grade->class_subject_id);
+        $caGrades = Grade::inTerm($term)
+            ->where('assessment_type', 'CA')
+            ->whereIn('class_subject_id', $classSubjectIds)
+            ->whereIn('student_id', $students->pluck('student_id'))
+            ->get()
+            ->keyBy(fn ($grade) => $grade->student_id.'-'.$grade->class_subject_id);
+
+        $rankings = $students->map(function ($student) use ($classSubjects, $grades, $caGrades) {
+            $scores = [];
+            $deltas = [];
+            foreach ($classSubjects as $subject) {
+                $key = $student->student_id.'-'.$subject->class_subject_id;
+                $exam = $grades->get($key);
+                $ca = $caGrades->get($key);
+                $scores[$subject->subject?->subject_name ?? 'Subject'] = $exam?->percentage;
+                if ($exam && $ca) {
+                    $deltas[] = $exam->percentage - $ca->percentage;
+                }
+            }
+            $available = collect($scores)->filter(fn ($score) => $score !== null);
+            $average = $available->isNotEmpty() ? round($available->avg(), 1) : null;
+
+            return [
+                'student' => $student,
+                'scores' => $scores,
+                'average' => $average,
+                'letter' => $average === null ? null : $this->performanceLetter($average),
+                'trend' => empty($deltas) ? 'flat' : ($deltas[0] >= 2 ? 'up' : ($deltas[0] <= -2 ? 'down' : 'flat')),
+            ];
+        })->sortByDesc(fn ($row) => $row['average'] ?? -1)->values();
+
+        $rankings = $rankings->values()->map(function ($row, $index) {
+            $row['rank'] = $row['average'] === null ? null : $index + 1;
+            return $row;
+        });
+        $graded = $rankings->filter(fn ($row) => $row['average'] !== null);
+        $averages = $graded->pluck('average');
+        $distribution = collect(['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'F' => 0]);
+        foreach ($graded as $row) {
+            $bucket = match ($row['letter']) {
+                'A+', 'A' => 'A', 'B+', 'B' => 'B', 'C+', 'C' => 'C', 'D' => 'D', default => 'F',
+            };
+            $distribution->put($bucket, $distribution->get($bucket) + 1);
+        }
+
+        $subjects = $classSubjects->map(function ($subject) use ($students, $grades) {
+            $scores = $students->map(fn ($student) => $grades->get($student->student_id.'-'.$subject->class_subject_id)?->percentage)->filter(fn ($score) => $score !== null);
+            return ['name' => $subject->subject?->subject_name ?? 'Subject', 'average' => $scores->isNotEmpty() ? round($scores->avg(), 1) : 0];
+        });
+        $attendance = Attendance::whereIn('student_id', $students->pluck('student_id'))
+            ->whereIn('class_subject_id', $classSubjectIds)
+            ->whereBetween('date', [$term->start_date, $term->end_date])
+            ->where('status', '!=', 'Excused')->get();
+        $present = $attendance->whereIn('status', ['Present', 'Late'])->count();
+        $attendanceRate = $attendance->count() > 0 ? round(($present / $attendance->count()) * 100, 1) : 0;
+
+        return view('teacher.performance', [
+            'teacher' => $teacher, 'terms' => $terms, 'term' => $term,
+            'assignments' => $assignments, 'selectedAssignment' => $selected,
+            'class' => $class, 'subjects' => $subjects, 'rankings' => $rankings,
+            'distribution' => $distribution, 'attendanceRate' => $attendanceRate,
+            'isFinalized' => app(ReportCardService::class)->isLocked($class->class_id, $term->term_id),
+            'canFinalize' => (int) $class->teacher_id === (int) $teacher?->teacher_id,
+            'kpis' => [
+                'average' => $averages->isNotEmpty() ? round($averages->avg(), 1) : 0,
+                'passed' => $graded->filter(fn ($row) => ($row['average'] ?? 0) >= 50)->count(),
+                'graded' => $graded->count(),
+                'top' => $graded->first(), 'lowest' => $graded->last(),
+            ],
+        ]);
+    }
+
+    public function finalizeGrades(Request $request)
+    {
+        $teacher = auth()->user()->teacher;
+        $assignment = ClassSubject::with('schoolClass')->where('class_subject_id', $request->integer('assignment_id'))->where('teacher_id', $teacher?->teacher_id)->firstOrFail();
+        abort_unless((int) $assignment->schoolClass->teacher_id === (int) $teacher->teacher_id, 403);
+        $term = Term::findOrFail($request->integer('term_id'));
+
+        try {
+            app(ReportCardService::class)->finalize($assignment->schoolClass, $term, $teacher);
+        } catch (ValidationException $exception) {
+            return back()->withErrors($exception->errors());
+        }
+
+        return back()->with('notification', "Grades finalized for {$assignment->schoolClass->class_name}, {$term->name}.");
+    }
+
+    public function unfinalizeRequest(Request $request)
+    {
+        $teacher = auth()->user()->teacher;
+        $validated = $request->validate([
+            'assignment_id' => ['required', 'integer'],
+            'term_id' => ['required', 'exists:terms,term_id'],
+            'reason' => ['required', 'string', 'min:5', 'max:1000'],
+        ]);
+        $assignment = ClassSubject::with('schoolClass')->where('class_subject_id', $validated['assignment_id'])->where('teacher_id', $teacher?->teacher_id)->firstOrFail();
+
+        AuditLog::create([
+            'user_id' => auth()->id(), 'auditable_type' => SchoolClass::class,
+            'auditable_id' => $assignment->schoolClass->class_id, 'action' => 'unfinalize_requested',
+            'old_values' => ['term_id' => (int) $validated['term_id']], 'new_values' => null,
+            'reason' => $validated['reason'], 'ip_address' => request()->ip(), 'user_agent' => request()->userAgent(),
+        ]);
+
+        return back()->with('notification', 'The unfinalize request was recorded for administrator review. Grades remain locked.');
+    }
+
+    private function performanceLetter(float $percentage): string
+    {
+        return match (true) {
+            $percentage >= 90 => 'A+', $percentage >= 80 => 'A', $percentage >= 75 => 'B+',
+            $percentage >= 70 => 'B', $percentage >= 65 => 'C+', $percentage >= 60 => 'C',
+            $percentage >= 50 => 'D', default => 'F',
+        };
+    }
+
     public function timetable(Request $request)
     {
         $teacher = auth()->user()->teacher;
@@ -22,18 +234,128 @@ class TeacherController extends Controller
             : Term::current();
         $term ??= $terms->first();
 
-        $classes = $teacher && $term
-            ? TimetableSlot::with([
+        $days = collect(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+
+        $classes = collect();
+        if ($teacher && $term) {
+            $slots = TimetableSlot::with([
                 'schoolClass.gradeLevel.periods',
                 'subject',
                 'period',
+                'schoolClass.students',
             ])->where('teacher_id', $teacher->teacher_id)
                 ->where('term_id', $term->term_id)
-                ->get()
-                ->groupBy('school_class_id')
-            : collect();
+                ->get();
 
-        return view('teacher.timetable', compact('teacher', 'terms', 'term', 'classes'));
+            $byClass = $slots->groupBy('school_class_id');
+            foreach ($byClass as $classId => $classSlots) {
+                $schoolClass = $classSlots->first()->schoolClass;
+                if (! $schoolClass) continue;
+
+                $periods = $schoolClass->gradeLevel?->periods
+                    ?? $classSlots->pluck('period')->filter()->unique('id')->all();
+                if (is_array($periods)) {
+                    $periods = collect($periods);
+                }
+
+                $map = $classSlots->keyBy(fn ($s) => $s->day_of_week.'-'.$s->period_id);
+                $map->each(function ($slot) { $slot->icon = $slot->subject ? $this->subjectIcon($slot->subject->subject_name) : 'school'; });
+                $dayCounts = $days->mapWithKeys(fn ($d) => [
+                    $d => $classSlots->where('day_of_week', $d)->count(),
+                ]);
+
+                $classes->push([
+                    'class'     => $schoolClass,
+                    'periods'   => $periods->sortBy('order')->values(),
+                    'slots'     => $map,
+                    'roster'    => $schoolClass->students->count(),
+                    'dayCounts' => $dayCounts,
+                ]);
+            }
+        }
+
+        // Upcoming slot: the earliest day/period combination that is not in the past.
+        $upNext = null;
+        foreach ($classes as $card) {
+            foreach ($card['slots'] as $slot) {
+                if (! $slot->period || $slot->period->is_break) continue;
+                $order = (int) ($slot->period->order ?? 0);
+                $candidate = [
+                    'slot' => $slot,
+                    'class' => $card['class'],
+                    'day' => $slot->day_of_week,
+                    'order' => $order,
+                ];
+                if (! $upNext) {
+                    $upNext = $candidate;
+                }
+            }
+        }
+
+        // Legend: subjects taught and their period-per-week counts.
+        $legend = collect();
+        $subjectCounts = [];
+        foreach ($classes as $card) {
+            foreach ($card['slots'] as $slot) {
+                if (! $slot->subject || $slot->period?->is_break) continue;
+                $key = $slot->subject->subject_id;
+                $subjectCounts[$key] = ($subjectCounts[$key] ?? 0) + 1;
+            }
+        }
+        foreach ($classes as $card) {
+            foreach ($card['slots'] as $slot) {
+                if (! $slot->subject || $slot->period?->is_break) continue;
+                $legend->push([
+                    'subject' => $slot->subject->subject_name,
+                    'icon'    => $this->subjectIcon($slot->subject->subject_name),
+                    'periods' => $subjectCounts[$slot->subject->subject_id] ?? 0,
+                ]);
+            }
+        }
+        $legend = $legend->unique('subject')->sortBy('subject')->values();
+
+        // Workload / summary metrics.
+        $taughtSlots = 0;
+        $freeSlots = 0;
+        $totalHours = 0.0;
+        foreach ($classes as $card) {
+            foreach ($card['slots'] as $slot) {
+                $period = $slot->period;
+                if (! $period || $period->is_break) continue;
+                if ($slot->subject) {
+                    $taughtSlots++;
+                    if ($period->start_time && $period->end_time) {
+                        $mins = (($period->end_time->format('H')*60) + $period->end_time->format('i'))
+                            - (($period->start_time->format('H')*60) + $period->start_time->format('i'));
+                        $totalHours += $mins / 60;
+                    }
+                } else {
+                    $freeSlots++;
+                }
+            }
+        }
+        $rosteredClasses = $classes->count();
+        $activeStudents = $classes->sum('roster');
+
+        $metrics = [
+            'hours'       => round($totalHours, 1),
+            'hours_pct'   => $totalHours > 0 ? (int) round(($totalHours / max(40, $totalHours)) * 100) : 0,
+            'classes'     => $rosteredClasses,
+            'students'    => $activeStudents,
+            'prep'        => $freeSlots,
+            'taught'      => $taughtSlots,
+        ];
+
+        return view('teacher.timetable', compact(
+            'teacher',
+            'terms',
+            'term',
+            'classes',
+            'days',
+            'upNext',
+            'legend',
+            'metrics',
+        ));
     }
 
     /**
@@ -481,6 +803,114 @@ class TeacherController extends Controller
     }
 
     /**
+     * Teacher attendance roster (Record Attendance page)
+     */
+    public function attendance(Request $request)
+    {
+        $teacher = auth()->user()->teacher;
+
+        $assignments = collect();
+        if ($teacher) {
+            $assignments = ClassSubject::with(['schoolClass', 'subject'])
+                ->where('teacher_id', $teacher->teacher_id)
+                ->orderBy('class_subject_id')
+                ->get();
+        }
+
+        if ($assignments->isEmpty()) {
+            return view('teacher.attendance', ['assignments' => collect(), 'students' => collect()])
+                ->with('notification', 'No class assignments found for this teacher.');
+        }
+
+        $assignment = $request->filled('assignment_id')
+            ? $assignments->firstWhere('class_subject_id', (int) $request->query('assignment_id'))
+            : $assignments->first();
+        $assignment = $assignment ?: $assignments->first();
+
+        $rosterDate = $request->query('date') ?: now()->toDateString();
+
+        $statusMap = ['Present' => 'P', 'Absent' => 'A', 'Late' => 'L', 'Excused' => 'E'];
+
+        $students = Student::where('class_id', $assignment->schoolClass->class_id)
+            ->with('user')
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get()
+            ->values()
+            ->map(function ($student, $i) use ($assignment, $rosterDate, $statusMap) {
+                $attendance = Attendance::where('student_id', $student->student_id)
+                    ->where('class_subject_id', $assignment->class_subject_id)
+                    ->where('date', $rosterDate)
+                    ->first();
+
+                return [
+                    'id'        => $student->student_id,
+                    'name'      => $student->full_name,
+                    'initials'  => mb_strtoupper(mb_substr($student->first_name ?? ' ', 0, 1).mb_substr($student->last_name ?? ' ', 0, 1)),
+                    'admission' => $student->student_number ?? ('ID: '.$student->student_id),
+                    'status'    => $statusMap[$attendance?->status] ?? 'P',
+                    'remarks'   => $attendance?->remarks ?? '',
+                    'index'     => $i + 1,
+                ];
+            });
+
+        return view('teacher.attendance', compact('assignments', 'assignment', 'rosterDate', 'students'));
+    }
+
+    /**
+     * Persist the attendance roster for a class + date
+     */
+    public function storeAttendance(Request $request)
+    {
+        $teacher = auth()->user()->teacher;
+
+        if (!$teacher) {
+            return back()->withErrors('Teacher profile not found.');
+        }
+
+        $assignment = ClassSubject::where('class_subject_id', $request->input('assignment_id'))
+            ->where('teacher_id', $teacher->teacher_id)
+            ->first();
+
+        if (!$assignment) {
+            return back()->withErrors('Unauthorized assignment.');
+        }
+
+        $statuses  = $request->input('status', []);
+        $remarks   = $request->input('remarks', []);
+        $date      = $request->input('date') ?: now()->toDateString();
+
+        $statusMap = ['P' => 'Present', 'A' => 'Absent', 'L' => 'Late', 'E' => 'Excused'];
+
+        try {
+            $saved = 0;
+            foreach ($statuses as $studentId => $short) {
+                if (!isset($statusMap[$short])) {
+                    continue;
+                }
+
+                Attendance::updateOrCreate(
+                    [
+                        'student_id'       => $studentId,
+                        'class_subject_id' => $assignment->class_subject_id,
+                        'date'             => $date,
+                    ],
+                    [
+                        'status'      => $statusMap[$short],
+                        'remarks'     => $remarks[$studentId] ?? null,
+                        'recorded_by' => $teacher->teacher_id,
+                    ]
+                );
+                $saved++;
+            }
+
+            return back()->with('notification', "Attendance saved for {$saved} students ({$date}).");
+        } catch (\Exception $e) {
+            return back()->withErrors('Failed to save attendance: '.$e->getMessage());
+        }
+    }
+
+    /**
      * Store marks and attendance records
      */
     public function storeMarks(Request $request)
@@ -504,10 +934,12 @@ class TeacherController extends Controller
 
         // Phase 11 — finalized terms are locked. An admin can unfinalize if a
         // correction is genuinely needed.
-        $currentTerm = \App\Models\Term::current();
+        $currentTerm = $request->filled('term_id')
+            ? \App\Models\Term::find($request->integer('term_id'))
+            : (\App\Models\Term::current() ?? \App\Models\Term::first());
 
         if ($currentTerm && app(\App\Services\ReportCardService::class)
-                ->isLocked((int) $assignment->class_id, (int) $currentTerm->term_id)) {
+                    ->isLocked((int) $assignment->schoolClass->class_id, (int) $currentTerm->term_id)) {
             return back()->withErrors(
                 'Grades for this class are finalized for ' . $currentTerm->name .
                 ' and can no longer be edited. Ask an administrator to unfinalize first.'

@@ -31,7 +31,7 @@ return new class extends Migration
             // Draft assignments are invisible to students until published.
             $table->string('status', 20)->default('Draft');
             $table->timestamp('published_at')->nullable();
-            $table->timestamp('due_at');
+            $table->dateTime('due_at');
 
             $table->decimal('max_score', 6, 2)->default(100.00);
             $table->boolean('allows_file_upload')->default(true);

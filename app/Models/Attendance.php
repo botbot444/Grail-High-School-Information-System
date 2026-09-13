@@ -17,6 +17,7 @@ class Attendance extends Model
         'class_subject_id',
         'date',
         'status',
+        'remarks',
         'recorded_by',
     ];
 
@@ -71,5 +72,10 @@ class Attendance extends Model
     public function scopeLate($query)
     {
         return $query->where('status', 'Late');
+    }
+
+    public function scopeExcused($query)
+    {
+        return $query->where('status', 'Excused');
     }
 }

@@ -13,7 +13,7 @@
 | `AuthController.php`      | Custom login dispatcher (redirects by role after auth)                |
 | `DashboardController.php` | `/dashboard` role redirect; `adminDashboard()` for `/admin/dashboard` |
 | `ProfileController.php`   | Edit/update/delete user profile                                       |
-| `TeacherController.php`   | Teacher portal: `dashboard()`, `classes()`, `marks()`, `storeMarks()` |
+| `TeacherController.php`   | Teacher portal: `dashboard()`, `classes()`, `roster()`, `marks()`, `storeMarks()`, `performance()`, and grade-finalization actions |
 
 ---
 

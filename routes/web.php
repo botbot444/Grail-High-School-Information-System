@@ -121,11 +121,15 @@ Route::middleware(['auth', 'role:teacher'])
         // Each renders the shared teacher layout with a "coming soon" card until
         // its own page is integrated from the teacher portal HTML.
         Route::get('/classes', [TeacherController::class, 'classes'])->name('classes');
+        Route::get('/classes/{class}/roster', [TeacherController::class, 'roster'])->name('classes.roster');
         Route::get('/timetable', [TeacherController::class, 'timetable'])->name('timetable');
-        Route::view('/attendance', 'teacher.placeholder')->defaults('placeholder', 'Record Attendance')->name('attendance');
-        Route::view('/performance', 'teacher.placeholder')->defaults('placeholder', 'Class Performance')->name('performance');
+        Route::get('/attendance', [TeacherController::class, 'attendance'])->name('attendance');
+        Route::post('/attendance', [TeacherController::class, 'storeAttendance'])->name('attendance.store');
+        Route::get('/performance', [TeacherController::class, 'performance'])->name('performance');
+        Route::post('/performance/finalize', [TeacherController::class, 'finalizeGrades'])->name('performance.finalize');
+        Route::post('/performance/unfinalize-request', [TeacherController::class, 'unfinalizeRequest'])->name('performance.unfinalize-request');
         Route::view('/announcements', 'teacher.placeholder')->defaults('placeholder', 'Announcements')->name('announcements');
-        Route::view('/settings', 'teacher.placeholder')->defaults('placeholder', 'Settings')->name('settings');
+        Route::get('/settings', [TeacherController::class, 'settings'])->name('settings');
 
         // Assignments — authoring and marking.
         Route::get('/assignments', [TeacherAssignmentController::class, 'index'])->name('assignments.index');

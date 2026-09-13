@@ -164,7 +164,7 @@
                     </div>
                 </div>
                 <div class="bg-surface-container-low px-space-md py-space-sm flex items-center justify-between gap-1 {{ $card['is_homeroom'] ? 'pl-space-xl' : '' }}">
-                    <a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-secondary font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="{{ route('teacher.performance') }}">
+                    <a class="flex-1 text-center py-2 px-1 rounded hover:bg-surface-container-highest text-secondary font-label-md text-label-md transition-colors flex items-center justify-center gap-1" href="{{ route('teacher.classes.roster', ['class' => $card['class_id']]) }}">
                         <span class="material-symbols-outlined text-[16px]">visibility</span>
                         <span>Roster</span>
                     </a>

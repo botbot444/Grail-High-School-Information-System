@@ -24,6 +24,7 @@ class ReportCard extends Model
         'class_teacher_comment',
         'finalized_at',
         'finalized_by',
+        'audit_reason',
     ];
 
     protected $casts = [
