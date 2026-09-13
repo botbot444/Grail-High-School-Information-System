@@ -2,40 +2,47 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Supplementary fee-related indexes.
+     *
+     * Written with the schema builder rather than raw SQL so the migration
+     * runs on SQLite (local dev) as well as MySQL.
+     */
+    private array $indexes = [
+        ['fees',      ['student_id', 'due_date'],        'fees_student_id_due_date_index'],
+        ['fees',      ['status', 'due_date'],            'fees_status_due_date_index'],
+        ['fee_items', ['fee_id', 'category'],            'fee_items_fee_id_category_index'],
+        ['payments',  ['fee_id', 'payment_date'],        'payments_fee_id_payment_date_index'],
+        ['payments',  ['payment_method', 'payment_date'], 'payments_method_date_index'],
+    ];
+
     public function up(): void
     {
-        DB::statement('ALTER TABLE fees ADD INDEX IF NOT EXISTS fees_student_id_due_date_index (student_id, due_date)');
-        DB::statement('ALTER TABLE fees ADD INDEX IF NOT EXISTS fees_status_due_date_index (status, due_date)');
+        foreach ($this->indexes as [$table, $columns, $name]) {
+            if (! Schema::hasTable($table) || Schema::hasIndex($table, $name)) {
+                continue;
+            }
 
-        $feeItemIndexExists = DB::selectOne("SHOW INDEX FROM fee_items WHERE Key_name = 'fee_items_fee_id_category_index'");
-        if (!$feeItemIndexExists) {
-            DB::statement('ALTER TABLE fee_items ADD INDEX fee_items_fee_id_category_index (fee_id, category)');
-        }
-
-        $paymentsDateIndexExists = DB::selectOne("SHOW INDEX FROM payments WHERE Key_name = 'payments_fee_id_payment_date_index'");
-        if (!$paymentsDateIndexExists) {
-            DB::statement('ALTER TABLE payments ADD INDEX payments_fee_id_payment_date_index (fee_id, payment_date)');
-        }
-
-        $paymentsMethodIndexExists = DB::selectOne("SHOW INDEX FROM payments WHERE Key_name = 'payments_method_date_index'");
-        if (!$paymentsMethodIndexExists) {
-            DB::statement('ALTER TABLE payments ADD INDEX payments_method_date_index (payment_method, payment_date)');
+            Schema::table($table, function (Blueprint $blueprint) use ($columns, $name) {
+                $blueprint->index($columns, $name);
+            });
         }
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE fees DROP INDEX IF EXISTS fees_student_id_due_date_index');
-        DB::statement('ALTER TABLE fees DROP INDEX IF EXISTS fees_status_due_date_index');
+        foreach (array_reverse($this->indexes) as [$table, $columns, $name]) {
+            if (! Schema::hasTable($table) || ! Schema::hasIndex($table, $name)) {
+                continue;
+            }
 
-        DB::statement('ALTER TABLE fee_items DROP INDEX IF EXISTS fee_items_fee_id_category_index');
-
-        DB::statement('ALTER TABLE payments DROP INDEX IF EXISTS payments_fee_id_payment_date_index');
-        DB::statement('ALTER TABLE payments DROP INDEX IF EXISTS payments_method_date_index');
+            Schema::table($table, function (Blueprint $blueprint) use ($name) {
+                $blueprint->dropIndex($name);
+            });
+        }
     }
 };

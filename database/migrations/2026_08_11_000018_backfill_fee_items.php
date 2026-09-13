@@ -17,8 +17,8 @@ return new class extends Migration
                     DB::raw("'General Fees' as item_name"),
                     DB::raw("'Other' as category"),
                     'amount_due as amount',
-                    DB::raw('NOW()'),
-                    DB::raw('NOW()')
+                    DB::raw('CURRENT_TIMESTAMP'),
+                    DB::raw('CURRENT_TIMESTAMP')
                 )
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))

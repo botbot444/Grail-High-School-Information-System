@@ -78,6 +78,12 @@ class Student extends Model
         return $this->hasMany(Fee::class, 'student_id', 'student_id');
     }
 
+    /** Assignment submissions made by this student */
+    public function assignmentSubmissions(): HasMany
+    {
+        return $this->hasMany(AssignmentSubmission::class, 'student_id', 'student_id');
+    }
+
     // ── Scopes ────────────────────────────────────────────────────────────────
 
     /** Filter to students in a specific class */

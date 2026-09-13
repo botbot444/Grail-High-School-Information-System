@@ -51,6 +51,11 @@ class ClassSubject extends Model
         return $this->hasMany(Attendance::class, 'class_subject_id', 'class_subject_id');
     }
 
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class, 'class_subject_id', 'class_subject_id');
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /** e.g. "10A – Mathematics" */

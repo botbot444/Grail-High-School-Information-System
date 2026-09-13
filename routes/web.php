@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\Admin\GradeLevelController;
 use App\Http\Controllers\Admin\PeriodController;
 use App\Http\Controllers\Admin\TimetableController;
+use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
+use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -110,6 +112,16 @@ Route::middleware(['auth', 'role:teacher'])
         Route::view('/performance', 'teacher.placeholder')->defaults('placeholder', 'Class Performance')->name('performance');
         Route::view('/announcements', 'teacher.placeholder')->defaults('placeholder', 'Announcements')->name('announcements');
         Route::view('/settings', 'teacher.placeholder')->defaults('placeholder', 'Settings')->name('settings');
+
+        // Assignments — authoring and marking.
+        Route::get('/assignments', [TeacherAssignmentController::class, 'index'])->name('assignments.index');
+        Route::get('/assignments/create', [TeacherAssignmentController::class, 'create'])->name('assignments.create');
+        Route::post('/assignments', [TeacherAssignmentController::class, 'store'])->name('assignments.store');
+        Route::get('/assignments/{assignment}/edit', [TeacherAssignmentController::class, 'edit'])->name('assignments.edit');
+        Route::put('/assignments/{assignment}', [TeacherAssignmentController::class, 'update'])->name('assignments.update');
+        Route::delete('/assignments/{assignment}', [TeacherAssignmentController::class, 'destroy'])->name('assignments.destroy');
+        Route::get('/assignments/{assignment}/submissions', [TeacherAssignmentController::class, 'submissions'])->name('assignments.submissions');
+        Route::put('/assignments/{assignment}/submissions/{submission}', [TeacherAssignmentController::class, 'grade'])->name('assignments.grade');
     });
 
 // Parent Routes
@@ -137,7 +149,19 @@ Route::middleware(['auth', 'role:student'])
     ->name('student.')
     ->group(function () {
         Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+        Route::get('/results', [StudentController::class, 'results'])->name('results');
+        Route::get('/attendance', [StudentController::class, 'attendance'])->name('attendance');
         Route::get('/timetable', [StudentController::class, 'timetable'])->name('timetable');
+        Route::get('/settings', [StudentController::class, 'settings'])->name('settings');
+
+        // Assignments — student view and submission.
+        Route::get('/assignments', [StudentAssignmentController::class, 'index'])->name('assignments.index');
+        Route::get('/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('assignments.show');
+        Route::post('/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('assignments.submit');
+
+        // Awaiting their own phases: report cards (Phase 11), announcements (Phase 5).
+        Route::get('/report-cards', [StudentController::class, 'reportCards'])->name('report-cards');
+        Route::get('/announcements', [StudentController::class, 'announcements'])->name('announcements');
     });
 
 require __DIR__.'/auth.php';

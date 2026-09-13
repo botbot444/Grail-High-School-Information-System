@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\View\Composers\StudentPortalComposer;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,5 +28,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('viewReports',   [\App\Policies\ReportPolicy::class, 'viewReports']);
         Gate::define('exportReports', [\App\Policies\ReportPolicy::class, 'exportReports']);
         Gate::define('viewFinancials',[\App\Policies\ReportPolicy::class, 'viewFinancials']);
+
+        // Student portal chrome (sidebar profile, term badge, assignments-due count).
+        View::composer(['layouts.student', 'student.partials.*'], StudentPortalComposer::class);
     }
 }

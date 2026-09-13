@@ -77,6 +77,12 @@ export default {
                 'on-tertiary-container': '#fcfcff',
                 primary: '#0059bb',
                 'surface-tint': '#005bc0',
+
+                // ---- Status colours (student portal / Stitch screens) ----
+                success: '#166534',
+                'success-container': '#dcfce7',
+                warning: '#92400e',
+                'warning-container': '#fef3c7',
             },
             spacing: {
                 'stack-sm': '8px',
@@ -90,6 +96,7 @@ export default {
                 'header-height': '72px',
                 'container-padding': '32px',
                 'sidebar-width': '260px',
+                'sidebar-rail': '76px',
                 gutter: '24px',
             },
             fontSize: {
