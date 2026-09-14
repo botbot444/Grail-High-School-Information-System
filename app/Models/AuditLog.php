@@ -40,6 +40,68 @@ class AuditLog extends Model
 
     // ── Scopes ─────────────────────────────────────────────────────────────
 
+    /**
+     * Phase 12 — field-by-field diff for the log viewer.
+     *
+     * The raw old/new JSON is unreadable in a table, and most of it is noise:
+     * timestamps and unchanged columns that Eloquent includes anyway. This
+     * returns only fields whose value actually moved.
+     *
+     * @return array<int, array{field: string, from: ?string, to: ?string}>
+     */
+    public function getChangeSummaryAttribute(): array
+    {
+        $ignored = ['created_at', 'updated_at', 'deleted_at', 'remember_token', 'password', 'last_updated'];
+
+        $old = $this->old_values ?? [];
+        $new = $this->new_values ?? [];
+
+        $fields = collect(array_keys($old + $new))
+            ->reject(fn ($field) => in_array($field, $ignored, true))
+            ->values();
+
+        $changes = [];
+
+        foreach ($fields as $field) {
+            $before = $old[$field] ?? null;
+            $after  = $new[$field] ?? null;
+
+            // On an update Eloquent hands us every attribute, not just the dirty
+            // ones — skip anything that did not actually move.
+            if ($this->action === 'updated' && $this->stringify($before) === $this->stringify($after)) {
+                continue;
+            }
+
+            $changes[] = [
+                'field' => ucfirst(str_replace('_', ' ', $field)),
+                'from'  => $this->stringify($before),
+                'to'    => $this->stringify($after),
+            ];
+        }
+
+        return $changes;
+    }
+
+    /** Render a stored value for display, keeping it short enough for a table cell. */
+    private function stringify(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'Yes' : 'No';
+        }
+
+        if (is_array($value)) {
+            return json_encode($value);
+        }
+
+        $text = (string) $value;
+
+        return mb_strlen($text) > 60 ? mb_substr($text, 0, 57) . '…' : $text;
+    }
+
     public function scopeForDateRange(Builder $query, ?string $from, ?string $to): Builder
     {
         return $query->when($from, fn ($q) => $q->whereDate('created_at', '>=', $from))

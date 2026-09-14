@@ -50,6 +50,21 @@ class LoginRequest extends FormRequest
             ]); // failed log in message to the user
         }
 
+        // Phase 12 — a deactivated account must not get a session, even with the
+        // right password. Checked after Auth::attempt so we can name the reason
+        // rather than pretending the credentials were wrong.
+        if (! Auth::user()->is_active) {
+            Auth::logout();
+            $this->session()->invalidate();
+            $this->session()->regenerateToken();
+
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'This account has been deactivated. Please contact the school office.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());//Successful  log in
     }
 

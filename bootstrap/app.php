@@ -17,9 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
 
+        // Phase 12 — a deactivated account loses access on its next request,
+        // not whenever its session happens to expire. Runs first: a
+        // deactivated user should be logged out outright, not just locked
+        // to the settings page for a password change.
+        //
         // Locks a must-change-password account to its settings page until
         // it sets a new password. See EnsurePasswordIsChanged for details.
         $middleware->web(append: [
+            \App\Http\Middleware\EnsureAccountIsActive::class,
             \App\Http\Middleware\EnsurePasswordIsChanged::class,
         ]);
     })
