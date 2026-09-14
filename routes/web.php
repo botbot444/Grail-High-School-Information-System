@@ -26,6 +26,8 @@ use App\Http\Controllers\Admin\ReportCardController as AdminReportCardController
 use App\Http\Controllers\Admin\PaymentSettingsController;
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\UserAccountController;
+use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -98,6 +100,14 @@ Route::middleware(['auth', 'role:admin'])
         // ── Audit Logs ───────────────────────────────────────────────────────
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 
+        // ── Admin account management (Phase 12) ──────────────────────────────
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [UserAccountController::class, 'index'])->name('index');
+            Route::put('/{user}/status', [UserAccountController::class, 'toggleActive'])->name('status');
+            Route::put('/{user}/reset-password', [UserAccountController::class, 'resetPassword'])->name('reset-password');
+            Route::put('/{user}/role', [UserAccountController::class, 'updateRole'])->name('role');
+        });
+
         // --- School Calendar (Phase 3) ---
         Route::resource('academic-years', AcademicYearController::class);
         Route::resource('terms', TermController::class);
@@ -110,10 +120,20 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/timetable/clear', [TimetableController::class, 'clear'])->name('timetable.clear');
 
 
-        // ── Reports & Analytics (Phase 4) ────────────────────────────────────
+        // ── Reports & Analytics (Phase 4 fee-collection, Phase 9 attendance/aging/school-wide) ──
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('/fee-collection', [ReportController::class, 'feeCollection'])->name('fee-collection');
             Route::get('/fee-collection/export', [ReportController::class, 'exportFeeCollection'])->name('fee-collection.export');
+
+            Route::get('/attendance', [AnalyticsController::class, 'attendance'])->name('attendance');
+            Route::get('/attendance/export', [AnalyticsController::class, 'exportAttendance'])->name('attendance.export');
+
+            Route::get('/aging', [AnalyticsController::class, 'aging'])->name('aging');
+            Route::get('/aging/export', [AnalyticsController::class, 'exportAging'])->name('aging.export');
+
+            Route::get('/school-wide', [AnalyticsController::class, 'schoolWide'])->name('school-wide');
+            Route::get('/school-wide/export', [AnalyticsController::class, 'exportSchoolWide'])->name('school-wide.export');
+            Route::put('/school-wide/threshold', [AnalyticsController::class, 'saveThreshold'])->name('school-wide.threshold');
         });
 
         // ── Student financials & statements (Phase 4) ───────────────────────
