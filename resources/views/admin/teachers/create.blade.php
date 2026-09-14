@@ -133,8 +133,7 @@
                                 <div class="flex items-center justify-between pb-3 mb-4">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-4 rounded-full bg-secondary"></span>
-                                        <h2 class="font-title-sm text-title-sm text-on-surface">Academic Assignments &amp;
-                                            Workload</h2>
+                                        <h2 class="font-title-sm text-title-sm text-on-surface">Academic Assignments &amp; Workload</h2>
                                     </div>
                                     <span class="font-label-sm text-label-sm text-primary font-semibold leading-tight"
                                         id="selectedSubjectsCounter">

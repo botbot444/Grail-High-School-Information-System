@@ -12,6 +12,16 @@
             <p class="text-sm text-on-surface-variant mt-1">Manage your account and personal information</p>
         </div>
 
+        @if ($parentProfile->user?->must_change_password)
+            <div class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-amber-600" style="font-size:20px">lock_reset</span>
+                <div class="text-sm text-amber-900">
+                    <p class="font-semibold">Please set a new password</p>
+                    <p class="text-amber-800/90 mt-0.5">You're currently signed in with a temporary password. Set your own below to continue using the portal.</p>
+                </div>
+            </div>
+        @endif
+
         {{-- ── Profile card ── --}}
         <div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
             <div class="h-16 bg-primary/10"></div>
@@ -68,6 +78,20 @@
             </div>
         </form>
 
+
+        {{-- ── Password ── --}}
+        <div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-outline-variant flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">lock</span>
+                <div>
+                    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Password</h2>
+                    <p class="text-xs text-on-surface-variant mt-0.5">Use a strong password to protect your account</p>
+                </div>
+            </div>
+            <div class="p-5">
+                @include('profile.partials.update-password-form')
+            </div>
+        </div>
 
         {{-- ── Account info ── --}}
         <div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">

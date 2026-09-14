@@ -122,7 +122,16 @@ class AdminController extends Controller
      */
     public function show(Student $student)
     {
-        $student->load('schoolClass', 'grades', 'attendance', 'fees', 'user');
+        $student->load(
+            'schoolClass',
+            'grades.classSubject.subject',
+            'grades.recordedByTeacher',
+            'attendance.classSubject.subject',
+            'attendance.recordedByTeacher',
+            'fees',
+            'user'
+        );
+
         return view('admin.students.show', compact('student'));
     }
 

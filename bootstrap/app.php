@@ -16,6 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
+
+        // Locks a must-change-password account to its settings page until
+        // it sets a new password. See EnsurePasswordIsChanged for details.
+        $middleware->web(append: [
+            \App\Http\Middleware\EnsurePasswordIsChanged::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (TokenMismatchException $exception, Request $request) {

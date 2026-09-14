@@ -72,6 +72,39 @@ class TeacherController extends Controller
         return view('teacher.roster', compact('teacher', 'schoolClass', 'terms', 'term', 'rows'));
     }
 
+    /**
+     * Read-only student profile, reached from a teacher's class roster.
+     *
+     * Shares its content (resources/views/students/profile-content.blade.php)
+     * with the admin student profile — same tabs, minus Financials, which
+     * stays admin-only. Scoped to students in a class the teacher actually
+     * teaches (homeroom or subject-assigned), same check as roster().
+     */
+    public function studentProfile(Student $student)
+    {
+        $teacher = auth()->user()->teacher;
+        abort_unless($teacher, 404);
+
+        $schoolClass = $student->schoolClass;
+        abort_unless($schoolClass, 404);
+
+        $isAssigned = (int) $schoolClass->teacher_id === (int) $teacher->teacher_id
+            || $schoolClass->classSubjects()->where('teacher_id', $teacher->teacher_id)->exists();
+
+        abort_unless($isAssigned, 403);
+
+        $student->load(
+            'schoolClass',
+            'grades.classSubject.subject',
+            'grades.recordedByTeacher',
+            'attendance.classSubject.subject',
+            'attendance.recordedByTeacher',
+            'user'
+        );
+
+        return view('teacher.student-profile', compact('student'));
+    }
+
     public function performance(Request $request)
     {
         $teacher = auth()->user()->teacher;

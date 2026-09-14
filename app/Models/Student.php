@@ -138,6 +138,55 @@ class Student extends Model
         return $this->status === self::STATUS_ENROLLED;
     }
 
+    /**
+     * Average percentage across this student's EXAM grades (all subjects,
+     * all terms currently loaded on `grades`). Shared by the admin and
+     * teacher student-profile views so both show the same number.
+     */
+    public function averageExamPercentage(): ?float
+    {
+        $scores = $this->grades
+            ->where('assessment_type', 'EXAM')
+            ->map(fn (Grade $grade) => $grade->percentage)
+            ->filter(fn ($score) => $score !== null);
+
+        return $scores->isNotEmpty() ? round($scores->avg(), 1) : null;
+    }
+
+    /** Letter grade for {@see averageExamPercentage()}, or null if ungraded. */
+    public function averageExamLetterGrade(): ?string
+    {
+        $pct = $this->averageExamPercentage();
+
+        if ($pct === null) {
+            return null;
+        }
+
+        return match (true) {
+            $pct >= 90 => 'A+', $pct >= 80 => 'A', $pct >= 75 => 'B+',
+            $pct >= 70 => 'B', $pct >= 65 => 'C+', $pct >= 60 => 'C',
+            $pct >= 50 => 'D', default => 'F',
+        };
+    }
+
+    /**
+     * Overall attendance rate (Present + Late) / total recorded sessions,
+     * from whatever `attendance` records are currently loaded. Null when
+     * there are no records yet, so views can show "—" instead of "0%".
+     */
+    public function attendanceRate(): ?float
+    {
+        $total = $this->attendance->count();
+
+        if ($total === 0) {
+            return null;
+        }
+
+        $attended = $this->attendance->whereIn('status', ['Present', 'Late'])->count();
+
+        return round(($attended / $total) * 100, 1);
+    }
+
     // ── Accessors ─────────────────────────────────────────────────────────────
 
     public function getFullNameAttribute(): string

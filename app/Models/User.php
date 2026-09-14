@@ -15,13 +15,14 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'role', 'role_id', 'email_verified_at'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'role_id', 'email_verified_at', 'must_change_password'];
 
     protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'must_change_password' => 'boolean',
     ];
 
     public function roleModel(): BelongsTo

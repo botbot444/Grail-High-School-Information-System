@@ -136,6 +136,7 @@ Route::middleware(['auth', 'role:teacher'])
         // its own page is integrated from the teacher portal HTML.
         Route::get('/classes', [TeacherController::class, 'classes'])->name('classes');
         Route::get('/classes/{class}/roster', [TeacherController::class, 'roster'])->name('classes.roster');
+        Route::get('/students/{student}', [TeacherController::class, 'studentProfile'])->name('students.show');
         Route::get('/timetable', [TeacherController::class, 'timetable'])->name('timetable');
         Route::get('/attendance', [TeacherController::class, 'attendance'])->name('attendance');
         Route::post('/attendance', [TeacherController::class, 'storeAttendance'])->name('attendance.store');

@@ -22,6 +22,9 @@ class PasswordController extends Controller
 
         $request->user()->update([
             'password' => Hash::make($validated['password']),
+            // Clears any forced-change lock (EnsurePasswordIsChanged) — a
+            // no-op for accounts that were never flagged.
+            'must_change_password' => false,
         ]);
 
         return back()->with('status', 'password-updated');
