@@ -101,6 +101,15 @@ class AdminTeacherController extends Controller
                         ->update(['teacher_id' => $teacher->teacher_id]);
                 }
 
+                // Subjects this teacher is qualified/assigned to teach, independent
+                // of any specific class — this is what the "Teaching Subjects"
+                // checkboxes on the form actually promise ("assigned to the teacher
+                // independently of homeroom classes"), and what the teacher table
+                // and profile read to show an "Assigned Subjects" chip. It is NOT
+                // the same as a real class+subject teaching assignment below, which
+                // is what actually drives the teacher's portal.
+                $teacher->subjects()->sync($validated['subject_ids'] ?? []);
+
                 // Teaching: the rows the teacher portal actually reads.
                 $assignment = $this->syncTeachingAssignments(
                     $teacher,
@@ -128,6 +137,7 @@ class AdminTeacherController extends Controller
         $teacher->load([
             'user',
             'homeroomClasses',
+            'subjects',
             // Dependent-record counts come back with the rows, so the page can
             // say WHY an assignment can't be removed instead of failing on the
             // delete. Counted through the relations rather than a hand-written
@@ -173,7 +183,10 @@ class AdminTeacherController extends Controller
         $classes = SchoolClass::all();
         $subjects = Subject::all();
         $assignedClasses = SchoolClass::where('teacher_id', $teacher->teacher_id)->pluck('class_id')->toArray();
-        $assignedSubjects = $teacher->classSubjects()->pluck('subject_id')->unique()->values()->toArray();
+        // The "Assigned Subjects" checkboxes reflect the teacher_subjects
+        // qualification list (what store()/update() now save them as), not the
+        // class-paired teaching assignments managed separately on the show page.
+        $assignedSubjects = $teacher->subjects()->pluck('subject_id')->toArray();
 
         return view('admin.teachers.edit', compact('teacher', 'classes', 'subjects', 'assignedClasses', 'assignedSubjects'));
     }
@@ -215,6 +228,11 @@ class AdminTeacherController extends Controller
                     SchoolClass::whereIn('class_id', $newClassIds)
                         ->update(['teacher_id' => $teacher->teacher_id]);
                 }
+
+                // Subject qualifications (teacher_subjects) are free to add and
+                // remove here — unlike class_subjects rows, they carry no grades
+                // or attendance that could be orphaned by unchecking a box.
+                $teacher->subjects()->sync($validated['subject_ids'] ?? []);
 
                 // Teaching assignments are only ever ADDED here. Removing one
                 // can orphan grades and attendance, so that is a deliberate

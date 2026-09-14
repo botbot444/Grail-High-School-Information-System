@@ -128,6 +128,18 @@
                     </section>
 
                     <section class="rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm p-5">
+                        <h2 class="font-title-sm text-title-sm text-on-surface mb-3">Subjects</h2>
+                        @forelse ($teacher->subjects as $subject)
+                            <div class="flex items-center gap-2 py-1.5 font-body-md text-body-md text-on-surface">
+                                <span class="material-symbols-outlined text-[18px] text-on-surface-variant">menu_book</span>
+                                {{ $subject->subject_name }}
+                            </div>
+                        @empty
+                            <p class="font-body-sm text-body-sm text-on-surface-variant">Not assigned to any subject yet.</p>
+                        @endforelse
+                    </section>
+
+                    <section class="rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm p-5">
                         <h2 class="font-title-sm text-title-sm text-on-surface mb-3">Homeroom</h2>
                         @forelse ($teacher->homeroomClasses as $class)
                             <div class="flex items-center gap-2 py-1.5 font-body-md text-body-md text-on-surface">
