@@ -1,76 +1,124 @@
+{{-- resources/views/admin/calendar/holidays/index.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Holidays')
 
 @section('content')
-    <div id="view-admin" class="app-view" style="display:flex;">
-        @include('admin.sidebar')
-        @include('admin.header')
+    @include('admin.sidebar')
+    @include('admin.header')
 
-        <div class="main-content main-transition pt-[72px]" id="mainContent">
-            <div class="cards">
-                <div class="card">
-                    <i class="fa-solid fa-calendar-day"></i>
-                    <h2>{{ $holidays->total() }}</h2>
-                    <p>Registered Holidays</p>
-                </div>
+    <main id="mainContent"
+        class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+
+        <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-end">
+            <div>
+                <nav class="flex items-center gap-2 text-on-surface-variant mb-2">
+                    <span class="text-label-sm font-label-sm">Dashboard</span>
+                    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                    <span class="text-label-sm font-label-sm text-primary font-bold">Holidays</span>
+                </nav>
+                <h1 class="font-headline-md text-headline-md font-extrabold text-on-surface">Holidays</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    Mark non-school days so school-day counts stay accurate.
+                </p>
             </div>
-
-            <div style="margin-bottom: 25px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <h3 style="margin:0;">Manage Holidays</h3>
-                    <form method="GET" style="display:flex; align-items:center; gap:10px;">
-                        <label for="academic_year_id" style="margin:0; color:gray; font-size:13px;">Filter by year:</label>
-                        <select name="academic_year_id" id="academic_year_id" onchange="this.form.submit()" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:8px;">
-                            <option value="">All years</option>
-                            @foreach ($academicYears as $id => $label)
-                                <option value="{{ $id }}" {{ $id == $academicYearId ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </form>
-                </div>
-                <a href="{{ route('admin.holidays.create') }}" class="btn"
-                    style="background: #177aa4; color: white; padding: 12px 20px; text-decoration:none;">
-                    <i class="fa-solid fa-plus"></i> Add New Holiday
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.holidays.create') }}"
+                    class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:opacity-90 transition-opacity shadow-md">
+                    <span class="material-symbols-outlined text-lg">add</span>
+                    Add Holiday
                 </a>
             </div>
+        </div>
 
-            <div class="table-section">
-                <table>
+        @include('admin.partials.flash')
+
+        <!-- Stat Strip -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mb-6">
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">beach_access</span>
+                </div>
+                <div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Registered Holidays</p>
+                    <p class="font-headline-md text-headline-md font-bold">{{ $holidays->total() }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter -->
+        <form method="GET"
+            class="mb-6 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-4">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:max-w-sm">
+                <div class="sm:col-span-3">
+                    <label class="block text-xs font-semibold text-on-surface-variant mb-1" for="academic_year_id">Filter by Academic Year</label>
+                    <select id="academic_year_id" name="academic_year_id" onchange="this.form.submit()"
+                        class="w-full rounded-lg border border-outline-variant px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer">
+                        <option value="">All years</option>
+                        @foreach ($academicYears as $id => $label)
+                            <option value="{{ $id }}" {{ $id == $academicYearId ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <!-- Data Table -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Academic Year</th>
-                            <th>Actions</th>
+                        <tr class="bg-surface-container-low text-on-surface-variant uppercase tracking-wider font-label-sm text-[11px]">
+                            <th class="px-6 py-4 font-semibold border-b border-outline-variant">Date</th>
+                            <th class="px-6 py-4 font-semibold border-b border-outline-variant">Description</th>
+                            <th class="px-6 py-4 font-semibold border-b border-outline-variant">Academic Year</th>
+                            <th class="px-6 py-4 font-semibold border-b border-outline-variant text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant">
                         @forelse ($holidays as $holiday)
-                            <tr>
-                                <td>{{ $holiday->date->format('M d, Y') }}</td>
-                                <td>{{ $holiday->description }}</td>
-                                <td>{{ $holiday->academicYear->label ?? chr(8212) }}</td>
-                                <td>
-                                    <a href="{{ route('admin.holidays.edit', $holiday) }}" style="color: #177aa4; text-decoration: none;">Edit</a>
-                                    <span style="color: #cbd5e1;"> | </span>
-                                    <form method="POST" action="{{ route('admin.holidays.destroy', $holiday) }}" style="display:inline; margin:0; padding:0;" onsubmit="return confirm('Are you sure?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" style="background: none; border: none; color: #dc2626; cursor: pointer; padding: 0; text-decoration: underline;">Delete</button>
-                                    </form>
+                            <tr class="table-row-hover transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap font-semibold text-on-surface">{{ $holiday->date->format('M d, Y') }}</td>
+                                <td class="px-6 py-4 text-on-surface-variant">{{ $holiday->description }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-on-surface-variant">{{ $holiday->academicYear->label ?? chr(8212) }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('admin.holidays.edit', $holiday) }}"
+                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-all"
+                                            title="Edit holiday">
+                                            <span class="material-symbols-outlined text-xl">edit</span>
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.holidays.destroy', $holiday) }}"
+                                            style="display: inline;" onsubmit="return confirm('Delete this holiday? This cannot be undone.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded transition-all"
+                                                title="Delete holiday">
+                                                <span class="material-symbols-outlined text-xl">delete</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" style="text-align: center; color: gray;">No holidays found.</td></tr>
+                            <tr>
+                                <td colspan="4" class="px-6 py-8 text-center text-on-surface-variant">No holidays found.</td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
+            </div>
 
-                <div style="margin-top: 20px;">
+            <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex flex-col gap-3 md:flex-row md:justify-between md:items-center">
+                <p class="font-label-sm text-label-sm text-on-surface-variant">
+                    Showing {{ $holidays->firstItem() ?? 0 }} to {{ $holidays->lastItem() ?? 0 }} of
+                    {{ $holidays->total() }} holidays
+                </p>
+                <div class="flex items-center justify-end">
                     {{ $holidays->links() }}
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 @endsection
