@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassSubject;
 use App\Models\SchoolClass;
 use App\Models\Term;
 use App\Models\TimetableSlot;
@@ -43,25 +44,91 @@ class TimetableController extends Controller
         ]);
     }
 
+    /**
+     * Save the whole weekly grid for one class/term in a single request.
+     *
+     * The builder view submits every period/day cell at once (see
+     * timetable/builder.blade.php) rather than one form per cell, so this
+     * writes the full set of changes in one transaction instead of forcing
+     * the admin to click a separate "Save" per cell.
+     */
     public function store(Request $request)
     {
-        $validated = $this->validated($request);
-        $existing = TimetableSlot::where([
-            'school_class_id' => $validated['school_class_id'],
-            'day_of_week' => $validated['day_of_week'],
-            'period_id' => $validated['period_id'],
-            'term_id' => $validated['term_id'],
-        ])->first();
+        $data = $request->validate([
+            'school_class_id' => ['required', 'exists:school_classes,class_id'],
+            'term_id' => ['required', 'exists:terms,term_id'],
+            'cells' => ['nullable', 'array'],
+            'cells.*' => ['array'],
+            'cells.*.*.subject_id' => ['nullable', 'integer', Rule::exists('subjects', 'subject_id')],
+            'cells.*.*.teacher_id' => ['nullable', 'integer', Rule::exists('teachers', 'teacher_id')],
+        ]);
 
-        if (! $validated['subject_id'] && ! $validated['teacher_id']) {
-            $existing?->delete();
-        } elseif ($existing) {
-            $existing->update($validated);
-        } else {
-            TimetableSlot::create($validated);
+        $classId = (int) $data['school_class_id'];
+        $termId = (int) $data['term_id'];
+        $cells = $data['cells'] ?? [];
+
+        // Every selected subject must actually be offered by this class —
+        // checked up front so a bad cell fails the whole save with a clear
+        // message, rather than writing some cells and silently skipping others.
+        $classSubjectIds = ClassSubject::where('class_id', $classId)->pluck('subject_id')->all();
+        foreach ($cells as $day => $periodCells) {
+            if (! in_array($day, self::DAYS, true)) {
+                continue;
+            }
+            foreach ($periodCells as $cell) {
+                $subjectId = $cell['subject_id'] ?? null;
+                if ($subjectId && ! in_array((int) $subjectId, $classSubjectIds, true)) {
+                    return back()->withErrors([
+                        'timetable' => 'One or more selected subjects are not assigned to this class. No changes were saved.',
+                    ])->withInput();
+                }
+            }
         }
 
-        return back()->with('notification', 'Timetable cell saved.');
+        DB::transaction(function () use ($cells, $classId, $termId): void {
+            foreach ($cells as $day => $periodCells) {
+                if (! in_array($day, self::DAYS, true)) {
+                    continue;
+                }
+
+                foreach ($periodCells as $periodId => $cell) {
+                    $periodId = (int) $periodId;
+                    $subjectId = $cell['subject_id'] ?? null;
+                    $teacherId = $cell['teacher_id'] ?? null;
+
+                    $existing = TimetableSlot::where([
+                        'school_class_id' => $classId,
+                        'day_of_week' => $day,
+                        'period_id' => $periodId,
+                        'term_id' => $termId,
+                    ])->first();
+
+                    if (! $subjectId && ! $teacherId) {
+                        $existing?->delete();
+
+                        continue;
+                    }
+
+                    $payload = [
+                        'school_class_id' => $classId,
+                        'day_of_week' => $day,
+                        'period_id' => $periodId,
+                        'term_id' => $termId,
+                        'subject_id' => $subjectId,
+                        'teacher_id' => $teacherId,
+                    ];
+
+                    if ($existing) {
+                        $existing->update($payload);
+                    } else {
+                        TimetableSlot::create($payload);
+                    }
+                }
+            }
+        });
+
+        return redirect()->route('admin.timetable.index', ['class_id' => $classId, 'term_id' => $termId])
+            ->with('notification', 'Timetable saved.');
     }
 
     public function copyToTerm(Request $request)
@@ -104,27 +171,6 @@ class TimetableController extends Controller
             ->each->delete();
 
         return back()->with('notification', 'The selected timetable was cleared.');
-    }
-
-    private function validated(Request $request): array
-    {
-        $validated = $request->validate([
-            'school_class_id' => ['required', 'exists:school_classes,class_id'],
-            'subject_id' => ['nullable', 'integer', Rule::exists('subjects', 'subject_id')],
-            'teacher_id' => ['nullable', 'integer', Rule::exists('teachers', 'teacher_id')],
-            'period_id' => ['required', 'exists:periods,id'],
-            'day_of_week' => ['required', Rule::in(self::DAYS)],
-            'term_id' => ['required', 'exists:terms,term_id'],
-        ]);
-
-        if ($validated['subject_id'] && ! \App\Models\ClassSubject::where('class_id', $validated['school_class_id'])
-            ->where('subject_id', $validated['subject_id'])->exists()) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'subject_id' => 'The selected subject is not assigned to this class.',
-            ]);
-        }
-
-        return $validated;
     }
 
     private function resolveTerm(Request $request, $terms): ?Term
