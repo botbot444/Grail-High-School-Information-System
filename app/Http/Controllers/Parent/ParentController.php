@@ -429,6 +429,7 @@ class ParentController extends Controller
         })->filter(fn ($r) => $r['average'] > 0 || $r['attendance'] > 0)->values();
 
         return view('parent.reports', $this->parentLayoutVars($selected, $children, 'Reports') + [
+            'student'    => $student,
             'terms'      => $terms,
             'years'      => $years,
             'reportCards' => $reportCards,

@@ -1,11 +1,14 @@
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 
+const lanHost = process.env.VITE_DEV_SERVER_HOST || "192.168.100.160";
+
 export default defineConfig({
     server: {
-        host: "127.0.0.1",
+        host: "0.0.0.0",
+        origin: `http://${lanHost}:5173`,
         hmr: {
-            host: "127.0.0.1",
+            host: lanHost,
         },
     },
     plugins: [
