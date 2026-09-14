@@ -97,7 +97,8 @@ class UserAccountController extends Controller
         $user->save();
 
         return back()
-            ->with('notification', "Temporary password for {$user->name}: {$temporary}")
+            ->with('notification', "New temporary password for {$user->name}:")
+            ->with('temporary_password', $temporary)
             ->with('temporary_password_for', $user->id);
     }
 

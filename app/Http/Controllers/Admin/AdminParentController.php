@@ -13,11 +13,42 @@ use Illuminate\Support\Str;
 
 class AdminParentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $parents = ParentProfile::with('user')->paginate(20);
+        $parents = ParentProfile::with(['user', 'students'])
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $term = '%' . $request->search . '%';
+                $query->where(function ($inner) use ($term) {
+                    $inner->where('first_name', 'like', $term)
+                        ->orWhere('last_name', 'like', $term)
+                        ->orWhere('email', 'like', $term);
+                });
+            })
+            ->when($request->linkage === 'linked', fn ($query) => $query->has('students'))
+            ->when($request->linkage === 'unlinked', fn ($query) => $query->doesntHave('students'))
+            ->when($request->status === 'reset', function ($query) {
+                $query->whereHas('user', fn ($u) => $u->where('must_change_password', true));
+            })
+            ->when($request->status === 'active', function ($query) {
+                $query->whereHas('user', fn ($u) => $u->where('must_change_password', false)->where('is_active', true));
+            })
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('admin.parents.index', compact('parents'));
+        $totalGuardians = ParentProfile::count();
+        $portalVerified = ParentProfile::whereHas('user', fn ($q) => $q->where('must_change_password', false))->count();
+        $linkedCount = ParentProfile::has('students')->count();
+        $unassignedCount = $totalGuardians - $linkedCount;
+
+        return view('admin.parents.index', compact(
+            'parents',
+            'totalGuardians',
+            'portalVerified',
+            'linkedCount',
+            'unassignedCount'
+        ));
     }
 
     public function create()
@@ -86,10 +117,9 @@ class AdminParentController extends Controller
                     });
             }
 
-            return redirect()->route('admin.parents.index')->with(
-                'notification',
-                "Parent created successfully! Temporary password: {$temporaryPassword} — share it with them; they'll be required to set a new one on first login."
-            );
+            return redirect()->route('admin.parents.index')
+                ->with('notification', "Parent created successfully! Share the temporary password below with them — they'll be required to set a new one on first login.")
+                ->with('temporary_password', $temporaryPassword);
         } catch (\Exception $e) {
             return back()->withErrors('Failed to create parent: ' . $e->getMessage());
         }
@@ -97,7 +127,7 @@ class AdminParentController extends Controller
 
     public function show(ParentProfile $parent)
     {
-        $parent->load('user');
+        $parent->load(['user', 'students.schoolClass']);
 
         return view('admin.parents.show', compact('parent'));
     }

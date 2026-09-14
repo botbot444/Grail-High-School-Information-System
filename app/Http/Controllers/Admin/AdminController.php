@@ -67,10 +67,12 @@ class AdminController extends Controller
     /**
      * Display a listing of students (Resource: index)
      */
-    public function index()
+    public function index(Request $request)
     {
         $students = Student::with('schoolClass', 'user')
-            ->paginate(20);
+            ->when($request->filled('class_id'), fn ($query) => $query->where('class_id', $request->class_id))
+            ->paginate(20)
+            ->withQueryString();
 
         return view('admin.students.index', compact('students'));
     }

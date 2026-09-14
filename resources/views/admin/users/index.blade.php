@@ -21,30 +21,7 @@
             </p>
         </div>
 
-        @if (session('notification'))
-            <div class="mb-6 rounded-lg border border-secondary/30 bg-secondary-fixed px-4 py-3">
-                @if (session('temporary_password_for'))
-                    <p class="font-title-sm text-title-sm text-on-surface flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[20px]">key</span>
-                        {{ session('notification') }}
-                    </p>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
-                        Write this down or pass it on now — it is shown once and cannot be retrieved later.
-                        Ask them to change it after signing in.
-                    </p>
-                @else
-                    <p class="font-body-md text-body-md text-on-surface">{{ session('notification') }}</p>
-                @endif
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="mb-6 rounded-lg border border-error/30 bg-error-container px-4 py-3">
-                <ul class="list-disc ml-5 font-body-sm text-body-sm text-on-error-container space-y-1">
-                    @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-                </ul>
-            </div>
-        @endif
+        @include('admin.partials.flash')
 
         {{-- Counts --}}
         <div class="grid grid-cols-3 gap-4 mb-6">
