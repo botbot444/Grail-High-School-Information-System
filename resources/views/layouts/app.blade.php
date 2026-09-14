@@ -19,12 +19,6 @@
     </head>
 
     <body class="font-sans text-gray-900 antialiased">
-        @if (session('notification'))
-            <div class="notification" id="flash-notification">
-                {{ session('notification') }}
-            </div>
-        @endif
-
         @isset($header)
             <header class="page-header">
                 {{ $header }}

@@ -7,6 +7,8 @@
     @include('admin.header')
 
     <div class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
         <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-end">
             <div>
                 <nav class="flex items-center gap-2 text-on-surface-variant mb-2">

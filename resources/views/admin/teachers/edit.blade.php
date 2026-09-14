@@ -9,6 +9,8 @@
 
         <main id="mainContent"
             class="ml-[260px] pt-[72px] min-h-screen bg-background p-container-padding main-transition flex-1">
+        @include('admin.partials.flash')
+
             <div class="pb-12 max-w-[1400px] mx-auto">
                 <div class="flex flex-col gap-3 mb-8">
                     <nav

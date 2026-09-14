@@ -9,6 +9,8 @@
         @include('admin.header')
 
         <div class="main-content main-transition pt-[88px]" id="mainContent">
+        @include('admin.partials.flash')
+
             <div class="p-8 space-y-6">
 
                 {{-- ── Welcome Header ── --}}

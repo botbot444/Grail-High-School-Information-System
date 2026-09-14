@@ -8,6 +8,8 @@
         @include('admin.header')
 
         <div class="main-content main-transition pt-[88px]" id="mainContent">
+        @include('admin.partials.flash')
+
             <div class="p-8 max-w-7xl mx-auto">
                 <div class="mb-8">
                     <h1 class="text-2xl font-extrabold text-on-surface tracking-tight">System Settings</h1>

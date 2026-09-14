@@ -24,11 +24,6 @@
         </form>
     </div>
 
-    @if (session('notification'))
-        <div class="mb-6 rounded-lg border border-secondary/30 bg-secondary-fixed px-4 py-3 font-body-md text-body-md text-on-surface">
-            {{ session('notification') }}
-        </div>
-    @endif
 
     @if ($classes->isEmpty())
         <div class="rounded-xl border border-outline-variant/60 bg-surface-container-lowest py-16 text-center">

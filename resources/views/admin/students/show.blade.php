@@ -13,6 +13,8 @@
         <!-- Main Content Area -->
         <main id="mainContent"
             class="ml-[260px] pt-[72px] min-h-screen bg-background p-container-padding main-transition flex-1">
+        @include('admin.partials.flash')
+
             <!-- Breadcrumbs & Actions -->
             <div class="flex justify-between items-center mb-8">
                 <nav class="flex items-center gap-2 text-on-surface-variant text-label-sm">

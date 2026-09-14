@@ -7,6 +7,8 @@
     @include('admin.header')
 
     <div class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
 
         <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-end">
             <div>
@@ -27,11 +29,6 @@
             </a>
         </div>
 
-        @if (session('notification'))
-            <div class="mb-6 rounded-lg border border-secondary/30 bg-secondary-fixed px-4 py-3 font-body-md text-body-md text-on-surface">
-                {{ session('notification') }}
-            </div>
-        @endif
 
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             @foreach ([

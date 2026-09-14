@@ -46,10 +46,20 @@ class Term extends Model
         return $this->hasMany(TimetableSlot::class, 'term_id', 'term_id');
     }
 
-    /** Scope: only the row flagged is_current. */
+    /**
+     * Scope: the term whose window contains today.
+     *
+     * This used to filter on the is_current flag while the static current()
+     * below used the date window — two different answers to "which term is it",
+     * with one dashboard using the flag and the rest of the application using
+     * the dates. A stored flag also goes stale the moment a term ends and
+     * nobody remembers to move it. The dates are the truth; the flag is now
+     * only a label.
+     */
     public function scopeCurrent($query)
     {
-        return $query->where('is_current', true);
+        return $query->where('start_date', '<=', now())
+            ->where('end_date', '>=', now());
     }
 
     /**

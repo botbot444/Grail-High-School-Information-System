@@ -62,5 +62,13 @@ class AcademicYearSeeder extends Seeder
         );
 
         $this->command->info('✔ Academic year '.$year.' seeded with 3 terms, plus '.$nextYear.' for promotion.');
-    }
+    
+        // Keep is_current on the term that contains today, so the stored label
+        // agrees with what Term::current() computes from the dates.
+        \App\Models\Term::query()->update(['is_current' => false]);
+        \App\Models\Term::where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->limit(1)
+            ->update(['is_current' => true]);
+}
 }

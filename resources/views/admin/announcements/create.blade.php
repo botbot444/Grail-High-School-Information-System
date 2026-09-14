@@ -7,6 +7,8 @@
     @include('admin.header')
 
     <div class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
         <div class="max-w-3xl">
             <nav class="flex items-center gap-2 text-on-surface-variant mb-2">
                 <a href="{{ route('admin.announcements.index') }}" class="text-label-sm font-label-sm hover:text-primary">Announcements</a>

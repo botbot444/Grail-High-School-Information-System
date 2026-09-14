@@ -82,26 +82,7 @@
         :class="collapsed ? 'md:ml-sidebar-rail' : 'md:ml-sidebar-width'"
     >
         <div class="max-w-[1400px] mx-auto">
-            @if (session('notification'))
-                <div class="mb-space-lg flex items-start gap-3 rounded-xl border border-secondary/30 bg-secondary-container/40 px-4 py-3 text-body-md text-on-surface">
-                    <span class="material-symbols-outlined text-secondary text-xl">info</span>
-                    <p>{{ session('notification') }}</p>
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="mb-space-lg rounded-xl border border-error/30 bg-error-container/60 px-4 py-3">
-                    <p class="flex items-center gap-2 text-body-md font-semibold text-on-error-container">
-                        <span class="material-symbols-outlined text-xl">error</span>
-                        Please fix the following:
-                    </p>
-                    <ul class="mt-2 ml-8 list-disc space-y-1 text-body-sm text-on-error-container">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            <x-flash />
 
             @yield('content')
         </div>

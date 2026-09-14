@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +15,7 @@ use App\Models\Role;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Auditable;
 
     protected $fillable = ['name', 'email', 'password', 'role', 'role_id', 'email_verified_at', 'must_change_password', 'is_active'];
 
@@ -31,6 +33,15 @@ class User extends Authenticatable
     protected $attributes = [
         'is_active' => true,
     ];
+
+    /**
+     * Kept out of the audit trail. The credentials are handled by the trait
+     * itself; these are the merely noisy ones — a verification timestamp or a
+     * login bump is not an administrative act worth recording.
+     *
+     * @var array<int, string>
+     */
+    protected array $auditExclude = ['email_verified_at', 'updated_at', 'created_at'];
 
     protected $hidden = ['password', 'remember_token'];
 

@@ -267,7 +267,16 @@ class ReportCardController extends Controller
     {
         $teacher     = $this->currentTeacher();
         $schoolClass = $this->homeroomClass($teacher, $class);
-        $term        = Term::findOrFail($request->integer('term_id'));
+
+        // Every other action in this controller falls back to the current term
+        // when the query string has none. This one used to findOrFail(0) and
+        // hand back a bare 404 — so a bookmarked preview, or a link that lost
+        // its query string, looked like a missing student rather than a missing
+        // parameter.
+        $terms = Term::with('academicYear')->orderByDesc('start_date')->get();
+        $term  = $this->resolveTerm($request, $terms);
+
+        abort_if(! $term, 404, 'No term to build a report card against.');
 
         $pupil = Student::where('student_id', $student)
             ->where('class_id', $schoolClass->class_id)

@@ -8,6 +8,8 @@
         @include('admin.header')
 
         <div class="main-content main-transition pt-[88px]" id="mainContent">
+        @include('admin.partials.flash')
+
             <div class="p-8 max-w-7xl mx-auto space-y-6">
                 <nav class="flex items-center gap-2 text-sm text-on-surface-variant">
                     <a href="{{ route('admin.dashboard') }}" class="hover:text-primary transition-colors">Dashboard</a>

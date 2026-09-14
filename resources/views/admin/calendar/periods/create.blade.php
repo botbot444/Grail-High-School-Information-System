@@ -9,6 +9,8 @@
 
     <main id="mainContent"
         class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
 
         <nav class="flex items-center gap-2 mb-4 font-label-md text-label-md text-on-surface-variant">
             <a href="{{ route('admin.periods.index') }}" class="hover:text-primary transition-colors">Periods</a>

@@ -7,6 +7,8 @@
     @include('admin.header')
 
     <div class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
 
         @php
             $exportBase = fn ($section) => route('admin.reports.school-wide.export', [
@@ -57,11 +59,6 @@
             </div>
         </div>
 
-        @if (session('notification'))
-            <div class="mb-6 rounded-lg border border-secondary/30 bg-secondary-fixed px-4 py-3 font-body-md text-body-md text-on-surface">
-                {{ session('notification') }}
-            </div>
-        @endif
 
         @if (! $report)
             <div class="rounded-xl border border-outline-variant bg-surface-container-lowest py-16 text-center">

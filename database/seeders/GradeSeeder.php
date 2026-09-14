@@ -17,7 +17,14 @@ class GradeSeeder extends Seeder
         // Anchor the seeded marks to a real term from the Phase 3 calendar so
         // report cards and term-scoped reports can find them by term_id, not
         // just by the legacy term-name string.
-        $termModel = Term::with('academicYear')->orderBy('start_date')->first();
+        //
+        // Specifically the term that contains TODAY. Seeding into the first term
+        // of the year meant that on any date outside it — which is most of the
+        // year — every screen defaulting to the current term opened empty, and
+        // finalizing report cards refused because "marks are missing". The demo
+        // data has to land where the application will look for it.
+        $termModel = Term::with('academicYear')->current()->first()
+            ?? Term::with('academicYear')->orderBy('start_date')->first();
         $year      = (int) ($termModel?->academicYear?->label ?? now()->year);
         $term      = $termModel?->name ?? 'Term 1';
         $count     = 0;

@@ -28,7 +28,12 @@ trait Auditable
         // (getOriginal()) and the incoming dirty values (getChanges()).
         static::saving(function ($model) {
             if ($model->exists && $model->isDirty()) {
-                $model->writeAudit('updated', $model->getOriginal(), $model->getChanges());
+                // getDirty(), not getChanges(). getChanges() is only populated
+                // AFTER a save completes, so inside `saving` it is always empty
+                // — which meant every update recorded what the row used to be
+                // and nothing about what it became, leaving the log viewer's
+                // field-by-field diff with nothing to compare against.
+                $model->writeAudit('updated', $model->getOriginal(), $model->getDirty());
             }
         });
 
@@ -49,11 +54,40 @@ trait Auditable
     /**
      * Persist a single audit log entry.
      */
+    /**
+     * Attributes that must never be written to the audit table, whatever the
+     * model. An audit log is read on screen by administrators, so a password
+     * hash or a session token recorded "for completeness" turns an
+     * accountability feature into a credential store. A model can extend this
+     * list with its own $auditExclude property.
+     *
+     * @var array<int, string>
+     */
+    protected array $auditNeverStore = ['password', 'remember_token'];
+
+    /** Strip excluded attributes from a values array before it is stored. */
+    protected function redactForAudit(?array $values): ?array
+    {
+        if ($values === null) {
+            return null;
+        }
+
+        $excluded = array_merge(
+            $this->auditNeverStore,
+            property_exists($this, 'auditExclude') ? $this->auditExclude : []
+        );
+
+        return array_diff_key($values, array_flip($excluded));
+    }
+
     protected function writeAudit(
         string $action,
         ?array $oldValues,
         ?array $newValues
     ): void {
+        $oldValues = $this->redactForAudit($oldValues);
+        $newValues = $this->redactForAudit($newValues);
+
         // Seeders / artisan commands have no HTTP request / auth user.
         if (app()->runningInConsole()) {
             $ip   = null;

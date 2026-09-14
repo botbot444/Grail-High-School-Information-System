@@ -7,6 +7,8 @@
     @include('admin.header')
 
     <div class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
         <div style="margin-bottom: 25px; display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <h2 style="color: #177aa4;">Add New Fee</h2>

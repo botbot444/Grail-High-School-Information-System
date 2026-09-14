@@ -8,6 +8,8 @@
 
     <main id="mainContent"
         class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
 
         <div class="mb-6 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

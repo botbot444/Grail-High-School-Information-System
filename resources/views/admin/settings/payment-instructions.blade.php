@@ -7,6 +7,8 @@
     @include('admin.header')
 
     <div class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
         <div class="mb-8">
             <nav class="flex items-center gap-2 text-on-surface-variant mb-2">
                 <span class="text-label-sm font-label-sm">Settings</span>
@@ -20,19 +22,7 @@
             </p>
         </div>
 
-        @if (session('notification'))
-            <div class="mb-6 rounded-lg border border-secondary/30 bg-secondary-fixed px-4 py-3 font-body-md text-body-md text-on-surface">
-                {{ session('notification') }}
-            </div>
-        @endif
 
-        @if ($errors->any())
-            <div class="mb-6 rounded-lg border border-error/30 bg-error-container px-4 py-3">
-                <ul class="list-disc ml-5 font-body-sm text-body-sm text-on-error-container space-y-1">
-                    @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-                </ul>
-            </div>
-        @endif
 
         <form method="POST" action="{{ route('admin.settings.payments.update') }}" class="max-w-3xl">
             @csrf

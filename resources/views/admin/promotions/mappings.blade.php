@@ -7,6 +7,8 @@
     @include('admin.header')
 
     <div class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+        @include('admin.partials.flash')
+
 
         <a href="{{ route('admin.promotions.index') }}"
            class="inline-flex items-center gap-1.5 mb-4 font-label-md text-label-md text-primary hover:underline">
@@ -21,19 +23,7 @@
             </p>
         </div>
 
-        @if (session('notification'))
-            <div class="mb-6 rounded-lg border border-secondary/30 bg-secondary-fixed px-4 py-3 font-body-md text-body-md text-on-surface">
-                {{ session('notification') }}
-            </div>
-        @endif
 
-        @if ($errors->any())
-            <div class="mb-6 rounded-lg border border-error/30 bg-error-container px-4 py-3">
-                <ul class="list-disc ml-5 font-body-sm text-body-sm text-on-error-container space-y-1">
-                    @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-                </ul>
-            </div>
-        @endif
 
         <form method="POST" action="{{ route('admin.promotions.mappings.save') }}" class="max-w-4xl">
             @csrf

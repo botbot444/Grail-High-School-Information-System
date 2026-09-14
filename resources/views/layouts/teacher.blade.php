@@ -35,21 +35,8 @@
         </script>
         <main id="mainContent"
               class="fixed top-header-height right-0 w-[calc(100%-260px)] h-[calc(100vh-72px)] overflow-y-auto bg-surface p-container-padding main-transition">
+            <x-flash />
             @yield('page')
         </main>
     </div>
-    @if (session('notification'))
-        <div id="teacher-toast"
-             class="fixed bottom-6 right-6 hidden bg-surface-container-lowest border border-outline-variant text-on-surface px-space-md py-3 rounded-xl shadow-lg z-50 toast-show">
-            <span class="material-symbols-outlined text-primary mr-2 align-middle">info</span>
-            {{ session('notification') }}
-        </div>
-        <script>
-            const t_toast = document.getElementById('teacher-toast');
-            if (t_toast) {
-                t_toast.classList.remove('hidden');
-                setTimeout(() => t_toast.classList.add('toast-hide'), 1500);
-            }
-        </script>
-    @endif
 @endsection

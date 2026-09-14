@@ -18,19 +18,7 @@
         </p>
     </div>
 
-    @if (session('notification'))
-        <div class="mb-6 rounded-lg border border-secondary/30 bg-secondary-fixed px-4 py-3 font-body-md text-body-md text-on-surface">
-            {{ session('notification') }}
-        </div>
-    @endif
 
-    @if ($errors->any())
-        <div class="mb-6 rounded-lg border border-error/30 bg-error-container px-4 py-3">
-            <ul class="list-disc ml-5 font-body-sm text-body-sm text-on-error-container space-y-1">
-                @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-            </ul>
-        </div>
-    @endif
 
     {{-- Submitted --}}
     <section class="rounded-xl border border-outline-variant/60 bg-surface-container-lowest overflow-hidden mb-6">
