@@ -1,199 +1,142 @@
-<!-- Sidebar Navigation -->
+{{--
+    Admin navigation.
+
+    Was a flat list of 25 links with one heading. Now grouped into collapsible
+    sections built from the $nav array below — add a screen by adding a row,
+    not by copying forty characters of Tailwind.
+
+    Groups use native <details>/<summary> rather than Alpine, deliberately: the
+    student sidebar taught us what happens when navigation depends on JavaScript
+    that fails to load. A group containing the current page is rendered open by
+    the server, so the menu is always usable even with no JS at all.
+--}}
+@php
+    /** True when any of the given route patterns matches the current request. */
+    $matches = fn (array $patterns) => collect($patterns)->contains(fn ($p) => request()->routeIs($p));
+
+    $nav = [
+        ['type' => 'link', 'label' => 'Dashboard', 'icon' => 'dashboard',
+         'route' => 'admin.dashboard', 'match' => ['admin.dashboard']],
+
+        ['type' => 'group', 'label' => 'People', 'icon' => 'group', 'items' => [
+            ['label' => 'Students',      'icon' => 'school',           'route' => 'admin.students.index',  'match' => ['admin.students.*']],
+            ['label' => 'Teachers',      'icon' => 'person_pin',       'route' => 'admin.teachers.index',  'match' => ['admin.teachers.*']],
+            ['label' => 'Parents',       'icon' => 'family_restroom',  'route' => 'admin.parents.index',   'match' => ['admin.parents.*']],
+            ['label' => 'User Accounts', 'icon' => 'manage_accounts',  'route' => 'admin.users.index',     'match' => ['admin.users.*']],
+        ]],
+
+        ['type' => 'group', 'label' => 'Academics', 'icon' => 'menu_book', 'items' => [
+            ['label' => 'Classes',      'icon' => 'groups',                'route' => 'admin.classes.index',      'match' => ['admin.classes.*']],
+            ['label' => 'Subjects',     'icon' => 'book',                  'route' => 'admin.subjects.index',     'match' => ['admin.subjects.*']],
+            ['label' => 'Timetables',   'icon' => 'calendar_month',        'route' => 'admin.timetable.index',    'match' => ['admin.timetable.*']],
+            ['label' => 'Examinations', 'icon' => 'assignment_turned_in',  'route' => 'admin.examinations',       'match' => ['admin.examinations']],
+            ['label' => 'Report Cards', 'icon' => 'description',           'route' => 'admin.report-cards.index', 'match' => ['admin.report-cards.*']],
+            ['label' => 'Promotion',    'icon' => 'moving',                'route' => 'admin.promotions.index',   'match' => ['admin.promotions.*']],
+        ]],
+
+        ['type' => 'group', 'label' => 'Finance', 'icon' => 'payments', 'items' => [
+            ['label' => 'Fees',                 'icon' => 'receipt_long',      'route' => 'admin.fees.index',            'match' => ['admin.fees.index', 'admin.fees.create', 'admin.fees.edit', 'admin.fees.show', 'admin.payments.*']],
+            ['label' => 'Payment Lookup',       'icon' => 'pin',               'route' => 'admin.fees.lookup',           'match' => ['admin.fees.lookup']],
+            ['label' => 'Fee Categories',       'icon' => 'sell',              'route' => 'admin.categories.index',      'match' => ['admin.categories.*']],
+            ['label' => 'Payment Instructions', 'icon' => 'account_balance',   'route' => 'admin.settings.payments',     'match' => ['admin.settings.payments*']],
+            ['label' => 'Collection Report',    'icon' => 'bar_chart',         'route' => 'admin.reports.fee-collection','match' => ['admin.reports.fee-collection*']],
+            ['label' => 'Fee Aging',            'icon' => 'hourglass_bottom',  'route' => 'admin.reports.aging',         'match' => ['admin.reports.aging*']],
+        ]],
+
+        ['type' => 'group', 'label' => 'Reports', 'icon' => 'insights', 'items' => [
+            ['label' => 'School Performance', 'icon' => 'insights',    'route' => 'admin.reports.school-wide', 'match' => ['admin.reports.school-wide*']],
+            ['label' => 'Attendance',         'icon' => 'fact_check',  'route' => 'admin.reports.attendance',  'match' => ['admin.reports.attendance*']],
+        ]],
+
+        ['type' => 'link', 'label' => 'Announcements', 'icon' => 'campaign',
+         'route' => 'admin.announcements.index', 'match' => ['admin.announcements.*']],
+
+        ['type' => 'group', 'label' => 'School Setup', 'icon' => 'tune', 'items' => [
+            ['label' => 'Academic Years', 'icon' => 'calendar_month', 'route' => 'admin.academic-years.index', 'match' => ['admin.academic-years.*']],
+            ['label' => 'Terms',          'icon' => 'view_agenda',    'route' => 'admin.terms.index',          'match' => ['admin.terms.*']],
+            ['label' => 'Holidays',       'icon' => 'beach_access',   'route' => 'admin.holidays.index',       'match' => ['admin.holidays.*']],
+            ['label' => 'Grade Levels',   'icon' => 'stairs',         'route' => 'admin.grade-levels.index',   'match' => ['admin.grade-levels.*']],
+            ['label' => 'Periods',        'icon' => 'schedule',       'route' => 'admin.periods.index',        'match' => ['admin.periods.*']],
+        ]],
+
+        ['type' => 'link', 'label' => 'Audit Logs', 'icon' => 'history',
+         'route' => 'admin.audit-logs.index', 'match' => ['admin.audit-logs.*']],
+    ];
+
+    $activeClasses = 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm';
+    $idleClasses   = 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg';
+@endphp
+
+{{--
+    Plain CSS, not Tailwind variants: hiding the disclosure marker needs a
+    -webkit- rule for Safari, and a named-group variant is not worth depending
+    on for a chevron.
+--}}
+<style>
+    .nav-group > summary { list-style: none; }
+    .nav-group > summary::-webkit-details-marker { display: none; }
+    .nav-chevron { transition: transform 200ms ease; }
+    .nav-group[open] > summary .nav-chevron { transform: rotate(180deg); }
+</style>
+
 <aside id="sidebar"
     class="w-sidebar-width h-screen fixed left-0 top-0 bg-[#001a41] border-r border-[#2d476f] z-50 flex flex-col overflow-y-auto custom-scrollbar sidebar-transition">
+
     <div class="px-6 py-8 flex items-center gap-3 border-b border-white/10">
         <div class="w-10 h-10 bg-[#0059bb] rounded-lg flex items-center justify-center text-white shadow-sm">
             <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">school</span>
         </div>
         <div>
-            <h1 class="text-title-sm font-title-sm font-bold text-white">
-                Grail SIS
-            </h1>
-            <p class="text-[10px] uppercase tracking-[0.2em] text-[#bfc8d0] opacity-90">
-                Admin Portal
-            </p>
+            <h1 class="text-title-sm font-title-sm font-bold text-white">Grail SIS</h1>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-[#bfc8d0] opacity-90">Admin Portal</p>
         </div>
     </div>
+
     <nav class="flex-1 px-4 py-4 space-y-1">
-        <!-- Dashboard -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.dashboard') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.dashboard') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.dashboard') ? 'font-variation-settings: "FILL" 1' : '' }}">dashboard</span>
-            <span class="font-label-sm text-label-sm">Dashboard</span>
-        </a>
+        @foreach ($nav as $entry)
+            @if ($entry['type'] === 'link')
+                @php $active = $matches($entry['match']); @endphp
+                <a href="{{ route($entry['route']) }}"
+                   class="flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 group {{ $active ? $activeClasses : $idleClasses }}">
+                    <span class="material-symbols-outlined"
+                          style="{{ $active ? 'font-variation-settings: \'FILL\' 1' : '' }}">{{ $entry['icon'] }}</span>
+                    <span class="font-label-sm text-label-sm">{{ $entry['label'] }}</span>
+                </a>
+            @else
+                @php
+                    $groupActive = collect($entry['items'])->contains(fn ($item) => $matches($item['match']));
+                @endphp
+                <details class="nav-group" @if ($groupActive) open @endif>
+                    <summary
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200
+                               {{ $groupActive ? 'text-white' : 'text-[#dbe4ed]' }} hover:bg-[#004493]/80">
+                        <span class="material-symbols-outlined">{{ $entry['icon'] }}</span>
+                        <span class="font-label-sm text-label-sm flex-1">{{ $entry['label'] }}</span>
+                        <span class="material-symbols-outlined nav-chevron text-[18px] text-[#9fb2c6]">expand_more</span>
+                    </summary>
 
-        <!-- User Management -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.users.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.users.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.users.*') ? 'font-variation-settings: "FILL" 1' : '' }}">group</span>
-            <span class="font-label-sm text-label-sm">User Accounts</span>
-        </a>
-
-        <!-- Students -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.students.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.students.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.students.*') ? 'font-variation-settings: "FILL" 1' : '' }}">school</span>
-            <span class="font-label-sm text-label-sm">Students</span>
-        </a>
-
-        <!-- Teachers -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.teachers.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.teachers.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.teachers.*') ? 'font-variation-settings: "FILL" 1' : '' }}">person_pin</span>
-            <span class="font-label-sm text-label-sm">Teachers</span>
-        </a>
-
-        <!-- Parents -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.parents.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.parents.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.parents.*') ? 'font-variation-settings: "FILL" 1' : '' }}">family_restroom</span>
-            <span class="font-label-sm text-label-sm">Parents</span>
-        </a>
-
-        <!-- Classes -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.classes.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.classes.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.classes.*') ? 'font-variation-settings: "FILL" 1' : '' }}">groups</span>
-            <span class="font-label-sm text-label-sm">Classes</span>
-        </a>
-
-        <!-- Subjects -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.subjects.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.subjects.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.subjects.*') ? 'font-variation-settings: "FILL" 1' : '' }}">book</span>
-            <span class="font-label-sm text-label-sm">Subjects</span>
-        </a>
-
-        <!-- Timetable -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.timetable.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.timetable.index') }}">
-            <span class="material-symbols-outlined">calendar_month</span>
-            <span class="font-label-sm text-label-sm">Timetables</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 text-[#dbe4ed] hover:bg-[#004493]/80 transition-colors duration-200 rounded-lg group"
-            href="#">
-            <span class="material-symbols-outlined">how_to_reg</span>
-            <span class="font-label-sm text-label-sm">Attendance</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.examinations') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.examinations') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.examinations') ? 'font-variation-settings: "FILL" 1' : '' }}">assignment_turned_in</span>
-            <span class="font-label-sm text-label-sm">Examinations</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.report-cards.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.report-cards.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.report-cards.*') ? 'font-variation-settings: "FILL" 1' : '' }}">description</span>
-            <span class="font-label-sm text-label-sm">Report Cards</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.announcements.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.announcements.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.announcements.*') ? 'font-variation-settings: "FILL" 1' : '' }}">campaign</span>
-            <span class="font-label-sm text-label-sm">Announcements</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.promotions.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.promotions.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.promotions.*') ? 'font-variation-settings: "FILL" 1' : '' }}">moving</span>
-            <span class="font-label-sm text-label-sm">Promotion</span>
-        </a>
-
-        <!-- Fees -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.fees.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.fees.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.fees.*') ? 'font-variation-settings: "FILL" 1' : '' }}">payments</span>
-            <span class="font-label-sm text-label-sm">Fees</span>
-        </a>
-
-        <!-- School Calendar -->
-        <p class="px-3 pt-4 pb-1 text-[10px] uppercase tracking-[0.2em] text-[#9fb2c6] opacity-80">School Calendar</p>
-
-        <!-- Academic Years -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.academic-years.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.academic-years.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.academic-years.*') ? 'font-variation-settings: \"FILL\" 1' : '' }}">calendar_month</span>
-            <span class="font-label-sm text-label-sm">Academic Years</span>
-        </a>
-
-        <!-- Terms -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.terms.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.terms.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.terms.*') ? 'font-variation-settings: \"FILL\" 1' : '' }}">view_agenda</span>
-            <span class="font-label-sm text-label-sm">Terms</span>
-        </a>
-
-        <!-- Holidays -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.holidays.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.holidays.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.holidays.*') ? 'font-variation-settings: \"FILL\" 1' : '' }}">beach_access</span>
-            <span class="font-label-sm text-label-sm">Holidays</span>
-        </a>
-
-        <!-- Grade Levels -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.grade-levels.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.grade-levels.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.grade-levels.*') ? 'font-variation-settings: \"FILL\" 1' : '' }}">stairs</span>
-            <span class="font-label-sm text-label-sm">Grade Levels</span>
-        </a>
-
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.periods.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.periods.index') }}">
-            <span class="material-symbols-outlined">schedule</span>
-            <span class="font-label-sm text-label-sm">Periods</span>
-        </a>
-
-        <!-- Audit Logs -->
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.audit-logs.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.audit-logs.index') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.audit-logs.*') ? 'font-variation-settings: "FILL" 1' : '' }}">history</span>
-            <span class="font-label-sm text-label-sm">Audit Logs</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.reports.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.reports.fee-collection') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.reports.*') ? 'font-variation-settings: \"FILL\" 1' : '' }}">bar_chart</span>
-            <span class="font-label-sm text-label-sm">Fee Collection Report</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.reports.school-wide*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.reports.school-wide') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.reports.school-wide*') ? 'font-variation-settings: "FILL" 1' : '' }}">insights</span>
-            <span class="font-label-sm text-label-sm">School Performance</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.reports.attendance*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.reports.attendance') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.reports.attendance*') ? 'font-variation-settings: "FILL" 1' : '' }}">fact_check</span>
-            <span class="font-label-sm text-label-sm">Attendance Report</span>
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.reports.aging*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
-            href="{{ route('admin.reports.aging') }}">
-            <span class="material-symbols-outlined"
-                style="{{ request()->routeIs('admin.reports.aging*') ? 'font-variation-settings: "FILL" 1' : '' }}">hourglass_bottom</span>
-            <span class="font-label-sm text-label-sm">Fee Aging</span>
-        </a>
+                    <div class="mt-1 ml-3 pl-3 border-l border-white/10 space-y-0.5">
+                        @foreach ($entry['items'] as $item)
+                            @php $active = $matches($item['match']); @endphp
+                            <a href="{{ route($item['route']) }}"
+                               class="flex items-center gap-3 px-3 py-2 transition-colors duration-200 {{ $active ? $activeClasses : $idleClasses }}">
+                                <span class="material-symbols-outlined text-[18px]"
+                                      style="{{ $active ? 'font-variation-settings: \'FILL\' 1' : '' }}">{{ $item['icon'] }}</span>
+                                <span class="font-label-sm text-label-sm">{{ $item['label'] }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </details>
+            @endif
+        @endforeach
     </nav>
+
     <div class="p-4 mt-auto">
         <div class="space-y-2">
-            <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.settings*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.settings') ? $activeClasses : $idleClasses }} transition-colors duration-200 group"
                 href="{{ route('admin.settings') }}">
                 <span class="material-symbols-outlined"
-                    style="{{ request()->routeIs('admin.settings*') ? 'font-variation-settings: "FILL" 1' : '' }}">settings</span>
+                    style="{{ request()->routeIs('admin.settings') ? 'font-variation-settings: \'FILL\' 1' : '' }}">settings</span>
                 <span class="font-label-sm text-label-sm">Settings</span>
             </a>
 

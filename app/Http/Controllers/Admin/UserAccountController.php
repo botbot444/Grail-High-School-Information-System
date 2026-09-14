@@ -29,7 +29,7 @@ class UserAccountController extends Controller
     public function index(Request $request): View
     {
         $users = User::query()
-            ->with('role')
+            ->with('roleModel')
             ->when($request->filled('search'), function ($q) use ($request) {
                 $term = '%' . $request->search . '%';
                 $q->where(fn ($inner) => $inner->where('name', 'like', $term)->orWhere('email', 'like', $term));
@@ -154,7 +154,7 @@ class UserAccountController extends Controller
     private function activeAdminCount(): int
     {
         return User::where('is_active', true)
-            ->whereHas('role', fn ($q) => $q->where('name', 'admin'))
+            ->whereHas('roleModel', fn ($q) => $q->where('name', 'admin'))
             ->count();
     }
 
