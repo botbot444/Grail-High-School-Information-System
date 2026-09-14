@@ -99,7 +99,18 @@ class FeeController extends Controller
         $academicYears = AcademicYear::orderByDesc('start_date')->get(['year_id', 'label']);
         $terms         = Term::orderBy('start_date')->get(['term_id', 'name', 'academic_year_id']);
 
-        return view('admin.fees.index', compact('fees', 'academicYears', 'terms'));
+        // Stat strip totals — deliberately unfiltered (like the Classes/Subjects
+        // index stats) so the header always reads as "the whole fee book",
+        // not just whatever the current filter/pagination happens to show.
+        $totalFees        = Fee::count();
+        $totalCollected    = (float) Fee::sum('amount_paid');
+        $totalOutstanding = (float) Fee::sum('balance');
+        $overdueCount     = Fee::where('status', 'Overdue')->count();
+
+        return view('admin.fees.index', compact(
+            'fees', 'academicYears', 'terms',
+            'totalFees', 'totalCollected', 'totalOutstanding', 'overdueCount'
+        ));
     }
 
     public function create()

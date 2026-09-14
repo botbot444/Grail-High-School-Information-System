@@ -34,6 +34,46 @@
             </div>
         </div>
 
+        <!-- Stat Strip -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mb-6">
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">receipt_long</span>
+                </div>
+                <div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Total Fee Records</p>
+                    <p class="font-headline-md text-headline-md font-bold">{{ $totalFees }}</p>
+                </div>
+            </div>
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary">
+                    <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">payments</span>
+                </div>
+                <div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Total Collected</p>
+                    <p class="font-headline-md text-headline-md font-bold">ZMW {{ number_format($totalCollected, 2) }}</p>
+                </div>
+            </div>
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary">
+                    <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">account_balance_wallet</span>
+                </div>
+                <div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Outstanding Balance</p>
+                    <p class="font-headline-md text-headline-md font-bold">ZMW {{ number_format($totalOutstanding, 2) }}</p>
+                </div>
+            </div>
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-error/15 flex items-center justify-center text-error">
+                    <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">warning</span>
+                </div>
+                <div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Overdue Fees</p>
+                    <p class="font-headline-md text-headline-md font-bold">{{ $overdueCount }}</p>
+                </div>
+            </div>
+        </div>
+
         {{-- Match a deposit slip or mobile money SMS to its fee in one step. --}}
         <form method="GET" action="{{ route('admin.fees.lookup') }}"
             class="mb-4 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-4">
