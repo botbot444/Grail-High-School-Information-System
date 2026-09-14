@@ -89,8 +89,7 @@
                             <th class="px-4 py-3 text-label-sm font-semibold text-on-surface-variant">User</th>
                             <th class="px-4 py-3 text-label-sm font-semibold text-on-surface-variant">Model</th>
                             <th class="px-4 py-3 text-label-sm font-semibold text-on-surface-variant text-center">Action</th>
-                            <th class="px-4 py-3 text-label-sm font-semibold text-on-surface-variant">Old Values</th>
-                            <th class="px-4 py-3 text-label-sm font-semibold text-on-surface-variant">New Values</th>
+                            <th class="px-4 py-3 text-label-sm font-semibold text-on-surface-variant" colspan="2">What changed</th>
                             <th class="px-4 py-3 text-label-sm font-semibold text-on-surface-variant">Reason</th>
                             <th class="px-4 py-3 text-label-sm font-semibold text-on-surface-variant">IP</th>
                         </tr>
@@ -121,11 +120,31 @@
                                         {{ ucfirst($log->action) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-body-sm text-on-surface">
-                                    {{ $log->old_values ? json_encode($log->old_values) : '-' }}
-                                </td>
-                                <td class="px-4 py-3 text-body-sm text-on-surface">
-                                    {{ $log->new_values ? json_encode($log->new_values) : '-' }}
+                                <td class="px-4 py-3 text-body-sm text-on-surface" colspan="2">
+                                    @php $changes = $log->change_summary; @endphp
+                                    @if (empty($changes))
+                                        <span class="text-on-surface-variant">No field changes recorded</span>
+                                    @else
+                                        <ul class="space-y-1">
+                                            @foreach (array_slice($changes, 0, 4) as $change)
+                                                <li class="flex flex-wrap items-baseline gap-1.5">
+                                                    <span class="font-semibold text-on-surface">{{ $change['field'] }}</span>
+                                                    @if ($log->action === 'created')
+                                                        <span class="font-mono text-xs text-green-700">{{ $change['to'] ?? '—' }}</span>
+                                                    @elseif ($log->action === 'deleted')
+                                                        <span class="font-mono text-xs text-red-700 line-through">{{ $change['from'] ?? '—' }}</span>
+                                                    @else
+                                                        <span class="font-mono text-xs text-on-surface-variant line-through">{{ $change['from'] ?? 'empty' }}</span>
+                                                        <span class="material-symbols-outlined text-[14px] text-on-surface-variant">arrow_forward</span>
+                                                        <span class="font-mono text-xs font-semibold text-on-surface">{{ $change['to'] ?? 'empty' }}</span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                            @if (count($changes) > 4)
+                                                <li class="text-xs text-on-surface-variant">and {{ count($changes) - 4 }} more field(s)</li>
+                                            @endif
+                                        </ul>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-body-sm text-on-surface">
                                     {{ $log->reason ?: '-' }}

@@ -24,10 +24,11 @@
         </a>
 
         <!-- User Management -->
-        <a class="flex items-center gap-3 px-3 py-2.5 text-tertiary-fixed-dim hover:bg-on-primary-fixed-variant transition-colors duration-200 rounded-lg group"
-            href="#">
-            <span class="material-symbols-outlined">group</span>
-            <span class="font-label-sm text-label-sm">User Management</span>
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.users.*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.users.index') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.users.*') ? 'font-variation-settings: "FILL" 1' : '' }}">group</span>
+            <span class="font-label-sm text-label-sm">User Accounts</span>
         </a>
 
         <!-- Students -->
@@ -167,6 +168,24 @@
             <span class="material-symbols-outlined"
                 style="{{ request()->routeIs('admin.reports.*') ? 'font-variation-settings: \"FILL\" 1' : '' }}">bar_chart</span>
             <span class="font-label-sm text-label-sm">Fee Collection Report</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.reports.school-wide*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.reports.school-wide') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.reports.school-wide*') ? 'font-variation-settings: "FILL" 1' : '' }}">insights</span>
+            <span class="font-label-sm text-label-sm">School Performance</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.reports.attendance*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.reports.attendance') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.reports.attendance*') ? 'font-variation-settings: "FILL" 1' : '' }}">fact_check</span>
+            <span class="font-label-sm text-label-sm">Attendance Report</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.reports.aging*') ? 'bg-[#004493] text-white border-l-4 border-[#adc7ff] rounded-r-lg font-bold shadow-sm' : 'text-[#dbe4ed] hover:bg-[#004493]/80 rounded-lg' }} transition-colors duration-200 group"
+            href="{{ route('admin.reports.aging') }}">
+            <span class="material-symbols-outlined"
+                style="{{ request()->routeIs('admin.reports.aging*') ? 'font-variation-settings: "FILL" 1' : '' }}">hourglass_bottom</span>
+            <span class="font-label-sm text-label-sm">Fee Aging</span>
         </a>
     </nav>
     <div class="p-4 mt-auto">

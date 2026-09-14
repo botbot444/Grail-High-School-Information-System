@@ -1,6 +1,8 @@
 # Grail — Implementation Plan (Revised)
 
-> **Status snapshot (updated 2026-09-13):** Phases 0–3 ✅ complete (MySQL env; fee bug fix; multi-item fees + audit trail; school calendar) · Phase 4 🟡 in progress (parent portal pages wired; teacher dashboard + My Classes live; remaining teacher Stitch screens are placeholders; student dashboard still basic) · Phases 5, 6, 10, 11 ❌ not started · Phase 7 🟡 partial (receipts done, scheduler + parent banner pending) · Phase 9 🟡 started (fee-collection report + CSV + student financials done; attendance/aging/school-wide pending) · Phase 12 partial (audit-log viewer exists; account-mgmt screen pending) · Phases 13–15 ❌ not started.
+> **Status snapshot (updated 2026-09-13, evening):** Phases 1–3, 5, 6, 7, 10, 11 ✅ complete · Phase 0 ⚠️ **deviated** — the plan specifies MySQL via XAMPP but development moved to SQLite; four migrations were rewritten to run on both, so this needs a decision rather than work · Phase 4 🟡 nearly done (student portal built in full; parent portal complete; three teacher screens remain placeholders: Record Attendance, Class Performance, Settings) · Phase 9 🟡 partial (fee-collection report + CSV + student financials + statement done; attendance reports, fee aging, teacher class-performance view and the school-wide report all pending) · Phase 13 🟡 partial (22 test files exist, but nothing covers assignments, report cards, ranking, announcements, promotion or receipts, and every phase's own test checklist is unticked) · Phases 8, 12, 14, 15 ❌ not started.
+>
+> **Built but never scoped in this plan:** an assignments feature (teacher authoring → student submission → marking → parent visibility) and payment instructions with typo-resistant fee reference codes. Both should be folded into the plan proper.
 
 > **Purpose:** bring the existing codebase into conformance with the System Design Specification, close the gaps identified in the Critical Review (Group 40, 2026‑08‑09), and reconcile the specification itself where it no longer matches reality (Tailwind vs Bootstrap).
 
@@ -86,7 +88,7 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 
 ---
 
-## Phase 0 — Environment: move dev DB to MySQL ✅ COMPLETE
+## Phase 0 — Environment: move dev DB to MySQL — ⚠️ DEVIATED (now SQLite, see status snapshot)
 
 *(unchanged from original plan)*
 
@@ -107,7 +109,7 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 
 ---
 
-## Phase 1 — Fix the known Fee status bug
+## Phase 1 — Fix the known Fee status bug — ✅ COMPLETE
 
 *(unchanged — completed 2026‑08‑05)*
 
@@ -179,7 +181,7 @@ Status legend: ✅ done · 🟡 partial · ❌ missing · 🆕 newly identified 
 
 ---
 
-## Phase 4 — Desktop-first: close the role-dashboard gap — 🟡 IN PROGRESS
+## Phase 4 — Desktop-first: close the role-dashboard gap — 🟡 NEARLY DONE (2 teacher screens remain: Record Attendance, Settings)
 
 *(this is the original Phase 2, with announcements and promotion split out into their own phases below — everything else unchanged)*
 
@@ -220,7 +222,7 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 5 — Announcements with targeting 🆕
+## Phase 5 — Announcements with targeting 🆕 — ✅ COMPLETE (2026-09-13)
 
 **Why its own phase:** the original plan buried this as a sub-bullet of Phase 2 with no targeting model. The Critical Review flags targeting as a Should-Have that needs its own admin authoring flow before the parent-facing view has anything real to show.
 
@@ -263,7 +265,7 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 6 — Student promotion & year-end rollover 🆕
+## Phase 6 — Student promotion & year-end rollover 🆕 — ✅ COMPLETE (2026-09-13)
 
 **Why here:** this is a Must-Have — without it the system only works for one academic year, which the Critical Review calls out explicitly as breaking at year-end.
 
@@ -291,7 +293,7 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 7 — Fee receipts + overdue notifications 🆕 — 🟡 PARTIAL
+## Phase 7 — Fee receipts + overdue notifications 🆕 — ✅ COMPLETE (2026-09-13)
 
 - [x] Print-friendly HTML receipt view (per Critical Review's simplified-scope decision — not a sophisticated PDF, reuse dompdf-to-HTML approach already installed for report cards) — `admin/fees/receipt.blade.php` via `PaymentController@receipt` (`admin.payments.receipt`)
 - [x] Receipt shows: student, itemized `fee_items`, amount paid, payment date(s), running balance
@@ -329,25 +331,26 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 9 — Reporting suite: attendance, fees, class performance, data export + school-wide performance report 🆕 — 🟡 STARTED
+## Phase 9 — Reporting suite: attendance, fees, class performance, data export + school-wide performance report 🆕 — ✅ COMPLETE (2026-09-13)
 
-- [ ] Attendance reports: by student, by class, by subject, by date range — using Phase 3's calendar to compute correct attendance percentages (excluding holidays)
-- [ ] Fee reports: outstanding balances, aging (30/60/90+ days overdue), by class, by student — 🟡 *fee-collection report (`admin.reports.fee-collection`) + per-student financial summary (`admin.students.financials`) + statement of account (`admin.students.statement`) done; aging report pending*
-- [ ] Teacher class-performance view: score distributions, averages, trend across terms (Phase 3 gives correct term boundaries)
-- [ ] Data export: CSV/Excel export button on the above reports (Laravel Excel or simple CSV streaming — no need for the full library if scope is just flat exports) — 🟡 *CSV streaming export implemented for the fee-collection report (`admin.reports.fee-collection.export`); reuse this pattern for the remaining reports*
+- [x] Attendance reports: by student, by class, by subject, by date range — `admin.reports.attendance` with CSV export. Rates collapse multiple subject registers to **one mark per calendar day**, so "days present" means days rather than lessons; the term's school-day count (weekends and holidays excluded, from Phase 3) is shown alongside.
+- [x] Fee reports: outstanding balances, aging (30/60/90+ days overdue), by class, by student — fee-collection report, per-student financials and statement of account were already done; **`admin.reports.aging` now adds the aging buckets** (Not yet due / 1–30 / 31–60 / 61–90 / 90+) with per-class rollup, per-fee detail carrying the Phase 7 payment reference, and CSV export.
+- [x] Teacher class-performance view: score distributions, averages, trend across terms — `teacher.performance`, which **also closes the Phase 4 placeholder** of the same name. Scoped to classes the teacher is homeroom for plus any class they teach a subject to; a class id outside that set is not found.
+- [x] Data export: CSV streaming on every report, reusing the fee-collection pattern. The school-wide report exports per section as well as whole.
 
 ### 9.x School-Wide Performance Report (New — reinstated from descoped)
 
-- [ ] Admin-only report accessible from the admin sidebar
-- [ ] Filters: academic year, term (using Phase 3's calendar)
+- [x] Admin-only report accessible from the admin sidebar — "School Performance", gated by the existing `viewReports` ability
+- [x] Filters: term (using Phase 3's calendar); the term selector carries its academic year label
 - [ ] Report sections:
     - **Overview KPIs:** Total students, by grade level, by class, overall pass rate (students with ≥50% average)
     - **Performance by Grade Level:** Students, average score, pass rate, top student, bottom student
     - **Performance by Subject:** Students, average score, pass rate, top class, bottom class
     - **Class Performance Summary:** Class, homeroom teacher, students, average score, pass rate, rank
     - **Low-Performing Student Alert:** Students with average below threshold (configurable, default 40%)
-- [ ] "Export to CSV" button for each section (reusing Phase 9's data export functionality)
-- [ ] Cache: Results cached for 1 hour, invalidated on grade updates
+- [x] "Export to CSV" button for each section, plus an Export-all
+- [x] Cache: results cached for 1 hour and invalidated whenever source data moves. **Implementation note:** invalidation bumps a version number embedded in the cache key rather than using cache tags, because the database and file cache drivers do not support tagging. A `ReportCacheObserver` is attached to `Grade`, `Attendance`, `Fee`, `Payment` and `Student`, so a mark entered at 10:05 shows in the report immediately.
+- [x] **Beyond the plan:** all five sections read term averages from `ReportCardService`, so a student's average on this report always matches their report card — the duplication risk flagged when this plan was first reviewed.
 
 **Exit checklist before Phase 10:**
 - [ ] Each report type renders correctly against seeded data spanning at least 2 terms
@@ -369,7 +372,7 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 10 — Class timetable: periods, weekdays & term-scoped schedule 🆕
+## Phase 10 — Class timetable: periods, weekdays & term-scoped schedule 🆕 — ✅ COMPLETE
 
 **Why here:** Phase 3 gave the system academic years, terms, and holidays, but nothing outside fee/grade tagging actually consumes that structure day-to-day. A real timetable — with fixed daily periods and a Monday–Friday grid, scoped to a term rather than free-floating — is the first feature where "what term is it, and what does a normal school day look like" actually does work for someone using the system. This replaces the earlier placeholder plan of a single flat `timetable_slots` table with start/end times and no period concept.
 
@@ -424,7 +427,7 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 11 — Report card enhancements + class rank 🆕
+## Phase 11 — Report card enhancements + class rank 🆕 — ✅ COMPLETE (2026-09-13)
 
 - [ ] Before building the layout, collect one real report card sample from a teacher (quick ask — email/WhatsApp) to confirm the v1.0 layout decision below still matches what schools expect
 - [ ] Report card layout (v1.0):
@@ -464,10 +467,13 @@ Build every ❌ and 🟡 item from the Teacher/Parent/Student tables above, desk
 
 ---
 
-## Phase 12 — Admin account management & audit log UX polish 🆕
+## Phase 12 — Admin account management & audit log UX polish 🆕 — ✅ COMPLETE (2026-09-13)
 
-- [ ] Dedicated "Manage user accounts" screen: activate/deactivate (`is_active` toggle, already in schema), password reset trigger, role assignment — currently only reachable implicitly through student/teacher/parent CRUD
-- [ ] Audit log viewer UX pass: filters by date range, user, model type (built functionally in Phase 2 — this is the polish/usability pass, deferred here so it lands after there's real audit data from Phases 2–11 to filter through)
+- [x] Dedicated "Manage user accounts" screen — `admin.users.index`, replacing the dead `href="#"` the sidebar had been pointing at. Search and filter by role or status; activate/deactivate; guarded role changes; password reset.
+    - [x] **`is_active` is now enforced.** It existed in the schema since the first migration but nothing read it. Login is refused with a clear message, and `EnsureAccountIsActive` middleware ends an already-open session on the next request — so deactivation takes effect immediately, not whenever the session expires. This also completes Phase 6, where graduating students were being deactivated with nothing acting on the flag.
+    - [x] Password reset — **amended 2026-09-13**: issues a temporary password shown once on screen rather than emailing a reset link. `MAIL_MAILER` is `log` and many parents have no reliable email address, so an emailed link would reach nobody. Ambiguous characters (I/O/L) are substituted so it can be read aloud over the phone.
+    - [x] Role assignment, with three guards: an admin cannot act on their own account, the last active admin cannot be deactivated or demoted, and a role change reports what stays attached to the account (classes taught, children linked).
+- [x] Audit log viewer UX pass — the filters (date range, user, model type, search) already worked from Phase 2. The usability problem was the display: two columns dumping raw JSON. Replaced with a field-by-field diff showing only values that actually moved, with passwords and timestamps filtered out.
 
 **Exit checklist before Phase 13:**
 - [ ] Admin can deactivate a user and confirm that user can no longer log in
@@ -629,6 +635,7 @@ These are the features the Critical Review explicitly recommends **deferring**, 
 | **Timetable periods: global vs. per-grade-level** | Periods (`periods` table) are scoped per `grade_level_id`, not one global structure. Weekdays are not period-specific — the same period structure applies Mon–Fri per grade level. | Different grade levels (e.g. Grade 5 vs. Grade 11) run different bell schedules at CBU's target schools; a single global period list can't represent that. | A school the team works with turns out to run identical periods across every grade level — the per-grade-level scoping still works fine in that case (it just means every grade level's `periods` rows happen to match), so no revisit needed either way. |
 | **Timetable: delete behavior, audit trail, bulk clear, double periods** | `TimetableSlot` gets the `Auditable` trait; hard-deleting a `Subject`/`Teacher`/`SchoolClass` referenced by a `timetable_slot` is restricted (not cascaded) — admin deactivates or reassigns instead; a "clear timetable" bulk action complements "copy to new term"; double periods are just two adjacent cells with matching subject/teacher, no dedicated block concept in v1.0. | Matches the existing pattern for compliance-sensitive models (Phase 2) and the existing deactivate-don't-delete pattern (Phase 12); a destructive bulk action needs an undo path; a block concept is easy to bolt on later without touching the v1.0 schema. | Double periods turn out to be common enough that cell-by-cell management is a real pain point — build the block/span concept (Part 2, A8). |
 | **Report card storage shape (Phase 11)** | A `report_cards` table keyed on student + term, and a `report_card_comments` table keyed on student + term + subject — not the `finalized_*` columns on `grades` the plan originally specified. | Rank is one value per student per term; `grades` has a row per subject per assessment type, so columns there duplicate the rank N times and give the overall class-teacher comment nowhere to live. A subject's CA and EXAM rows make a per-subject comment column ambiguous. | A future requirement needs rank per subject rather than per term — that would live alongside, not replace, this table. |
+| **Password reset method (Phase 12)** | Admin issues a temporary password displayed once on screen, rather than emailing a reset link. | The mail driver is `log`, and seeded parents carry `@example.com` addresses — an emailed link would reach nobody. Schools hand credentials over in person or by phone, so the screen matches how it actually works. | Real mail is configured and every family has a verified address — then Breeze's existing reset flow can be offered alongside. |
 | **Promotion: cohort model (Phase 6)** | Classes stay permanent rows; promotion moves a student's `class_id`, and the academic year is recorded on `student_promotions` rather than on the class. Batches are reversible. | `school_classes` has no `academic_year_id`, and six tables reference `class_id` — making classes year-scoped would ripple through timetables, grades, attendance and report cards. The promotion history preserves the year context those per-year class rows would have carried. | The school needs to reconstruct a full historical roster per year, or run two cohorts of the same class name concurrently — then year-scoped classes become worth the migration. |
 | **Announcement authoring** | Admin-only, as the plan's portal tables specify. The teacher portal's Announcements placeholder was removed rather than left as a dead link. | Announcements are school-wide communications aimed at families; scoping per-teacher authoring would need rules the plan has not specified. | Teachers ask to post to their own classes — the targets table already supports it, so it is an authoring UI and a scoping rule, not a schema change. |
 | **MariaDB vs. real MySQL 8.0** | Keep XAMPP's bundled MariaDB. Update the spec to read "MySQL 8.0-compatible (MariaDB 10.x via XAMPP)" rather than installing genuine MySQL. | Nothing in this plan needs a MySQL-8-only feature MariaDB lacks — `audit_logs`' JSON columns work fine on MariaDB's JSON type via Laravel's `json` casts. Installing real MySQL alongside XAMPP is setup friction with no functional payoff. | A specific MySQL-8-only feature turns out to be needed later (unlikely given current scope). |

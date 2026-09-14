@@ -734,6 +734,51 @@ class TeacherController extends Controller
     /**
      * Show mark entry form for teacher
      */
+    /**
+     * Phase 9 — class performance. Replaces the Phase 4 placeholder.
+     *
+     * Scoped to classes this teacher actually has: the ones they are homeroom
+     * for, plus any class they teach a subject to.
+     */
+    public function performance(Request $request)
+    {
+        $teacher = auth()->user()->teacher;
+
+        if (! $teacher) {
+            return view('teacher.performance', [
+                'classes' => collect(), 'schoolClass' => null, 'report' => null,
+                'terms' => collect(), 'term' => null,
+            ])->with('notification', 'Teacher profile not found.');
+        }
+
+        // Homeroom classes plus classes they deliver a subject to.
+        $classIds = \App\Models\SchoolClass::where('teacher_id', $teacher->teacher_id)->pluck('class_id')
+            ->merge(ClassSubject::where('teacher_id', $teacher->teacher_id)->pluck('class_id'))
+            ->unique()
+            ->values();
+
+        $classes = \App\Models\SchoolClass::with('gradeLevel')
+            ->whereIn('class_id', $classIds)
+            ->orderBy('class_name')
+            ->get();
+
+        $terms = \App\Models\Term::with('academicYear')->orderByDesc('start_date')->get();
+        $term = $request->filled('term_id')
+            ? $terms->firstWhere('term_id', (int) $request->term_id)
+            : (\App\Models\Term::current() ?? $terms->first());
+
+        // A class id from outside this teacher's set is simply not found.
+        $schoolClass = $request->filled('class_id')
+            ? $classes->firstWhere('class_id', (int) $request->class_id)
+            : $classes->first();
+
+        $report = ($schoolClass && $term)
+            ? app(\App\Services\AnalyticsService::class)->classPerformance($schoolClass, $term, $terms)
+            : null;
+
+        return view('teacher.performance', compact('classes', 'schoolClass', 'terms', 'term', 'report', 'teacher'));
+    }
+
     public function marks(Request $request)
     {
         $user = auth()->user();

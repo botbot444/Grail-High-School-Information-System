@@ -26,6 +26,8 @@ use App\Http\Controllers\Admin\ReportCardController as AdminReportCardController
 use App\Http\Controllers\Admin\PaymentSettingsController;
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\UserAccountController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Student\StudentController;
@@ -52,6 +54,12 @@ Route::middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+
+        // Account management (Phase 12).
+        Route::get('/users', [UserAccountController::class, 'index'])->name('users.index');
+        Route::put('/users/{user}/status', [UserAccountController::class, 'toggleActive'])->name('users.status');
+        Route::put('/users/{user}/role', [UserAccountController::class, 'updateRole'])->name('users.role');
+        Route::post('/users/{user}/reset-password', [UserAccountController::class, 'resetPassword'])->name('users.reset-password');
         Route::get('/examinations', [AdminController::class, 'examinations'])->name('examinations');
         Route::resource('teachers', AdminTeacherController::class);
         Route::resource('parents', AdminParentController::class);
@@ -114,6 +122,15 @@ Route::middleware(['auth', 'role:admin'])
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('/fee-collection', [ReportController::class, 'feeCollection'])->name('fee-collection');
             Route::get('/fee-collection/export', [ReportController::class, 'exportFeeCollection'])->name('fee-collection.export');
+
+            // Phase 9 — attendance, fee aging and the school-wide report.
+            Route::get('/attendance', [AnalyticsController::class, 'attendance'])->name('attendance');
+            Route::get('/attendance/export', [AnalyticsController::class, 'exportAttendance'])->name('attendance.export');
+            Route::get('/aging', [AnalyticsController::class, 'aging'])->name('aging');
+            Route::get('/aging/export', [AnalyticsController::class, 'exportAging'])->name('aging.export');
+            Route::get('/school-wide', [AnalyticsController::class, 'schoolWide'])->name('school-wide');
+            Route::get('/school-wide/export', [AnalyticsController::class, 'exportSchoolWide'])->name('school-wide.export');
+            Route::put('/school-wide/threshold', [AnalyticsController::class, 'saveThreshold'])->name('school-wide.threshold');
         });
 
         // ── Student financials & statements (Phase 4) ───────────────────────
@@ -137,6 +154,7 @@ Route::middleware(['auth', 'role:teacher'])
         Route::get('/classes', [TeacherController::class, 'classes'])->name('classes');
         Route::get('/classes/{class}/roster', [TeacherController::class, 'roster'])->name('classes.roster');
         Route::get('/timetable', [TeacherController::class, 'timetable'])->name('timetable');
+<<<<<<< HEAD
         Route::get('/attendance', [TeacherController::class, 'attendance'])->name('attendance');
         Route::post('/attendance', [TeacherController::class, 'storeAttendance'])->name('attendance.store');
         Route::get('/performance', [TeacherController::class, 'performance'])->name('performance');
@@ -146,6 +164,11 @@ Route::middleware(['auth', 'role:teacher'])
         Route::post('/announcements/read-all', [TeacherController::class, 'readAllAnnouncements'])->name('announcements.read-all');
         Route::post('/announcements/{announcement}/read', [TeacherController::class, 'readAnnouncement'])->name('announcements.read');
         Route::get('/settings', [TeacherController::class, 'settings'])->name('settings');
+=======
+        Route::view('/attendance', 'teacher.placeholder')->defaults('placeholder', 'Record Attendance')->name('attendance');
+        Route::get('/performance', [TeacherController::class, 'performance'])->name('performance');
+        Route::view('/settings', 'teacher.placeholder')->defaults('placeholder', 'Settings')->name('settings');
+>>>>>>> ae247bb (Progress upto Phase 12)
 
         // Assignments — authoring and marking.
         Route::get('/assignments', [TeacherAssignmentController::class, 'index'])->name('assignments.index');

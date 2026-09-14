@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Observers\ReportCacheObserver;
 use App\View\Composers\StudentPortalComposer;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -31,5 +32,16 @@ class AppServiceProvider extends ServiceProvider
 
         // Student portal chrome (sidebar profile, term badge, assignments-due count).
         View::composer(['layouts.student', 'student.partials.*'], StudentPortalComposer::class);
+
+        // Phase 9 — cached reports are rebuilt as soon as their source data moves.
+        foreach ([
+            \App\Models\Grade::class,
+            \App\Models\Attendance::class,
+            \App\Models\Fee::class,
+            \App\Models\Payment::class,
+            \App\Models\Student::class,
+        ] as $model) {
+            $model::observe(ReportCacheObserver::class);
+        }
     }
 }
