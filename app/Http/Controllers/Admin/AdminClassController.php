@@ -84,7 +84,14 @@ class AdminClassController extends Controller
 
     public function show(SchoolClass $class)
     {
-        $class->load(['teacher.user', 'subjects', 'gradeLevel'])->loadCount('students');
+        $class->load([
+            'teacher.user',
+            'subjects',
+            'gradeLevel',
+            // Who actually stands in front of each subject in this class.
+            'classSubjects.subject',
+            'classSubjects.teacher',
+        ])->loadCount('students');
 
         return view('admin.classes.show', ['class' => $class]);
     }

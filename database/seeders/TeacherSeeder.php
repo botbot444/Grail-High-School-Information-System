@@ -2,76 +2,89 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
+use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Role;
-use App\Models\User;
-use App\Models\Teacher;
 
 class TeacherSeeder extends Seeder
 {
     /**
-     * Creates 10 teacher accounts with linked User records.
-     * One demo teacher has predictable credentials for testing.
+     * One teacher per subject, named after the subject they teach.
+     *
+     * These used to be faker names, which meant every re-seed produced a
+     * different staff room: any note, screenshot or test that named a teacher
+     * was wrong the moment someone ran the seeders again. Naming a teacher
+     * after their subject makes the whole demo readable — "who teaches
+     * Mathematics in 9B" answers itself — and, more importantly, makes it
+     * reproducible.
+     *
+     * Login for all of them is the subject in lower case, dots for spaces:
+     *   Mathematics        -> mathematics@grail.school
+     *   English Language   -> english.language@grail.school
+     *   Integrated Science -> integrated.science@grail.school
+     *
+     * Password for every seeded account is 12345678.
      */
     public function run(): void
     {
         $roleId = Role::where('name', 'teacher')->value('id');
 
-        // ── Demo teacher (known credentials for testing) ──────────────────────
-        $demoUser = User::firstOrCreate(
-            ['email' => 'teacher@grail.school'],
-            [
-                'name'              => 'Demo Teacher',
-                'email'             => 'teacher@grail.school',
-                'password'          => Hash::make('12345678'),
-                'role'              => 'teacher',
-                    'role_id'           => $roleId,
-                'email_verified_at' => now(),
-            ]
-        );
+        if (! $roleId) {
+            $this->command->warn('✖ Teacher role missing — run RoleSeeder first.');
 
-        Teacher::firstOrCreate(
-            ['email' => 'teacher@grail.school'],
-            [
-                'user_id'    => $demoUser->id,
-                'first_name' => 'Demo',
-                'last_name'  => 'Teacher',
-                'email'      => 'teacher@grail.school',
-                'phone'      => '+260 97 0000001',
-            ]
-        );
+            return;
+        }
 
-        // ── Additional random teachers ────────────────────────────────────────
-        for ($i = 0; $i < 9; $i++) {
-            $firstName = fake()->firstName();
-            $lastName  = fake()->lastName();
-            $email     = strtolower("{$firstName}.{$lastName}@grail.school");
+        $subjects = SubjectSeeder::subjects();
 
-            $user = User::firstOrCreate(
+        foreach ($subjects as $index => $subjectName) {
+            $email = self::emailFor($subjectName);
+            $phone = '+260 97 ' . str_pad((string) ($index + 1), 7, '0', STR_PAD_LEFT);
+
+            $user = User::updateOrCreate(
                 ['email' => $email],
                 [
-                    'name'              => "{$firstName} {$lastName}",
-                    'email'             => $email,
+                    'name'              => "{$subjectName} Teacher",
                     'password'          => Hash::make('12345678'),
                     'role'              => 'teacher',
                     'role_id'           => $roleId,
                     'email_verified_at' => now(),
+                    'is_active'         => true,
+                    // Seeded demo accounts are meant to be logged straight into,
+                    // so they skip the forced password change a real new account
+                    // would get from the admin portal.
+                    'must_change_password' => false,
                 ]
             );
 
-            Teacher::firstOrCreate(
+            Teacher::updateOrCreate(
                 ['email' => $email],
                 [
                     'user_id'    => $user->id,
-                    'first_name' => $firstName,
-                    'last_name'  => $lastName,
-                    'email'      => $email,
-                    'phone'      => fake()->phoneNumber(),
+                    'first_name' => $subjectName,
+                    'last_name'  => 'Teacher',
+                    'phone'      => $phone,
                 ]
             );
         }
 
-        $this->command->info('✔ 10 teachers seeded.');
+        $this->command->info('✔ ' . count($subjects) . ' teachers seeded, one per subject.');
+    }
+
+    /**
+     * The login for a subject's teacher. Shared with the class and
+     * class-subject seeders so the three cannot drift apart.
+     */
+    public static function emailFor(string $subjectName): string
+    {
+        return str_replace(' ', '.', strtolower($subjectName)) . '@grail.school';
+    }
+
+    /** The Teacher record that owns a subject, or null if not seeded yet. */
+    public static function forSubject(string $subjectName): ?Teacher
+    {
+        return Teacher::where('email', self::emailFor($subjectName))->first();
     }
 }

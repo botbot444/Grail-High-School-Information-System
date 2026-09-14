@@ -45,6 +45,52 @@
             </div>
         </div>
 
+        {{-- Who teaches what in this class. A form teacher has to chase missing
+             marks before they can finalize a report card, and this is the list
+             of people to chase. --}}
+        <section class="rounded-xl bg-surface-container-lowest shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant p-space-lg">
+                <div>
+                    <h2 class="font-title-md text-title-md">Subject teachers</h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Who takes each subject in {{ $schoolClass->display_name }}.
+                        @if ((int) $schoolClass->teacher_id === (int) $teacher?->teacher_id)
+                            You are the form teacher for this class.
+                        @endif
+                    </p>
+                </div>
+                <span class="font-label-sm text-label-sm text-on-surface-variant">
+                    {{ $schoolClass->classSubjects->count() }} subjects
+                </span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 p-space-lg">
+                @forelse ($schoolClass->classSubjects->sortBy(fn ($cs) => $cs->subject?->subject_name) as $classSubject)
+                    <div class="rounded-lg bg-surface-container-low p-3">
+                        <p class="font-label-md text-label-md text-on-surface truncate">
+                            {{ $classSubject->subject?->subject_name ?? 'Unknown subject' }}</p>
+                        @if ($classSubject->teacher)
+                            <p class="font-body-sm text-body-sm text-on-surface-variant truncate">
+                                {{ $classSubject->teacher->full_name }}
+                                @if ((int) $classSubject->teacher_id === (int) $teacher?->teacher_id)
+                                    <span
+                                        class="ml-1 px-1.5 py-0.5 rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm">you</span>
+                                @endif
+                            </p>
+                            @if ($classSubject->teacher->email)
+                                <p class="font-body-sm text-body-sm text-outline truncate">{{ $classSubject->teacher->email }}</p>
+                            @endif
+                        @else
+                            <p class="font-body-sm text-body-sm text-error">No teacher assigned</p>
+                        @endif
+                    </div>
+                @empty
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                        No subjects are assigned to this class yet, so there is nothing to mark.
+                    </p>
+                @endforelse
+            </div>
+        </section>
+
         <section class="rounded-xl bg-surface-container-lowest shadow-sm">
             <div
                 class="flex flex-col gap-3 border-b border-outline-variant p-space-lg lg:flex-row lg:items-center lg:justify-between">

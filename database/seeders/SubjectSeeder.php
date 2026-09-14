@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Subject;
+use Illuminate\Database\Seeder;
 
 class SubjectSeeder extends Seeder
 {
@@ -30,6 +30,20 @@ class SubjectSeeder extends Seeder
         'Zambian Languages',
     ];
 
+    /**
+     * Subjects every class studies, and therefore the ones that must have a
+     * teacher standing in front of them before a report card can be finalized.
+     */
+    private const CORE_SUBJECTS = [
+        'English Language',
+        'Mathematics',
+        'Integrated Science',
+        'Geography',
+        'History',
+        'Civic Education',
+        'Computer Studies',
+    ];
+
     public function run(): void
     {
         foreach (self::SUBJECTS as $name) {
@@ -37,5 +51,17 @@ class SubjectSeeder extends Seeder
         }
 
         $this->command->info('✔ ' . count(self::SUBJECTS) . ' subjects seeded.');
+    }
+
+    /** @return array<int, string> Every subject on offer. */
+    public static function subjects(): array
+    {
+        return self::SUBJECTS;
+    }
+
+    /** @return array<int, string> The subjects taught in every class. */
+    public static function coreSubjects(): array
+    {
+        return self::CORE_SUBJECTS;
     }
 }

@@ -2,15 +2,21 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\SchoolClass;
 use App\Models\Teacher;
+use Illuminate\Database\Seeder;
 
 class SchoolClassSeeder extends Seeder
 {
     /**
-     * Seed a realistic set of classes across Grades 8–12 (two streams each).
-     * Teachers are assigned round-robin so every class has a homeroom teacher.
+     * Grades 8–12, two streams each.
+     *
+     * The homeroom teacher is drawn from the core-subject teachers in order,
+     * so every form teacher also teaches a subject inside their own class.
+     * That matters for testing: finalizing a report card is restricted to the
+     * form teacher, and a form teacher who taught nothing in their own class
+     * could not enter a single mark towards the cards they then have to sign
+     * off.
      */
     private const CLASSES = [
         ['class_name' => '8A',  'grade_level' => 'Grade 8'],
@@ -27,18 +33,22 @@ class SchoolClassSeeder extends Seeder
 
     public function run(): void
     {
-        $teachers = Teacher::all();
+        $core = SubjectSeeder::coreSubjects();
+        $fallback = Teacher::first();
 
         foreach (self::CLASSES as $index => $classData) {
-            SchoolClass::firstOrCreate(
+            $homeroomSubject = $core[$index % count($core)];
+            $homeroom = TeacherSeeder::forSubject($homeroomSubject) ?? $fallback;
+
+            SchoolClass::updateOrCreate(
                 ['class_name' => $classData['class_name']],
                 [
                     'grade_level' => $classData['grade_level'],
-                    'teacher_id'  => $teachers[$index % $teachers->count()]->teacher_id,
+                    'teacher_id'  => $homeroom?->teacher_id,
                 ]
             );
         }
 
-        $this->command->info('✔ ' . count(self::CLASSES) . ' classes seeded.');
+        $this->command->info('✔ ' . count(self::CLASSES) . ' classes seeded, each with a homeroom teacher.');
     }
 }

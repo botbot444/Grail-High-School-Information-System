@@ -123,12 +123,33 @@
                     <span class="material-symbols-outlined text-primary text-[20px]">menu_book</span>
                     <h2 class="font-headline-sm text-headline-sm text-on-surface">Assigned Subjects</h2>
                 </div>
-                @forelse ($class->subjects as $subject)
-                    <a href="{{ route('admin.subjects.show', $subject) }}"
-                        class="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-surface-container-low transition-colors">
-                        <span class="font-body-md text-body-md text-on-surface">{{ $subject->subject_name }}</span>
-                        <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
-                    </a>
+                @forelse ($class->classSubjects->sortBy(fn ($cs) => $cs->subject?->subject_name) as $classSubject)
+                    <div
+                        class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-container-low transition-colors">
+                        <div class="min-w-0">
+                            <p class="font-body-md text-body-md text-on-surface truncate">
+                                {{ $classSubject->subject?->subject_name ?? 'Unknown subject' }}</p>
+                            @if ($classSubject->teacher)
+                                <a href="{{ route('admin.teachers.show', $classSubject->teacher_id) }}"
+                                    class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors truncate">
+                                    <span class="material-symbols-outlined text-[14px]">person</span>
+                                    {{ $classSubject->teacher->full_name }}
+                                </a>
+                            @else
+                                <span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-error">
+                                    <span class="material-symbols-outlined text-[14px]">person_off</span>
+                                    No teacher assigned
+                                </span>
+                            @endif
+                        </div>
+                        @if ($classSubject->subject)
+                            <a href="{{ route('admin.subjects.show', $classSubject->subject_id) }}"
+                                class="shrink-0 text-on-surface-variant hover:text-primary transition-colors"
+                                title="Open subject">
+                                <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                            </a>
+                        @endif
+                    </div>
                 @empty
                     <p class="text-body-sm font-body-sm text-on-surface-variant py-2">No subjects assigned yet.</p>
                 @endforelse

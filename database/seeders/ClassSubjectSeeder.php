@@ -2,58 +2,67 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\ClassSubject;
 use App\Models\SchoolClass;
 use App\Models\Subject;
-use App\Models\ClassSubject;
-use App\Models\Teacher;
+use Illuminate\Database\Seeder;
 
 class ClassSubjectSeeder extends Seeder
 {
     /**
-     * Core subjects taught in every class.
-     * Each subject is assigned a teacher round-robin from the teacher pool.
+     * Puts a teacher in front of every subject in every class.
+     *
+     * These rows are what the teacher portal actually reads — marks,
+     * attendance, assignments, report cards and class performance all resolve
+     * through class_subjects — so a class with an unassigned subject is a
+     * class whose report cards can never be finalized.
+     *
+     * The teacher is no longer round-robin from a pool of random staff: each
+     * subject has its own teacher, and that teacher takes the subject in every
+     * class. Mathematics in 9B is taught by the Mathematics teacher, and it
+     * stays that way across re-seeds.
      */
-    private const CORE_SUBJECTS = [
-        'English Language',
-        'Mathematics',
-        'Integrated Science',
-        'Geography',
-        'History',
-        'Civic Education',
-        'Computer Studies',
-    ];
-
     public function run(): void
     {
-        $classes  = SchoolClass::all();
-        $teachers = Teacher::all();
-        $count    = 0;
-        $tIdx     = 0;
+        $classes = SchoolClass::all();
+        $core    = SubjectSeeder::coreSubjects();
+
+        $subjects = Subject::whereIn('subject_name', $core)->get()->keyBy('subject_name');
+
+        $assigned = 0;
+        $unassigned = [];
 
         foreach ($classes as $class) {
-            foreach (self::CORE_SUBJECTS as $subjectName) {
-                $subject = Subject::where('subject_name', $subjectName)->first();
+            foreach ($core as $subjectName) {
+                $subject = $subjects->get($subjectName);
+                $teacher = TeacherSeeder::forSubject($subjectName);
 
-                if (! $subject) {
+                if (! $subject || ! $teacher) {
+                    $unassigned[] = "{$class->class_name} · {$subjectName}";
                     continue;
                 }
 
-                ClassSubject::firstOrCreate(
+                // updateOrCreate rather than firstOrCreate: re-seeding an
+                // existing database should correct a wrong teacher, not skip
+                // the row because the class/subject pair already exists.
+                ClassSubject::updateOrCreate(
                     [
                         'class_id'   => $class->class_id,
                         'subject_id' => $subject->subject_id,
                     ],
                     [
-                        'teacher_id' => $teachers[$tIdx % $teachers->count()]->teacher_id,
+                        'teacher_id' => $teacher->teacher_id,
                     ]
                 );
 
-                $tIdx++;
-                $count++;
+                $assigned++;
             }
         }
 
-        $this->command->info("✔ {$count} class-subject assignments seeded.");
+        $this->command->info("✔ {$assigned} class-subject assignments seeded, every one with its subject's teacher.");
+
+        if (! empty($unassigned)) {
+            $this->command->warn('✖ Left unassigned (missing subject or teacher): ' . implode(', ', $unassigned));
+        }
     }
 }

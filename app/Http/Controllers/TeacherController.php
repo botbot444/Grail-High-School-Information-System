@@ -32,7 +32,7 @@ class TeacherController extends Controller
         $teacher = auth()->user()->teacher;
         abort_unless($teacher, 404);
 
-        $schoolClass = SchoolClass::with(['gradeLevel', 'classSubjects.subject'])
+        $schoolClass = SchoolClass::with(['gradeLevel', 'classSubjects.subject', 'classSubjects.teacher', 'teacher'])
             ->where('class_id', $class)
             ->where(function ($query) use ($teacher) {
                 $query->where('teacher_id', $teacher->teacher_id)
