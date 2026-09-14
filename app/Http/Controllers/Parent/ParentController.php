@@ -20,6 +20,7 @@ use App\Models\Student;
 use App\Models\Term;
 use App\Models\TimetableSlot;
 use App\Models\User;
+use App\Services\ReportCardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -144,9 +145,7 @@ class ParentController extends Controller
             $percentages = $grades->map->percentage->filter(fn ($p) => $p > 0);
             $gpa = $percentages->isNotEmpty() ? round(min(($percentages->avg() / 100) * 4, 4.0), 2) : 0;
 
-            $attTotal = $student->attendance()->count();
-            $attPresent = $student->attendance()->where('status', 'Present')->count();
-            $attRate = $attTotal > 0 ? round(($attPresent / $attTotal) * 100) : 0;
+            $attRate = $this->attendanceRate($student);
 
             $totalFees = (float) $student->fees()->sum('amount_due');
             $paidFees  = (float) $student->fees()->sum('amount_paid');
@@ -199,12 +198,23 @@ class ParentController extends Controller
             ->get();
     }
 
-    /** Aggregate stats for the selected child. */
-    private function attendanceRate(Student $student): int
+    /**
+     * Attendance rate for a child, in the term given (or the current one).
+     *
+     * Delegates to ReportCardService so this portal cannot disagree with the
+     * report card. Counting it here by hand is what produced 86% on one screen
+     * and 100% on another for the same pupil: this page counted raw lesson rows
+     * rather than calendar days, and treated a late arrival as an absence.
+     */
+    private function attendanceRate(Student $student, ?Term $term = null): int
     {
-        $total  = $student->attendance()->count();
-        $present = $student->attendance()->where('status', 'Present')->count();
-        return $total > 0 ? round(($present / $total) * 100) : 0;
+        $term ??= Term::current() ?? Term::orderByDesc('start_date')->first();
+
+        if (! $term) {
+            return 0;
+        }
+
+        return (int) round(app(ReportCardService::class)->attendanceSummary($student, $term)['rate'] ?? 0);
     }
 
     /** Monthly average grade percentage for the dashboard chart. */
@@ -237,9 +247,7 @@ class ParentController extends Controller
             $grades = $student->grades()->get();
             $percentages = $grades->map->percentage->filter(fn ($p) => $p > 0);
             $gpa = $percentages->isNotEmpty() ? round(min(($percentages->avg() / 100) * 4, 4.0), 2) : 0;
-            $attTotal = $student->attendance()->count();
-            $attPresent = $student->attendance()->where('status', 'Present')->count();
-            $attRate = $attTotal > 0 ? round(($attPresent / $attTotal) * 100) : 0;
+            $attRate = $this->attendanceRate($student);
             $totalFees = (float) $student->fees()->sum('amount_due');
             $paidFees  = (float) $student->fees()->sum('amount_paid');
             $balance   = max(0, round($totalFees - $paidFees, 2));
@@ -288,10 +296,23 @@ class ParentController extends Controller
         $student = Student::with(['schoolClass.teacher', 'user'])->findOrFail($selected->student_id);
 
         $records = $student->attendance()->orderBy('date', 'desc')->paginate(15);
-        $attTotal = $student->attendance()->count();
-        $daysPresent = $student->attendance()->where('status', 'Present')->count();
-        $absent = $student->attendance()->whereIn('status', ['Absent', 'Late'])->count();
-        $rate = $attTotal > 0 ? round(($daysPresent / $attTotal) * 100) : 0;
+
+        // These figures used to be counted here, by hand, and disagreed with the
+        // report card for the same child: this page counted raw lesson rows
+        // rather than calendar days, treated a late arrival as an absence, and
+        // ignored the term window — so a pupil reading 100% on their report card
+        // read 86% here. Attendance is now asked of the same service the report
+        // card uses, which is the whole reason that service exists.
+        $term = Term::current() ?? Term::orderByDesc('start_date')->first();
+        $summary = $term
+            ? app(ReportCardService::class)->attendanceSummary($student, $term)
+            : ['present' => 0, 'absent' => 0, 'late' => 0, 'recorded' => 0, 'rate' => null];
+
+        $attTotal    = $summary['recorded'];
+        $daysPresent = $summary['present'];
+        $absent      = $summary['absent'];
+        $late        = $summary['late'];
+        $rate        = $summary['rate'] ?? 0;
 
         // Monthly attendance rate for the chart (last 6 months present/absent).
         $trend = $student->attendance()->orderBy('date', 'desc')->take(60)->get()
@@ -309,6 +330,8 @@ class ParentController extends Controller
             'daysPresent'    => $daysPresent,
             'totalDays'      => $attTotal,
             'absentDays'     => $absent,
+            'lateDays'       => $late,
+            'term'           => $term,
             'recentTrend'    => $trend,
         ]);
     }
@@ -412,10 +435,7 @@ class ParentController extends Controller
             $percentages = $grades->map->percentage->filter(fn ($p) => $p > 0);
             $avg = $percentages->isNotEmpty() ? round($percentages->avg(), 1) : 0;
 
-            $attTotal = $selected->attendance()->where('date', '>=', $term->start_date)->where('date', '<=', $term->end_date)->count();
-            $attPresent = $selected->attendance()->where('status', 'Present')
-                ->where('date', '>=', $term->start_date)->where('date', '<=', $term->end_date)->count();
-            $attRate = $attTotal > 0 ? round(($attPresent / $attTotal) * 100) : 0;
+            $attRate = $this->attendanceRate($selected, $term);
 
             return [
                 'term'        => $term,
@@ -644,11 +664,10 @@ class ParentController extends Controller
         $overallAttendance = 0;
         $attended = 0; $total = 0;
         foreach ($children as $child) {
-            $t = $child->attendance()->count();
-            $p = $child->attendance()->where('status', 'Present')->count();
-            $attended += $p; $total += $t;
+            $attended += $this->attendanceRate($child);
+            $total++;
         }
-        $overallAttendance = $total > 0 ? round(($attended / $total) * 100) : 0;
+        $overallAttendance = $total > 0 ? (int) round($attended / $total) : 0;
 
         $totalFees = 0; $paidFees = 0;
         foreach ($children as $child) {

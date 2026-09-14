@@ -47,7 +47,7 @@
                                 @endif
                             </p>
                             <p class="text-xs text-on-surface-variant mt-0.5">
-                                Class teacher: {{ $s->schoolClass?->teacher?->name ?? 'Not assigned' }}
+                                Class teacher: {{ $s->schoolClass?->teacher?->full_name ?? 'Not assigned' }}
                             </p>
                             <div class="flex gap-2 mt-2">
                                 <span class="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded {{ ($child['fee_status'] ?? 'Cleared') === 'Cleared' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700' }}">

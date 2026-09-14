@@ -32,17 +32,17 @@
                         </span>
                     </div>
                     <p class="text-3xl font-extrabold text-on-surface">{{ $attendanceRate }}%</p>
-                    <p class="text-xs text-on-surface-variant mt-1">{{ $daysPresent }} of {{ $totalDays }} days present</p>
+                    <p class="text-xs text-on-surface-variant mt-1">{{ $daysPresent }} of {{ $totalDays }} days punctual</p>
                 </div>
                 <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Days Present</span>
+                        <span class="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Days Punctual</span>
                         <span class="w-9 h-9 bg-green-50 text-green-700 rounded-lg flex items-center justify-center">
                             <span class="material-symbols-outlined text-[20px]">check_circle</span>
                         </span>
                     </div>
                     <p class="text-3xl font-extrabold text-on-surface">{{ $daysPresent }}</p>
-                    <p class="text-xs text-on-surface-variant mt-1">Marked present</p>
+                    <p class="text-xs text-on-surface-variant mt-1">Arrived on time</p>
                 </div>
                 <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
                     <div class="flex items-center justify-between mb-2">
@@ -51,8 +51,8 @@
                             <span class="material-symbols-outlined text-[20px]">event_busy</span>
                         </span>
                     </div>
-                    <p class="text-3xl font-extrabold text-on-surface">{{ $absentDays }}</p>
-                    <p class="text-xs text-on-surface-variant mt-1">Days missed or late</p>
+                    <p class="text-3xl font-extrabold text-on-surface">{{ $absentDays }} / {{ $lateDays ?? 0 }}</p>
+                    <p class="text-xs text-on-surface-variant mt-1">Days missed / arrived late</p>
                 </div>
                 <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
                     <div class="flex items-center justify-between mb-2">
@@ -62,7 +62,7 @@
                         </span>
                     </div>
                     <p class="text-lg font-extrabold text-on-surface leading-tight mt-2">{{ $student->schoolClass?->display_name ?? ($student->schoolClass?->class_name ?? '—') }}</p>
-                    <p class="text-xs text-on-surface-variant mt-1">{{ $student->schoolClass?->teacher?->name ?? 'No class teacher' }}</p>
+                    <p class="text-xs text-on-surface-variant mt-1">{{ $student->schoolClass?->teacher?->full_name ?? 'No class teacher' }}</p>
                 </div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">

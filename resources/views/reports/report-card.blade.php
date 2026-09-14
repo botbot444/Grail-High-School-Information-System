@@ -189,7 +189,12 @@
                 <div class="v">{{ $reportCard?->rank_label ?? 'N/A' }}</div>
             </td>
             <td>
-                <div class="k">Days Present</div>
+                {{-- "Present" here means punctual: a day the student arrived on
+                     time. A late arrival is still attendance, so it counts in the
+                     Attendance percentage beside this but not in this figure.
+                     Labelling both "present" made the two tiles look like they
+                     contradicted each other — 3 of 10, next to 100%. --}}
+                <div class="k">Days Punctual</div>
                 <div class="v">{{ $attendance['present'] }}</div>
                 <div class="k">of {{ $attendance['recorded'] }} recorded</div>
             </td>
