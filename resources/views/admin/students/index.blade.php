@@ -22,7 +22,7 @@
                 </h1>
             </div>
             <div class="flex gap-3">
-                <a href="{{ route('admin.students.create') }}"
+                <a href="{{ route('admin.students.export', request()->query()) }}"
                     class="flex items-center gap-2 px-4 py-2.5 border border-outline text-on-surface rounded-lg font-label-sm text-label-sm hover:bg-surface-container-high transition-all">
                     <span class="material-symbols-outlined text-[20px]">file_download</span>
                     Export CSV
@@ -34,69 +34,106 @@
                 </a>
             </div>
         </div>
-        <!-- Filters Section -->
-        <div
-            class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 mb-6 shadow-sm flex flex-wrap items-center gap-gutter">
-            <div class="flex flex-col gap-1.5 min-w-[180px]">
-                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Grade / Level</label>
-                <select
+        {{-- Filters. A plain GET form: every choice ends up in the query string,
+             so a filtered list can be bookmarked, shared, or reloaded, and
+             pagination keeps the filters via withQueryString(). --}}
+        <form method="GET" action="{{ route('admin.students.index') }}"
+            class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 mb-6 shadow-sm flex flex-wrap items-end gap-gutter">
+
+            <div class="flex flex-col gap-1.5 min-w-[240px] flex-1">
+                <label for="search" class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Search</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant">search</span>
+                    <input id="search" name="search" type="search" value="{{ $filters['search'] }}"
+                        placeholder="Name, admission number or guardian"
+                        class="w-full bg-surface border-outline-variant rounded-lg text-body-md py-1.5 pl-9 focus:ring-primary focus:border-primary">
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5 min-w-[160px]">
+                <label for="grade_level_id" class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Grade / Level</label>
+                <select id="grade_level_id" name="grade_level_id"
                     class="bg-surface border-outline-variant rounded-lg text-body-md py-1.5 focus:ring-primary focus:border-primary">
-                    <option>All Grades</option>
-                    <option>Grade 10</option>
-                    <option>Grade 11</option>
-                    <option>Grade 12</option>
+                    <option value="">All grades</option>
+                    @foreach ($gradeLevels as $level)
+                        <option value="{{ $level->grade_level_id }}" @selected($filters['grade_level_id'] == $level->grade_level_id)>
+                            {{ $level->name }}</option>
+                    @endforeach
                 </select>
             </div>
+
+            <div class="flex flex-col gap-1.5 min-w-[140px]">
+                <label for="class_id" class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Class</label>
+                <select id="class_id" name="class_id"
+                    class="bg-surface border-outline-variant rounded-lg text-body-md py-1.5 focus:ring-primary focus:border-primary">
+                    <option value="">All classes</option>
+                    @foreach ($classes as $class)
+                        <option value="{{ $class->class_id }}" @selected($filters['class_id'] == $class->class_id)>
+                            {{ $class->class_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="flex flex-col gap-1.5 min-w-[150px]">
-                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Status</label>
-                <select
+                <label for="status" class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Status</label>
+                <select id="status" name="status"
                     class="bg-surface border-outline-variant rounded-lg text-body-md py-1.5 focus:ring-primary focus:border-primary">
-                    <option>All Status</option>
-                    <option>Active</option>
-                    <option>Suspended</option>
-                    <option>Pending</option>
+                    <option value="">All statuses</option>
+                    @foreach ($statuses as $value => $label)
+                        <option value="{{ $value }}" @selected($filters['status'] === $value)>{{ $label }}</option>
+                    @endforeach
                 </select>
             </div>
+
             <div class="flex flex-col gap-1.5 min-w-[120px]">
-                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Gender</label>
-                <select
+                <label for="gender" class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Gender</label>
+                <select id="gender" name="gender"
                     class="bg-surface border-outline-variant rounded-lg text-body-md py-1.5 focus:ring-primary focus:border-primary">
-                    <option>All</option>
-                    <option>Male</option>
-                    <option>Female</option>
+                    <option value="">All</option>
+                    <option value="Male" @selected($filters['gender'] === 'Male')>Male</option>
+                    <option value="Female" @selected($filters['gender'] === 'Female')>Female</option>
                 </select>
             </div>
-            <div class="h-10 w-px bg-surface-container-high"></div>
+
             <div class="flex items-center gap-2">
-                <button
+                <button type="submit"
                     class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg font-label-sm text-label-sm font-semibold hover:opacity-90 transition-all flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px]">filter_list</span>
-                    Advanced Filters
+                    Apply
                 </button>
-                <button class="text-on-surface-variant font-label-sm text-label-sm hover:underline">
-                    Clear all
-                </button>
+                @if ($isFiltered)
+                    <a href="{{ route('admin.students.index') }}"
+                        class="text-on-surface-variant font-label-sm text-label-sm hover:underline">Clear all</a>
+                @endif
             </div>
+
+            <p class="w-full font-body-sm text-body-sm text-on-surface-variant">
+                @if ($isFiltered)
+                    {{ $students->total() }} {{ Str::plural('student', $students->total()) }} match these filters.
+                @else
+                    {{ $students->total() }} {{ Str::plural('student', $students->total()) }} on roll.
+                @endif
+            </p>
             <div class="ml-auto flex items-center gap-3">
                 <span class="text-body-md text-on-surface-variant">Bulk Actions:</span>
-                <button
+                <button type="button"
                     class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed"
                     disabled>
                     Transfer
                 </button>
-                <button
+                <button type="button"
                     class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed"
                     disabled>
                     Archive
                 </button>
-                <button id="bulkDeleteBtn"
+                <button id="bulkDeleteBtn" type="button"
                     class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed flex items-center gap-1"
                     disabled>
                     <span class="material-symbols-outlined text-[18px]">delete</span>
                     Delete
                 </button>
             </div>
-        </div>
+        </form>
         <!-- Data Table Container -->
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
             <div class="overflow-x-auto">

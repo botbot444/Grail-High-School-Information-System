@@ -66,6 +66,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('parents', AdminParentController::class);
         Route::resource('classes', AdminClassController::class);
         Route::resource('subjects', AdminSubjectController::class);
+        // Must precede the resource: students/{student} would otherwise
+        // swallow students/export and try to bind a model named "export".
+        Route::get('students/export', [AdminController::class, 'export'])->name('students.export');
         Route::resource('students', AdminController::class);
 
         // ── Fees ──────────────────────────────────────────────────────────────
