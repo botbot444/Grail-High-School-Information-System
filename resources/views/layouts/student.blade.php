@@ -15,6 +15,29 @@
 
     <style>
         [x-cloak] { display: none !important; }
+
+        /*
+            Fallback for when Alpine has not run.
+
+            Every width, offset and label in this shell is an Alpine binding, so
+            if the bundle does not load — dev server down, a stale public/hot
+            pointing at an old LAN IP, a blocked request, a JS error earlier on
+            the page — the sidebar ends up with no width and every x-cloak'd
+            label stays hidden. That looks exactly like a collapsed sidebar that
+            refuses to expand, which is the worst possible failure mode: the
+            control that would fix it is the thing that disappeared.
+
+            :where() keeps these at zero specificity, so the instant Alpine
+            applies a real class it wins.
+        */
+        @media (min-width: 768px) {
+            :where(.student-shell aside)  { width: 260px; }
+            :where(.student-shell main)   { margin-left: 260px; }
+            :where(.student-shell header) { left: 260px; }
+        }
+        @media (max-width: 767.98px) {
+            :where(.student-shell aside)  { transform: translateX(-100%); }
+        }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;

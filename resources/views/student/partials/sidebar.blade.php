@@ -34,7 +34,7 @@
         <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm shrink-0">
             <span class="material-symbols-outlined filled">school</span>
         </div>
-        <div class="leading-tight overflow-hidden" x-show="!collapsed || mobileOpen" x-cloak>
+        <div class="leading-tight overflow-hidden" x-show="!collapsed || mobileOpen">
             <span class="font-bold text-title-sm text-primary tracking-tight block whitespace-nowrap">Grail SIS</span>
             <span class="text-label-sm text-on-surface-variant whitespace-nowrap">Student Portal</span>
         </div>
@@ -48,7 +48,7 @@
                 <div class="w-9 h-9 rounded-[50%] bg-secondary text-on-secondary font-semibold flex items-center justify-center text-label-sm shrink-0">
                     {{ $navStudentInitials ?? 'S' }}
                 </div>
-                <div class="overflow-hidden" x-show="!collapsed || mobileOpen" x-cloak>
+                <div class="overflow-hidden" x-show="!collapsed || mobileOpen">
                     <p class="text-label-sm font-semibold text-primary truncate leading-tight">{{ $navStudent->full_name }}</p>
                     <p class="text-code-sm font-data-mono text-on-surface-variant truncate">
                         {{ $navStudent->student_number }} @if($navStudent->schoolClass) • {{ $navStudent->schoolClass->class_name }} @endif
@@ -78,11 +78,11 @@
                     'text-outline group-hover:text-primary transition-colors' => !$isActive,
                 ])>{{ $item['icon'] }}</span>
 
-                <span class="whitespace-nowrap" x-show="!collapsed || mobileOpen" x-cloak>{{ $item['label'] }}</span>
+                <span class="whitespace-nowrap" x-show="!collapsed || mobileOpen">{{ $item['label'] }}</span>
 
                 @if (!empty($item['badge']))
                     <span class="ml-auto text-code-sm font-data-mono font-semibold px-2 py-0.5 rounded-full bg-error/10 text-error"
-                          x-show="!collapsed || mobileOpen" x-cloak>{{ $item['badge'] }}</span>
+                          x-show="!collapsed || mobileOpen">{{ $item['badge'] }}</span>
                 @endif
             </a>
         @endforeach
@@ -96,7 +96,7 @@
                 class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-body-md font-medium text-on-surface-variant hover:bg-error-container/60 hover:text-on-error-container transition-colors group"
                 :class="(collapsed && !mobileOpen) ? 'justify-center px-0' : ''">
                 <span class="material-symbols-outlined text-xl text-outline group-hover:text-on-error-container shrink-0">logout</span>
-                <span class="whitespace-nowrap" x-show="!collapsed || mobileOpen" x-cloak>Sign Out</span>
+                <span class="whitespace-nowrap" x-show="!collapsed || mobileOpen">Sign Out</span>
             </button>
         </form>
 
@@ -107,7 +107,7 @@
             :aria-expanded="(!collapsed).toString()">
             <span class="material-symbols-outlined text-xl text-outline group-hover:text-primary shrink-0"
                   x-text="collapsed ? 'chevron_right' : 'chevron_left'">chevron_left</span>
-            <span class="whitespace-nowrap" x-show="!collapsed" x-cloak>Collapse</span>
+            <span class="whitespace-nowrap" x-show="!collapsed">Collapse</span>
         </button>
     </div>
 </aside>

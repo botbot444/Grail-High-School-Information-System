@@ -3,7 +3,7 @@
     width and carries the hamburger that opens the sidebar drawer.
 --}}
 <header
-    class="header-transition fixed top-0 right-0 left-0 h-header-height bg-surface-container-lowest border-b border-outline-variant/60 flex items-center justify-between gap-4 px-space-md md:px-space-lg z-30"
+    class="header-transition fixed top-0 right-0 max-md:left-0 h-header-height bg-surface-container-lowest border-b border-outline-variant/60 flex items-center justify-between gap-4 px-space-md md:px-space-lg z-30"
     :class="collapsed ? 'md:left-sidebar-rail' : 'md:left-sidebar-width'"
 >
     <div class="flex items-center gap-3 min-w-0">
