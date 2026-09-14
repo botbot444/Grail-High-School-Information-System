@@ -56,6 +56,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
         Route::get('/examinations', [AdminController::class, 'examinations'])->name('examinations');
         Route::resource('teachers', AdminTeacherController::class);
+
+        // Teaching assignments: which subject this teacher delivers, in which
+        // class. These write class_subjects, the rows the teacher portal reads.
+        Route::post('teachers/{teacher}/assignments', [AdminTeacherController::class, 'assignSubject'])
+            ->name('teachers.assign');
+        Route::delete('teachers/{teacher}/assignments/{classSubject}', [AdminTeacherController::class, 'unassignSubject'])
+            ->name('teachers.unassign');
         Route::resource('parents', AdminParentController::class);
         Route::resource('classes', AdminClassController::class);
         Route::resource('subjects', AdminSubjectController::class);

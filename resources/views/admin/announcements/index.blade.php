@@ -78,7 +78,7 @@
                                     <td class="px-4 py-3">
                                         <p class="font-semibold text-on-surface">{{ $announcement->title }}</p>
                                         <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 max-w-md">
-                                            {{ Str::limit($announcement->body, 90) }}
+                                            {{ \Illuminate\Support\Str::limit($announcement->body, 90) }}
                                         </p>
                                     </td>
                                     <td class="px-4 py-3">

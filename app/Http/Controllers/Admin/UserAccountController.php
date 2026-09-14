@@ -94,6 +94,9 @@ class UserAccountController extends Controller
         $temporary = str_replace(['I', 'O', 'L'], ['X', 'Y', 'Z'], $temporary);
 
         $user->password = Hash::make($temporary);
+        // The point of a temporary password is that it is temporary: force the
+        // user onto their settings page until they pick their own.
+        $user->must_change_password = true;
         $user->save();
 
         return back()
