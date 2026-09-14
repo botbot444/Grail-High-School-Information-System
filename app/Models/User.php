@@ -15,7 +15,22 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'role', 'role_id', 'email_verified_at', 'must_change_password'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'role_id', 'email_verified_at', 'must_change_password', 'is_active'];
+
+    /**
+     * Default for brand-new instances, not just the DB column default.
+     *
+     * Model::create() builds its INSERT from the in-memory $attributes it
+     * already has — it never re-fetches the row afterward — so a factory or
+     * controller call that never mentions is_active would otherwise leave
+     * the in-memory model with no is_active attribute at all (accessing it
+     * returns null, which EnsureAccountIsActive reads as "deactivated").
+     * Setting the default here means every new User starts active in PHP,
+     * not only in the database.
+     */
+    protected $attributes = [
+        'is_active' => true,
+    ];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -23,6 +38,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'must_change_password' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function roleModel(): BelongsTo
