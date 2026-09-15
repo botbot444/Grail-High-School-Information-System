@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\FeeController;
 use App\Http\Controllers\Admin\FeeCategoryController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PaymentSubmissionController as AdminPaymentSubmissionController;
+use App\Http\Controllers\Parent\PaymentSubmissionController as ParentPaymentSubmissionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\TermController;
@@ -77,6 +79,12 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/fees-lookup', [FeeController::class, 'lookup'])->name('fees.lookup');
         Route::post('/fees/{fee}/payments', [PaymentController::class, 'store'])->name('fees.payments.store');
         Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
+
+        // ── Parent-submitted proof of payment — review queue ─────────────────
+        Route::get('/payment-submissions', [AdminPaymentSubmissionController::class, 'index'])->name('payment-submissions.index');
+        Route::get('/payment-submissions/{submission}', [AdminPaymentSubmissionController::class, 'show'])->name('payment-submissions.show');
+        Route::post('/payment-submissions/{submission}/approve', [AdminPaymentSubmissionController::class, 'approve'])->name('payment-submissions.approve');
+        Route::post('/payment-submissions/{submission}/reject', [AdminPaymentSubmissionController::class, 'reject'])->name('payment-submissions.reject');
 
         // Report cards (Phase 11) — browse, print, and the unfinalize override.
         Route::get('/report-cards', [AdminReportCardController::class, 'index'])->name('report-cards.index');
@@ -220,6 +228,7 @@ Route::middleware(['auth', 'role:parent'])
         Route::patch('/settings', [ParentController::class, 'updateSettings'])->name('settings.update');
         Route::get('/fees/{fee}', [ParentController::class, 'showFee'])->name('fees.show');
         Route::get('/payments/{payment}/receipt', [ParentController::class, 'receipt'])->name('payments.receipt');
+        Route::post('/payment-proofs', [ParentPaymentSubmissionController::class, 'store'])->name('payment-proofs.store');
         Route::get('/children/{student}/report-cards/{term}', [ParentController::class, 'reportCard'])->name('report-card');
         Route::get('/announcements', [ParentController::class, 'announcements'])->name('announcements');
         Route::post('/announcements/read-all', [ParentController::class, 'readAllAnnouncements'])->name('announcements.read-all');

@@ -529,6 +529,11 @@ class ParentController extends Controller
         $payments = Payment::whereIn('fee_id', $fees->pluck('fee_id'))
             ->orderBy('payment_date', 'desc')->get();
 
+        // Proof-of-payment submissions this parent has made for this student,
+        // whatever their review status — pending, approved or rejected.
+        $submissions = \App\Models\PaymentSubmission::whereIn('fee_id', $fees->pluck('fee_id'))
+            ->orderByDesc('created_at')->get();
+
         return view('parent.fees', $this->parentLayoutVars($selected, $children, 'Fees') + [
             'student' => $student,
             'fees'    => $fees,
@@ -537,6 +542,7 @@ class ParentController extends Controller
             'balance' => $balance,
             'nextDue' => $nextDue,
             'payments'=> $payments,
+            'submissions' => $submissions,
             'overdueCount' => $fees->where('status', 'Overdue')->count(),
             'overdueFees'  => $this->overdueFees($children->where('student_id', $student->student_id)),
             // Bank / mobile money details for the "How to pay" panel.

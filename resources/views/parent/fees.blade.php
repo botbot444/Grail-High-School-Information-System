@@ -100,6 +100,9 @@
         {{-- ── How to pay: instructions + per-fee reference (no money moves here) ── --}}
         @include('parent.partials.how-to-pay')
 
+        {{-- ── Submit proof of a payment made outside the system, for admin review ── --}}
+        @include('parent.partials.proof-of-payment')
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {{-- ── Fee invoices ── --}}
             <div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">

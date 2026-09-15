@@ -14,6 +14,8 @@
     /** True when any of the given route patterns matches the current request. */
     $matches = fn (array $patterns) => collect($patterns)->contains(fn ($p) => request()->routeIs($p));
 
+    $pendingPaymentSubmissions = \App\Models\PaymentSubmission::pending()->count();
+
     $nav = [
         ['type' => 'link', 'label' => 'Dashboard', 'icon' => 'dashboard',
          'route' => 'admin.dashboard', 'match' => ['admin.dashboard']],
@@ -36,6 +38,7 @@
 
         ['type' => 'group', 'label' => 'Finance', 'icon' => 'payments', 'items' => [
             ['label' => 'Fees',                 'icon' => 'receipt_long',      'route' => 'admin.fees.index',            'match' => ['admin.fees.index', 'admin.fees.create', 'admin.fees.edit', 'admin.fees.show', 'admin.payments.*']],
+            ['label' => 'Payment Approvals',     'icon' => 'fact_check',        'route' => 'admin.payment-submissions.index', 'match' => ['admin.payment-submissions.*'], 'badge' => $pendingPaymentSubmissions],
             // 'Payment Lookup' hidden for now — the page isn't opening correctly (per Lazarus, 2026-09-15).
             // Route/controller (admin.fees.lookup) left intact; re-add this row once it's fixed.
             ['label' => 'Fee Categories',       'icon' => 'sell',              'route' => 'admin.categories.index',      'match' => ['admin.categories.*']],
@@ -123,7 +126,10 @@
                                class="flex items-center gap-3 px-3 py-2 transition-colors duration-200 {{ $active ? $activeClasses : $idleClasses }}">
                                 <span class="material-symbols-outlined text-[18px]"
                                       style="{{ $active ? 'font-variation-settings: \'FILL\' 1' : '' }}">{{ $item['icon'] }}</span>
-                                <span class="font-label-sm text-label-sm">{{ $item['label'] }}</span>
+                                <span class="font-label-sm text-label-sm flex-1">{{ $item['label'] }}</span>
+                                @if (($item['badge'] ?? 0) > 0)
+                                    <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-amber-400 text-[#001a41] text-[10px] font-bold">{{ $item['badge'] }}</span>
+                                @endif
                             </a>
                         @endforeach
                     </div>

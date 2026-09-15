@@ -28,12 +28,13 @@ $tabRoutes = [
     'attendance' => 'parent.attendance',
     'performance' => 'parent.performance',
     'reports' => 'parent.reports',
+    'fees' => 'parent.fees',
     'assignments' => 'parent.assignments',
     'announcements' => 'parent.announcements',
             ];
         @endphp
 
-        @foreach (['children', 'attendance', 'performance', 'reports', 'assignments', 'announcements'] as $tab)
+        @foreach (['children', 'attendance', 'performance', 'reports', 'fees', 'assignments', 'announcements'] as $tab)
             @php
                 $routeName = $tabRoutes[$tab] ?? 'parent.' . $tab;
                 $icon = match ($tab) {
@@ -41,6 +42,7 @@ $tabRoutes = [
                     'attendance' => 'how_to_reg',
                     'performance' => 'assignment_turned_in',
                     'reports' => 'description',
+                    'fees' => 'payments',
                     'assignments' => 'assignment',
                     'announcements' => 'campaign',
                     default => 'label',
@@ -50,6 +52,7 @@ $tabRoutes = [
                     'attendance' => 'Attendance',
                     'performance' => 'Performance',
                     'reports' => 'Reports',
+                    'fees' => 'Fees',
                     'assignments' => 'Assignments',
                     'announcements' => 'Announcements',
                 ];

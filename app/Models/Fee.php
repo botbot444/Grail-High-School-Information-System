@@ -168,6 +168,52 @@ class Fee extends Model
         $this->save();
     }
 
+    /**
+     * Apply a received payment: creates the Payment row for the full amount
+     * received, applies whatever fits this fee's balance via
+     * recordPayment(), and carries any overage to the student's account
+     * credit (Student::grantCredit()) rather than dropping it.
+     *
+     * Shared by the bursar's direct entry (Admin\PaymentController) and
+     * admin-approved parent proof-of-payment submissions
+     * (Admin\PaymentSubmissionController), so both post through the exact
+     * same ledger logic.
+     */
+    public function applyPayment(
+        float $amount,
+        string $method,
+        ?string $reference,
+        ?string $notes,
+        $date,
+        ?int $recordedBy
+    ): Payment {
+        $applied = min($amount, (float) $this->balance);
+        $overage = round($amount - $applied, 2);
+
+        $payment = $this->payments()->create([
+            'amount'           => $amount,
+            'payment_method'   => $method,
+            'reference_number' => $reference,
+            'notes'            => $notes,
+            'payment_date'     => $date,
+            'recorded_by'      => $recordedBy,
+        ]);
+
+        if ($applied > 0) {
+            $this->recordPayment($applied);
+        }
+
+        if ($overage > 0) {
+            $this->student->grantCredit($overage, [
+                'source_payment_id' => $payment->payment_id,
+                'recorded_by'       => $recordedBy,
+                'notes'             => "Overpayment on fee #{$this->fee_id} ({$this->term} {$this->academic_year}).",
+            ]);
+        }
+
+        return $payment;
+    }
+
     // ── Scopes ────────────────────────────────────────────────────────────────
 
     public function scopePending($query)
