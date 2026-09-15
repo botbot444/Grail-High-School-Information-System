@@ -19,13 +19,29 @@
     </head>
 
     <body class="font-sans text-gray-900 antialiased">
+        {{--
+            This layout is used two incompatible ways: as a component
+            (<x-app-layout>, where $header/$slot are real ComponentSlot
+            objects from a handful of legacy Breeze pages) and via @extends
+            (every portal page). @extends passes the whole child template's
+            local scope up into this layout — so a page with, say,
+            `@foreach ($timetable as $slot)` leaves $slot holding the last
+            TimetableSlot model, which would otherwise get cast to a string
+            (its JSON) and printed here. Only trust $header/$slot when
+            they're actually component slot content, never just because the
+            variable happens to be set.
+        --}}
         @isset($header)
-            <header class="page-header">
-                {{ $header }}
-            </header>
+            @if ($header instanceof \Illuminate\Contracts\Support\Htmlable)
+                <header class="page-header">
+                    {{ $header }}
+                </header>
+            @endif
         @endisset
 
-        {{ $slot ?? '' }}
+        @if (isset($slot) && $slot instanceof \Illuminate\Contracts\Support\Htmlable)
+            {{ $slot }}
+        @endif
         @yield('content')
 
         @stack('scripts')

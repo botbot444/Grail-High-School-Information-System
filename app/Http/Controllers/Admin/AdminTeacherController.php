@@ -186,7 +186,7 @@ class AdminTeacherController extends Controller
         // The "Assigned Subjects" checkboxes reflect the teacher_subjects
         // qualification list (what store()/update() now save them as), not the
         // class-paired teaching assignments managed separately on the show page.
-        $assignedSubjects = $teacher->subjects()->pluck('subject_id')->toArray();
+        $assignedSubjects = $teacher->subjects()->pluck('subjects.subject_id')->toArray();
 
         return view('admin.teachers.edit', compact('teacher', 'classes', 'subjects', 'assignedClasses', 'assignedSubjects'));
     }
