@@ -8,6 +8,7 @@ use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AdminClassController extends Controller
 {
@@ -59,7 +60,11 @@ class AdminClassController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'class_name' => 'required|string|max:255',
+            // Soft-deleted classes don't hold their name hostage — see the
+            // whereNull('deleted_at') below and destroy()'s dependency guard,
+            // which is what should make a class's name reusable again.
+            'class_name' => ['required', 'string', 'max:255',
+                Rule::unique('school_classes', 'class_name')->whereNull('deleted_at')],
             'grade_level_id' => 'required|exists:grade_levels,grade_level_id',
             'teacher_id' => 'nullable|exists:teachers,teacher_id',
             'subject_ids' => 'nullable|array',
@@ -111,7 +116,8 @@ class AdminClassController extends Controller
     public function update(Request $request, SchoolClass $class)
     {
         $validated = $request->validate([
-            'class_name' => 'required|string|max:255',
+            'class_name' => ['required', 'string', 'max:255',
+                Rule::unique('school_classes', 'class_name')->ignore($class->class_id, 'class_id')->whereNull('deleted_at')],
             'grade_level_id' => 'required|exists:grade_levels,grade_level_id',
             'teacher_id' => 'nullable|exists:teachers,teacher_id',
             'subject_ids' => 'nullable|array',
@@ -138,6 +144,16 @@ class AdminClassController extends Controller
 
     public function destroy(SchoolClass $class)
     {
+        // Soft-deleting a class with students still enrolled doesn't remove
+        // their class_id — it just makes the class invisible everywhere that
+        // looks it up, silently breaking every screen that shows their class.
+        // That's what happened to 9A: the class disappeared from the roster
+        // but the students, timetable and subject assignments stayed pointed
+        // at it. Same shape of guard as Term/AcademicYear destroy().
+        if ($class->students()->exists()) {
+            return back()->withErrors('Cannot delete a class with students still enrolled. Move them to another class first.');
+        }
+
         $class->delete();
         return redirect()->route('admin.classes.index')->with('notification', 'Class deleted.');
     }

@@ -213,11 +213,6 @@
                                             title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit_note</span>
                                         </a>
-                                        <button
-                                            class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all"
-                                            title="Suspend">
-                                            <span class="material-symbols-outlined text-[20px]">person_off</span>
-                                        </button>
                                         <form method="POST"
                                             action="{{ route('admin.students.destroy', $student->student_id) }}"
                                             style="display: inline;" onsubmit="return confirm('Are you sure?');">
@@ -245,7 +240,7 @@
             </div>
         </div>
         <!-- Quick Summary Cards (Bento Style) -->
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-gutter">
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-gutter">
             <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm">
                 <div class="flex justify-between items-start mb-4">
                     <span class="material-symbols-outlined p-2 bg-primary-fixed text-primary rounded-lg">groups</span>
@@ -270,17 +265,6 @@
                 <p class="text-display-lg font-display-lg text-on-surface mt-1">
                     92.1%
                 </p>
-            </div>
-            <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm">
-                <div class="flex justify-between items-start mb-4">
-                    <span
-                        class="material-symbols-outlined p-2 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-lg">person_off</span>
-                    <span class="text-[12px] font-bold text-on-surface-variant">3 pending review</span>
-                </div>
-                <p class="text-on-surface-variant text-label-sm font-label-sm uppercase tracking-wider">
-                    Suspensions
-                </p>
-                <p class="text-display-lg font-display-lg text-on-surface mt-1">14</p>
             </div>
         </div>
     </main>

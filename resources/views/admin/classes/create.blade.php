@@ -31,7 +31,7 @@
 
         @include('admin.partials.flash')
 
-        <form method="POST" action="{{ route('admin.classes.store') }}">
+        <form method="POST" action="{{ route('admin.classes.store') }}" id="classForm">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 <section class="lg:col-span-7 flex flex-col gap-6">
@@ -140,8 +140,8 @@
                     class="px-5 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md text-label-md">
                     Cancel
                 </a>
-                <button type="submit"
-                    class="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container transition-all flex items-center gap-2 shadow-md">
+                <button type="submit" id="classFormSubmit"
+                    class="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container transition-all flex items-center gap-2 shadow-md disabled:opacity-60">
                     <span class="material-symbols-outlined text-[20px]">add_circle</span>
                     <span>Create Class</span>
                 </button>
@@ -151,6 +151,14 @@
 
     @push('scripts')
         <script>
+            // Disabling on submit stops a slow response (or an impatient extra
+            // click) from posting the same class twice — that's how three
+            // identical "8C" classes ended up on the roster.
+            document.getElementById('classForm')?.addEventListener('submit', function () {
+                const btn = document.getElementById('classFormSubmit');
+                if (btn) btn.disabled = true;
+            });
+
             (function () {
                 const checkboxes = document.querySelectorAll('.subject-checkbox');
                 const counter = document.getElementById('selectedCounter');

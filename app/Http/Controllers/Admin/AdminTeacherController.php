@@ -272,11 +272,16 @@ class AdminTeacherController extends Controller
             ->where('subject_id', $validated['subject_id'])
             ->first();
 
-        if ($existing && (int) $existing->teacher_id === (int) $teacher->teacher_id) {
+        // A class can offer a subject before anyone teaches it (Admin\ClassController
+        // lets a class declare its subjects with a teacher "decided later") — that's
+        // not a holder to hand over from, so it doesn't need confirm_handover.
+        $heldByAnotherTeacher = $existing && $existing->teacher_id !== null;
+
+        if ($heldByAnotherTeacher && (int) $existing->teacher_id === (int) $teacher->teacher_id) {
             return back()->with('notification', 'That subject is already assigned to this teacher for that class.');
         }
 
-        if ($existing && !$request->boolean('confirm_handover')) {
+        if ($heldByAnotherTeacher && !$request->boolean('confirm_handover')) {
             $holder = $existing->teacher?->full_name ?? 'another teacher';
 
             return back()->withErrors([
@@ -287,7 +292,7 @@ class AdminTeacherController extends Controller
         try {
             if ($existing) {
                 $existing->update(['teacher_id' => $teacher->teacher_id]);
-                $message = 'Assignment handed over to ' . $teacher->full_name . '.';
+                $message = $heldByAnotherTeacher ? 'Assignment handed over to ' . $teacher->full_name . '.' : 'Subject assigned.';
             } else {
                 ClassSubject::create([
                     'class_id' => $validated['class_id'],
@@ -397,7 +402,12 @@ class AdminTeacherController extends Controller
                     ->first();
 
                 if ($existing) {
-                    if ((int) $existing->teacher_id !== (int) $teacher->teacher_id) {
+                    if ($existing->teacher_id === null) {
+                        // Offered by the class but nobody teaches it yet — claim it,
+                        // rather than treating an empty slot as "already spoken for".
+                        $existing->update(['teacher_id' => $teacher->teacher_id]);
+                        $created++;
+                    } elseif ((int) $existing->teacher_id !== (int) $teacher->teacher_id) {
                         $holder = $existing->teacher?->full_name ?? 'another teacher';
                         $label = ($subjects[$subjectId]->subject_name ?? 'Subject')
                             . ' in ' . ($classes[$classId]->display_name ?? 'that class');
