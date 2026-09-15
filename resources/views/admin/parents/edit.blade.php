@@ -245,17 +245,20 @@
 
                                 @if ($parent->user)
                                     <div class="flex flex-col gap-1.5 pt-1">
-                                        <form action="{{ route('admin.users.reset-password', $parent->user_id) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Issue a new temporary password for {{ $parent->full_name }}? Their current password will stop working immediately.');">
-                                            @csrf
-                                            @method('PUT')
-                                            <button type="submit"
-                                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100/80 text-amber-900 font-label-md text-label-md transition-colors border border-amber-200">
-                                                <span class="material-symbols-outlined text-[18px]">lock_reset</span>
-                                                <span>Reset Password</span>
-                                            </button>
-                                        </form>
+                                        {{-- Deliberately NOT a nested <form> here — it used to be its
+                                             own <form> sitting inside #parentForm. Nested forms are
+                                             invalid HTML: the browser closed #parentForm early at this
+                                             form's </form> tag, which pushed the "Linked Children"
+                                             checkboxes further down the page outside #parentForm
+                                             entirely — so saving a parent silently never submitted any
+                                             student_ids[] changes. This button submits the standalone
+                                             #parent-reset-password-form declared just after #parentForm's
+                                             closing tag (a sibling, not a child). --}}
+                                        <button type="button" id="parent-reset-password-btn"
+                                            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100/80 text-amber-900 font-label-md text-label-md transition-colors border border-amber-200">
+                                            <span class="material-symbols-outlined text-[18px]">lock_reset</span>
+                                            <span>Reset Password</span>
+                                        </button>
                                         <span class="font-body-sm text-body-sm text-on-surface-variant text-center">
                                             Generates a new temporary password, shown once, for you to share with the
                                             parent.
@@ -319,6 +322,15 @@
                         </div>
                     </div>
                 </form>
+
+                {{-- Sibling of #parentForm (not nested inside it) — see comment above. --}}
+                @if ($parent->user)
+                    <form method="POST" action="{{ route('admin.users.reset-password', $parent->user_id) }}"
+                        id="parent-reset-password-form" class="hidden">
+                        @csrf
+                        @method('PUT')
+                    </form>
+                @endif
             </div>
         </main>
     </div>
@@ -372,5 +384,18 @@
                 this.classList.remove('border-error');
             });
         });
+
+        // Reset Password: submits the standalone #parent-reset-password-form
+        // (a sibling of #parentForm, not nested inside it — see the HTML
+        // comment above it).
+        const resetPasswordBtn = document.getElementById('parent-reset-password-btn');
+        const resetPasswordForm = document.getElementById('parent-reset-password-form');
+        if (resetPasswordBtn && resetPasswordForm) {
+            resetPasswordBtn.addEventListener('click', () => {
+                if (confirm('Issue a new temporary password for {{ $parent->full_name }}? Their current password will stop working immediately.')) {
+                    resetPasswordForm.submit();
+                }
+            });
+        }
     </script>
 @endpush
