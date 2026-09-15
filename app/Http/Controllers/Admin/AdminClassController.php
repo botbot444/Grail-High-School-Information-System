@@ -101,7 +101,8 @@ class AdminClassController extends Controller
         $teachers = Teacher::with('user')->orderBy('first_name')->orderBy('last_name')->get();
         $subjects = Subject::orderBy('subject_name')->get();
         $gradeLevels = GradeLevel::orderBy('order')->get();
-        $assignedSubjects = $class->subjects()->pluck('subject_id')->toArray();
+        // Specify the table to avoid ambiguity with the pivot table's subject_id
+        $assignedSubjects = $class->subjects()->pluck('subjects.subject_id')->toArray();
         $class->load('teacher.user')->loadCount('students');
 
         return view('admin.classes.edit', compact('class', 'teachers', 'subjects', 'gradeLevels', 'assignedSubjects'));
