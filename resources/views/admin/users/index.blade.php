@@ -142,7 +142,7 @@
                                         @unless ($isSelf)
                                             <form method="POST" action="{{ route('admin.users.reset-password', $user->id) }}"
                                                   onsubmit="return confirm('Issue a temporary password for {{ $user->name }}? Their current password stops working immediately.');">
-                                                @csrf
+                                                @csrf @method('PUT')
                                                 <button type="submit" title="Issue a temporary password"
                                                     class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container hover:text-primary text-sm font-medium transition-colors">
                                                     <span class="material-symbols-outlined text-[18px]">key</span>

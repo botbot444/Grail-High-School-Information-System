@@ -7,7 +7,7 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\ParentRegistrationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,10 +17,18 @@ Route::middleware('web')->group(function () {
 });
 
 Route::middleware(['web', 'guest'])->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
+    // Parent + child self-registration — always a new-admission request,
+    // reviewed by an admin (Admin\RegistrationRequestController) before any
+    // account is real. Replaces Laravel's stock scaffold, which used to
+    // create a working, role-less login instantly with no review at all.
+    Route::get('register', [ParentRegistrationController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [ParentRegistrationController::class, 'store'])
+        ->middleware('throttle:5,1');
+
+    Route::get('register/submitted', [ParentRegistrationController::class, 'submitted'])
+        ->name('registration.submitted');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 

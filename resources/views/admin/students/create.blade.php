@@ -86,15 +86,31 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="mb-2 block text-sm font-semibold text-on-surface">Student Number *</label>
-                                    <input type="text" name="student_number" value="{{ old('student_number') }}" required
-                                        class="w-full rounded-lg border border-outline-variant px-3 py-2 focus:ring-2 focus:ring-primary" />
-                                </div>
-                                <div>
                                     <label class="mb-2 block text-sm font-semibold text-on-surface">Enrollment Date</label>
                                     <input type="date" name="enrolment_date" value="{{ old('enrolment_date') }}"
                                         class="w-full rounded-lg border border-outline-variant px-3 py-2 focus:ring-2 focus:ring-primary" />
                                 </div>
+                            </div>
+                            <p class="mt-4 text-xs text-on-surface-variant flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">info</span>
+                                A student number is generated automatically when you save.
+                            </p>
+                        </section>
+
+                        <section class="rounded-xl border border-outline-variant bg-white p-6 shadow-sm">
+                            <div class="flex items-center gap-2 mb-6">
+                                <span class="material-symbols-outlined text-primary">badge</span>
+                                <h2 class="text-lg font-bold text-on-surface">Student Login (optional)</h2>
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-on-surface">Email</label>
+                                <input type="email" name="email" value="{{ old('email') }}"
+                                    class="w-full rounded-lg border border-outline-variant px-3 py-2 focus:ring-2 focus:ring-primary" />
+                                <p class="mt-2 text-xs text-on-surface-variant">
+                                    Leave blank if this student doesn't need their own login — the parent portal
+                                    already covers most of what a young student needs. If given, a one-time password
+                                    is generated and shown once after saving.
+                                </p>
                             </div>
                         </section>
 

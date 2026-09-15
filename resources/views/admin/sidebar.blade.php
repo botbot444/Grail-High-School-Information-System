@@ -15,6 +15,7 @@
     $matches = fn (array $patterns) => collect($patterns)->contains(fn ($p) => request()->routeIs($p));
 
     $pendingPaymentSubmissions = \App\Models\PaymentSubmission::pending()->count();
+    $pendingRegistrationRequests = \App\Models\RegistrationRequest::pending()->count();
 
     $nav = [
         ['type' => 'link', 'label' => 'Dashboard', 'icon' => 'dashboard',
@@ -24,6 +25,7 @@
             ['label' => 'Students',      'icon' => 'school',           'route' => 'admin.students.index',  'match' => ['admin.students.*']],
             ['label' => 'Teachers',      'icon' => 'person_pin',       'route' => 'admin.teachers.index',  'match' => ['admin.teachers.*']],
             ['label' => 'Parents',       'icon' => 'family_restroom',  'route' => 'admin.parents.index',   'match' => ['admin.parents.*']],
+            ['label' => 'Registration Requests', 'icon' => 'how_to_reg', 'route' => 'admin.registration-requests.index', 'match' => ['admin.registration-requests.*'], 'badge' => $pendingRegistrationRequests],
             ['label' => 'User Accounts', 'icon' => 'manage_accounts',  'route' => 'admin.users.index',     'match' => ['admin.users.*']],
         ]],
 

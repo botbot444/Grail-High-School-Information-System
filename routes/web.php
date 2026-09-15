@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PaymentSubmissionController as AdminPaymentSubmissionController;
 use App\Http\Controllers\Parent\PaymentSubmissionController as ParentPaymentSubmissionController;
+use App\Http\Controllers\Admin\RegistrationRequestController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\TermController;
@@ -85,6 +86,12 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/payment-submissions/{submission}', [AdminPaymentSubmissionController::class, 'show'])->name('payment-submissions.show');
         Route::post('/payment-submissions/{submission}/approve', [AdminPaymentSubmissionController::class, 'approve'])->name('payment-submissions.approve');
         Route::post('/payment-submissions/{submission}/reject', [AdminPaymentSubmissionController::class, 'reject'])->name('payment-submissions.reject');
+
+        // ── Parent + child self-registration — review queue ──────────────────
+        Route::get('/registration-requests', [RegistrationRequestController::class, 'index'])->name('registration-requests.index');
+        Route::get('/registration-requests/{registrationRequest}', [RegistrationRequestController::class, 'show'])->name('registration-requests.show');
+        Route::post('/registration-requests/{registrationRequest}/approve', [RegistrationRequestController::class, 'approve'])->name('registration-requests.approve');
+        Route::post('/registration-requests/{registrationRequest}/reject', [RegistrationRequestController::class, 'reject'])->name('registration-requests.reject');
 
         // Report cards (Phase 11) — browse, print, and the unfinalize override.
         Route::get('/report-cards', [AdminReportCardController::class, 'index'])->name('report-cards.index');

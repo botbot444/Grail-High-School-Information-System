@@ -64,6 +64,9 @@ class StudentSeeder extends Seeder
         $count++;
 
         // ── 3 students per class ──────────────────────────────────────────────
+        // Each gets its own login too now (Phase A: students are no longer
+        // second-class — every seeded student can sign in and see their own
+        // portal), same shared password as every other seeded account.
         $seq = 2;
         foreach ($classes as $class) {
             for ($i = 0; $i < 3; $i++) {
@@ -73,10 +76,25 @@ class StudentSeeder extends Seeder
                 $firstName = fake()->firstName();
                 $lastName  = fake()->lastName();
 
+                // seqStr guarantees uniqueness even when fake() repeats a name.
+                $email = strtolower("{$firstName}.{$lastName}{$seqStr}@student.grail.school");
+
+                $studentUser = User::firstOrCreate(
+                    ['email' => $email],
+                    [
+                        'name'              => "{$firstName} {$lastName}",
+                        'email'             => $email,
+                        'password'          => Hash::make('12345678'),
+                        'role'              => 'student',
+                        'role_id'           => $studentRoleId,
+                        'email_verified_at' => now(),
+                    ]
+                );
+
                 Student::firstOrCreate(
                     ['student_number' => $sNum],
                     [
-                        'user_id'        => null,
+                        'user_id'        => $studentUser->id,
                         'parent_user_id' => null,
                         'first_name'     => $firstName,
                         'last_name'      => $lastName,
@@ -93,8 +111,9 @@ class StudentSeeder extends Seeder
             }
         }
 
-        $this->command->info("✔ {$count} students seeded.");
+        $this->command->info("✔ {$count} students seeded, each with their own login.");
         $this->command->info('  Demo accounts: student@grail.school / 12345678');
         $this->command->info('  Parent:        parent@grail.school  / 12345678');
+        $this->command->info('  All other seeded students share the password: 12345678');
     }
 }

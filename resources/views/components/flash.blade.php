@@ -21,6 +21,19 @@
 @props(['class' => ''])
 
 @php
+    // Breeze flashes short machine codes into 'status' (password-updated,
+    // profile-updated, verification-link-sent, ...) meant to be translated by
+    // the view rather than shown as-is — left untranslated it reads as a
+    // literal slug instead of a sentence. Known codes get a friendly message
+    // and a success colour; anything unrecognised still gets humanised
+    // (dashes to spaces, capitalised) rather than shown raw.
+    $statusMessages = [
+        'password-updated' => 'Password updated successfully.',
+        'profile-updated'  => 'Profile updated successfully.',
+        'verification-link-sent' => 'A new verification link has been sent to your email address.',
+    ];
+    $rawStatus = session('status');
+
     // Severity comes from the key, so a controller does not have to remember
     // which colour to ask for — flashing 'error' is red because it is an error.
     $messages = collect([
@@ -28,9 +41,11 @@
         ['key' => 'notification', 'level' => 'success'],
         ['key' => 'success',      'level' => 'success'],
         ['key' => 'message',      'level' => 'info'],
-        ['key' => 'status',       'level' => 'info'],
+        ['key' => 'status',       'level' => isset($statusMessages[$rawStatus]) ? 'success' : 'info'],
     ])->filter(fn ($m) => filled(session($m['key'])))
-      ->map(fn ($m) => $m + ['text' => session($m['key'])]);
+      ->map(fn ($m) => $m + ['text' => $m['key'] === 'status'
+          ? ($statusMessages[$rawStatus] ?? ucfirst(str_replace('-', ' ', $rawStatus)))
+          : session($m['key'])]);
 
     $styles = [
         'success' => [

@@ -6,15 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Models\Fee;
 use App\Models\GradeLevel;
 use App\Models\ParentProfile;
+use App\Models\Role;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Models\User;
+use App\Traits\GeneratesTemporaryPassword;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminController extends Controller
 {
+    use GeneratesTemporaryPassword;
+
     /**
      * Admin Dashboard - Display key metrics and student roster
      */
@@ -229,22 +236,58 @@ class AdminController extends Controller
             'last_name' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:Male,Female',
-            'student_number' => 'required|unique:students|string|max:50',
             'class_id' => 'required|exists:school_classes,class_id',
             'parent_user_id' => 'nullable|exists:users,id',
             'guardian_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:20',
             'enrolment_date' => 'nullable|date',
+            // A student login is optional — most young children don't need
+            // one, the parent portal already covers them.
+            'email' => 'nullable|email|unique:users,email',
         ]);
 
         if (! empty($validated['parent_user_id'])) {
             $validated['parent_user_id'] = (int) $validated['parent_user_id'];
         }
 
+        $email = $validated['email'] ?? null;
+        unset($validated['email']);
+
+        // Generated up front so it can be flashed to admin after the
+        // transaction commits — never stored anywhere in readable form.
+        $temporary = $email ? $this->temporaryPassword() : null;
+
         try {
-            Student::create($validated);
-            return redirect()->route('admin.students.index')
-                ->with('notification', 'Student created successfully!');
+            $student = DB::transaction(function () use ($validated, $email, $temporary) {
+                $student = Student::createWithGeneratedNumber($validated);
+
+                if ($email) {
+                    $user = User::create([
+                        'name' => trim("{$student->first_name} {$student->last_name}"),
+                        'email' => $email,
+                        'password' => Hash::make($temporary),
+                        'role_id' => Role::where('name', 'student')->value('id'),
+                        'email_verified_at' => now(),
+                        // Forces the student onto their settings page at
+                        // first login until they choose their own password.
+                        'must_change_password' => true,
+                    ]);
+
+                    $student->user_id = $user->id;
+                    $student->save();
+                }
+
+                return $student;
+            });
+
+            $redirect = redirect()->route('admin.students.index')->with(
+                'notification',
+                $email
+                    ? "Student created successfully! Student number: {$student->student_number}. Their one-time login password is:"
+                    : "Student created successfully! Student number: {$student->student_number}."
+            );
+
+            return $email ? $redirect->with('temporary_password', $temporary) : $redirect;
         } catch (\Exception $e) {
             return back()->withErrors('Failed to create student: ' . $e->getMessage());
         }

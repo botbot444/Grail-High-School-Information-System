@@ -5,6 +5,16 @@
 @section('page-subtitle', 'Your profile and sign-in details')
 
 @section('content')
+    @if ($student->user?->must_change_password)
+        <div class="mb-space-md rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 flex items-start gap-2.5">
+            <span class="material-symbols-outlined text-amber-600" style="font-size:20px">lock_reset</span>
+            <div class="text-sm text-amber-900">
+                <p class="font-semibold">Please set a new password</p>
+                <p class="text-amber-800/90 mt-0.5">You're currently signed in with a temporary password. Set your own below to continue using the portal.</p>
+            </div>
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
         {{-- Profile card --}}
         <section class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 card-shadow p-space-lg text-center">
@@ -61,19 +71,53 @@
     <section class="mt-space-md bg-surface-container-lowest rounded-xl border border-outline-variant/50 card-shadow overflow-hidden">
         <header class="px-space-md py-space-sm border-b border-outline-variant/50">
             <h2 class="text-headline-sm font-headline-sm text-on-surface">Sign-in</h2>
+            <p class="text-body-sm text-on-surface-variant mt-0.5">Change the password you use to sign in to Grail SIS.</p>
         </header>
-        <div class="px-space-md py-space-md flex flex-wrap items-center justify-between gap-space-md">
-            <div>
-                <p class="text-body-md text-on-surface">Password</p>
-                <p class="text-body-sm text-on-surface-variant">Change the password you use to sign in to Grail SIS.</p>
+
+        <form method="POST" action="{{ route('password.update') }}" class="px-space-md py-space-md space-y-4">
+            @csrf
+            @method('put')
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="current_password" class="block text-label-sm text-on-surface-variant mb-1">Current Password</label>
+                    <input id="current_password" name="current_password" type="password" autocomplete="current-password"
+                        class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary">
+                    @error('current_password', 'updatePassword')
+                        <p class="mt-1 text-body-sm text-error">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="password" class="block text-label-sm text-on-surface-variant mb-1">New Password</label>
+                    <input id="password" name="password" type="password" autocomplete="new-password"
+                        class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary">
+                    @error('password', 'updatePassword')
+                        <p class="mt-1 text-body-sm text-error">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="password_confirmation" class="block text-label-sm text-on-surface-variant mb-1">Confirm New Password</label>
+                    <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password"
+                        class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary">
+                    @error('password_confirmation', 'updatePassword')
+                        <p class="mt-1 text-body-sm text-error">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
-            @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}"
-                   class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary text-label-md font-semibold hover:bg-on-primary-fixed-variant transition-colors">
-                    <span class="material-symbols-outlined text-lg">lock_reset</span>
-                    Change password
-                </a>
-            @endif
-        </div>
+
+            <div class="flex items-center gap-3">
+                <button type="submit"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary text-label-md font-semibold hover:bg-on-primary-fixed-variant transition-colors">
+                    <span class="material-symbols-outlined text-lg">key</span>
+                    Update Password
+                </button>
+                @if (session('status') === 'password-updated')
+                    <span class="text-body-sm text-secondary font-semibold flex items-center gap-1">
+                        <span class="material-symbols-outlined" style="font-size:16px">check_circle</span>
+                        Saved.
+                    </span>
+                @endif
+            </div>
+        </form>
     </section>
 @endsection

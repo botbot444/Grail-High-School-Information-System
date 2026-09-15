@@ -234,6 +234,48 @@ class Student extends Model
         $this->save();
     }
 
+    /**
+     * Next student number for the current year, e.g. "2026/0017" — the same
+     * `{year}/{seq}` shape StudentSeeder has always used. Admin used to type
+     * this in by hand; callers should retry Student::create() on a unique-
+     * constraint violation using a freshly generated number rather than
+     * relying on this alone to be race-proof — cheap, not bulletproof, which
+     * is all a human-facing ID like this needs.
+     */
+    public static function nextStudentNumber(): string
+    {
+        $prefix = now()->year . '/';
+
+        $last = static::withTrashed()
+            ->where('student_number', 'like', $prefix . '%')
+            ->orderByDesc('student_number')
+            ->value('student_number');
+
+        $next = $last ? ((int) substr($last, strlen($prefix)) + 1) : 1;
+
+        return $prefix . str_pad((string) $next, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Create a Student with an auto-generated student number, retrying with a
+     * fresh one on a rare collision instead of failing outright. Wraps
+     * Student::create() — every other attribute is passed through as-is.
+     */
+    public static function createWithGeneratedNumber(array $attributes): self
+    {
+        for ($attempt = 1; ; $attempt++) {
+            $attributes['student_number'] = static::nextStudentNumber();
+
+            try {
+                return static::create($attributes);
+            } catch (\Illuminate\Database\QueryException $e) {
+                if ($attempt >= 3 || ! str_contains($e->getMessage(), 'student_number')) {
+                    throw $e;
+                }
+            }
+        }
+    }
+
     // ── Scopes ────────────────────────────────────────────────────────────────
 
     /** Filter to students in a specific class */

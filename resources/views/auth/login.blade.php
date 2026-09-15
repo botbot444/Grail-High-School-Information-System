@@ -58,6 +58,10 @@
                             </button>
                         </form>
 
+                        <p style="text-align:center; margin-top:16px; font-size:0.9rem; color:#64748b;">
+                            New parent? <a href="{{ route('register') }}" style="color:#177aa4; font-weight:600;">Register you and your child</a>
+                        </p>
+
                     </div>
                 </div>
 

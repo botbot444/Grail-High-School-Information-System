@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Traits\GeneratesTemporaryPassword;
 use App\Models\ClassSubject;
 use App\Models\Role;
 use App\Models\SchoolClass;
@@ -14,10 +15,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AdminTeacherController extends Controller
 {
+    use GeneratesTemporaryPassword;
+
     /** Timetable rows read in the order a week actually runs. */
     private const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -435,16 +437,5 @@ class AdminTeacherController extends Controller
         }
 
         return empty($lines) ? null : implode(' ', $lines);
-    }
-
-    /**
-     * Readable one-time password: no I, O or L, so it survives being read
-     * down a phone or written on a slip of paper.
-     */
-    private function temporaryPassword(): string
-    {
-        $password = Str::upper(Str::random(3)) . '-' . random_int(1000, 9999) . '-' . Str::upper(Str::random(3));
-
-        return str_replace(['I', 'O', 'L'], ['X', 'Y', 'Z'], $password);
     }
 }
