@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FeeCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class FeeCategoryController extends Controller
 {
@@ -22,7 +23,8 @@ class FeeCategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:fee_categories,name'],
+            // A soft-deleted category's name is free to reuse — see destroy().
+            'name' => ['required', 'string', 'max:255', Rule::unique('fee_categories', 'name')->whereNull('deleted_at')],
         ]);
 
         $category = FeeCategory::create($validated);
@@ -33,7 +35,8 @@ class FeeCategoryController extends Controller
     public function update(Request $request, FeeCategory $feeCategory)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:fee_categories,name,' . $feeCategory->id],
+            'name' => ['required', 'string', 'max:255',
+                Rule::unique('fee_categories', 'name')->ignore($feeCategory->id)->whereNull('deleted_at')],
         ]);
 
         $feeCategory->update($validated);

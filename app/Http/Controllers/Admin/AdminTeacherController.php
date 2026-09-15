@@ -15,6 +15,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AdminTeacherController extends Controller
 {
@@ -57,7 +58,9 @@ class AdminTeacherController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email|unique:teachers,email',
+            // A soft-deleted teacher's email is free to reuse — see destroy().
+            'email' => ['required', 'email', 'unique:users,email',
+                Rule::unique('teachers', 'email')->whereNull('deleted_at')],
             'phone' => 'nullable|string|max:20',
             'class_ids' => 'nullable|array',
             'class_ids.*' => 'exists:school_classes,class_id',
@@ -198,7 +201,8 @@ class AdminTeacherController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $teacher->user_id . '|unique:teachers,email,' . $teacher->teacher_id . ',teacher_id',
+            'email' => ['required', 'email', 'unique:users,email,' . $teacher->user_id,
+                Rule::unique('teachers', 'email')->ignore($teacher->teacher_id, 'teacher_id')->whereNull('deleted_at')],
             'phone' => 'nullable|string|max:20',
             'class_ids' => 'nullable|array',
             'class_ids.*' => 'exists:school_classes,class_id',
@@ -353,6 +357,17 @@ class AdminTeacherController extends Controller
 
     public function destroy(Teacher $teacher)
     {
+        // Soft-deleting a teacher who's still a homeroom teacher or still
+        // teaching a class-subject leaves those pointed at a now-invisible
+        // record instead of removing the assignment — same shape of bug as
+        // deleting a class with students still enrolled in it.
+        if ($teacher->homeroomClasses()->exists()) {
+            return back()->withErrors('Cannot delete a teacher who is still a homeroom teacher. Reassign their classes first.');
+        }
+        if ($teacher->classSubjects()->exists()) {
+            return back()->withErrors('Cannot delete a teacher with active class-subject assignments. Reassign or remove them first.');
+        }
+
         try {
             $teacher->delete();
             $teacher->user?->delete();

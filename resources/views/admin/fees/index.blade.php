@@ -231,18 +231,21 @@
                                                 title="Edit">
                                                 <span class="material-symbols-outlined text-xl">edit</span>
                                             </a>
-                                            <form method="POST"
-                                                action="{{ route('admin.fees.destroy', $fee->fee_id) }}"
-                                                style="display: inline;"
-                                                onsubmit="return confirm('Delete this fee record?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded transition-all"
-                                                    title="Delete">
-                                                    <span class="material-symbols-outlined text-xl">delete</span>
-                                                </button>
-                                            </form>
+                                            {{-- Deliberately not a per-row <form> here — it used to sit
+                                                 nested inside #bulk-form below. Nested forms are invalid
+                                                 HTML: the browser closed #bulk-form early at the first
+                                                 row's </form>, so every row after the first silently fell
+                                                 out of the bulk-select form and could never be included in
+                                                 a bulk action. This button submits the standalone
+                                                 #fee-delete-form declared after #bulk-form's closing tag
+                                                 (a sibling, not a child), with its action set per-row via
+                                                 data-url. --}}
+                                            <button type="button"
+                                                class="fee-delete-btn p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded transition-all"
+                                                data-url="{{ route('admin.fees.destroy', $fee->fee_id) }}"
+                                                title="Delete">
+                                                <span class="material-symbols-outlined text-xl">delete</span>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -269,5 +272,25 @@
                 </div>
             </div>
         </form>
+
+        {{-- Sibling of #bulk-form (not nested inside it) — see comment above. --}}
+        <form method="POST" id="fee-delete-form" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
     </main>
+
+    @push('scripts')
+        <script>
+            document.querySelectorAll('.fee-delete-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    if (confirm('Delete this fee record?')) {
+                        const form = document.getElementById('fee-delete-form');
+                        form.action = btn.dataset.url;
+                        form.submit();
+                    }
+                });
+            });
+        </script>
+    @endpush
 @endsection

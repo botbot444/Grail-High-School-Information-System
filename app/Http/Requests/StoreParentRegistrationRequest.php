@@ -21,7 +21,8 @@ class StoreParentRegistrationRequest extends FormRequest
             'parent_email'      => [
                 'required', 'email', 'max:255',
                 'unique:users,email',
-                'unique:parents,email',
+                // A soft-deleted parent's email is free to reuse.
+                Rule::unique('parents', 'email')->whereNull('deleted_at'),
                 // A rejected request doesn't lock the email out — only block
                 // while a submission for it is still awaiting review.
                 Rule::unique('registration_requests', 'parent_email')->where('status', 'pending'),

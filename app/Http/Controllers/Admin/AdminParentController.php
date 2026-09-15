@@ -10,6 +10,7 @@ use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AdminParentController extends Controller
 {
@@ -63,7 +64,9 @@ class AdminParentController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email|unique:parents,email',
+            // A soft-deleted parent's email is free to reuse — see destroy().
+            'email' => ['required', 'email', 'unique:users,email',
+                Rule::unique('parents', 'email')->whereNull('deleted_at')],
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'occupation' => 'nullable|string|max:255',
@@ -145,7 +148,8 @@ class AdminParentController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $parent->user_id . '|unique:parents,email,' . $parent->parent_id . ',parent_id',
+            'email' => ['required', 'email', 'unique:users,email,' . $parent->user_id,
+                Rule::unique('parents', 'email')->ignore($parent->parent_id, 'parent_id')->whereNull('deleted_at')],
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'occupation' => 'nullable|string|max:255',
@@ -200,6 +204,14 @@ class AdminParentController extends Controller
 
     public function destroy(ParentProfile $parent)
     {
+        // Soft-deleting a parent who still has linked children leaves those
+        // students pointed at a now-invisible guardian instead of clearing
+        // the link — same shape of bug as deleting a class with students
+        // still enrolled in it.
+        if ($parent->students()->exists()) {
+            return back()->withErrors('Cannot delete a parent with children still linked. Unlink or reassign their children first.');
+        }
+
         try {
             $parent->delete();
             $parent->user?->delete();
