@@ -27,6 +27,15 @@ trait Auditable
         // record it is the right moment to snapshot the current DB values
         // (getOriginal()) and the incoming dirty values (getChanges()).
         static::saving(function ($model) {
+            // Always capture any human-supplied audit reason and remove it
+            // from the model attributes before the DB write. This lets callers
+            // set $model->audit_reason for the audit log without causing the
+            // ORM to attempt to persist a non-existent `audit_reason` column.
+            self::$auditTempReasons[spl_object_id($model)] = $model->audit_reason ?? null;
+            if (array_key_exists('audit_reason', $model->getAttributes())) {
+                $model->offsetUnset('audit_reason');
+            }
+
             if ($model->exists && $model->isDirty()) {
                 // getDirty(), not getChanges(). getChanges() is only populated
                 // AFTER a save completes, so inside `saving` it is always empty
@@ -64,6 +73,16 @@ trait Auditable
      * @var array<int, string>
      */
     protected array $auditNeverStore = ['password', 'remember_token'];
+
+    /**
+     * Temporary storage for per-model audit reasons during the saving lifecycle.
+     * We store reasons here keyed by the model object's id to avoid adding
+     * them to the model attributes (which would make Eloquent try to persist
+     * them as columns).
+     *
+     * @var array<int,string|null>
+     */
+    protected static array $auditTempReasons = [];
 
     /** Strip excluded attributes from a values array before it is stored. */
     protected function redactForAudit(?array $values): ?array
@@ -106,9 +125,18 @@ trait Auditable
             'action'         => $action,
             'old_values'     => $oldValues,
             'new_values'     => $newValues,
-            'reason'         => $this->audit_reason ?? null,
+            // Prefer an intentionally-set audit reason. We capture it from
+            // the temporary storage populated in the saving hook so it is
+            // available here without having been persisted to the model's
+            // table.
+            'reason'         => $this->audit_reason ?? (self::$auditTempReasons[spl_object_id($this)] ?? null),
             'ip_address'     => $ip,
             'user_agent'     => $ua,
         ]);
+        // Clear the temporary storage entry for this model.
+        $oid = spl_object_id($this);
+        if (array_key_exists($oid, self::$auditTempReasons)) {
+            unset(self::$auditTempReasons[$oid]);
+        }
     }
 }
