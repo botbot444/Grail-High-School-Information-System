@@ -36,7 +36,8 @@
 
         ['type' => 'group', 'label' => 'Finance', 'icon' => 'payments', 'items' => [
             ['label' => 'Fees',                 'icon' => 'receipt_long',      'route' => 'admin.fees.index',            'match' => ['admin.fees.index', 'admin.fees.create', 'admin.fees.edit', 'admin.fees.show', 'admin.payments.*']],
-            ['label' => 'Payment Lookup',       'icon' => 'pin',               'route' => 'admin.fees.lookup',           'match' => ['admin.fees.lookup']],
+            // 'Payment Lookup' hidden for now — the page isn't opening correctly (per Lazarus, 2026-09-15).
+            // Route/controller (admin.fees.lookup) left intact; re-add this row once it's fixed.
             ['label' => 'Fee Categories',       'icon' => 'sell',              'route' => 'admin.categories.index',      'match' => ['admin.categories.*']],
             ['label' => 'Payment Instructions', 'icon' => 'account_balance',   'route' => 'admin.settings.payments',     'match' => ['admin.settings.payments*']],
             ['label' => 'Collection Report',    'icon' => 'bar_chart',         'route' => 'admin.reports.fee-collection','match' => ['admin.reports.fee-collection*']],

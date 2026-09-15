@@ -213,16 +213,19 @@
             </section>
 
             <div class="flex items-center justify-end gap-3">
-                <form method="POST" action="{{ route('admin.fees.destroy', $fee->fee_id) }}"
-                    onsubmit="return confirm('Delete this fee? This cannot be undone.');" class="mr-auto">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="px-4 py-2.5 rounded-lg text-error hover:bg-error-container/30 transition-colors font-label-md text-label-md flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                        <span>Delete Fee</span>
-                    </button>
-                </form>
+                {{-- Deliberately NOT a nested <form> here — this used to be its own
+                     <form action="destroy"> sitting inside #fee-form. Nested forms
+                     are invalid HTML; the browser merged this form's @method('DELETE')
+                     hidden field into the outer #fee-form, so its _method value
+                     silently won over the outer form's own @method('PUT'), and every
+                     "Save Changes" click actually deleted the fee instead of updating
+                     it. Deleting now submits the separate #delete-fee-form declared
+                     just after #fee-form's closing tag (a sibling, not a child). --}}
+                <button type="button" id="delete-fee-btn"
+                    class="mr-auto px-4 py-2.5 rounded-lg text-error hover:bg-error-container/30 transition-colors font-label-md text-label-md flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                    <span>Delete Fee</span>
+                </button>
                 <a href="{{ route('admin.fees.show', $fee->fee_id) }}"
                     class="px-5 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md text-label-md">
                     Cancel
@@ -233,6 +236,12 @@
                     <span>Save Changes</span>
                 </button>
             </div>
+        </form>
+
+        {{-- Sibling of #fee-form (not nested inside it) — see comment above. --}}
+        <form method="POST" action="{{ route('admin.fees.destroy', $fee->fee_id) }}" id="delete-fee-form" class="hidden">
+            @csrf
+            @method('DELETE')
         </form>
     </main>
 
@@ -314,6 +323,18 @@
                 // Seed existing rows.
                 existing.forEach(row => addRow(row));
                 if (existing.length === 0) addRow();
+
+                // Delete Fee: submits the standalone #delete-fee-form (a sibling of
+                // #fee-form, not nested inside it — see the HTML comment above it).
+                const deleteBtn = document.getElementById('delete-fee-btn');
+                const deleteForm = document.getElementById('delete-fee-form');
+                if (deleteBtn && deleteForm) {
+                    deleteBtn.addEventListener('click', () => {
+                        if (confirm('Delete this fee? This cannot be undone.')) {
+                            deleteForm.submit();
+                        }
+                    });
+                }
             })();
         </script>
     @endpush
