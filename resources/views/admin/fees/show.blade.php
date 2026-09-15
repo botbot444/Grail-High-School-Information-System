@@ -157,6 +157,14 @@
                         <p><strong>Overdue:</strong> {{ $fee->is_overdue ? 'Yes' : 'No' }}</p>
                         <p><strong>Progress:</strong> {{ $fee->payment_progress }}%</p>
                     </div>
+                    @if ($fee->student && (float) $fee->student->credit_balance > 0)
+                        <div class="mt-3 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2">
+                            <span class="material-symbols-outlined text-green-700" style="font-size:18px">savings</span>
+                            <p class="text-body-sm text-green-800 font-semibold">
+                                ZMW {{ number_format($fee->student->credit_balance, 2) }} account credit available
+                            </p>
+                        </div>
+                    @endif
                 </section>
 
                 <section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">

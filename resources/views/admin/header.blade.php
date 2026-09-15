@@ -23,13 +23,7 @@
             Add New
         </a>
         <div class="flex items-center gap-2 border-l border-outline-variant pl-4">
-            <button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all">
-                <span class="material-symbols-outlined">notifications</span>
-            </button>
-            <button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all">
-                <span class="material-symbols-outlined">mail</span>
-            </button>
-            <div class="flex items-center gap-3 ml-2 cursor-pointer group">
+            <div class="flex items-center gap-3 cursor-pointer group">
                 <div
                     class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border-2 border-primary/20 group-hover:border-primary transition-all">
                     {{ substr(Auth::user()->name, 0, 2) }}
@@ -39,7 +33,7 @@
                         {{ Auth::user()->name }}
                     </p>
                     <p class="text-[10px] text-on-surface-variant">
-                        Registrar Office
+                        {{ ucfirst(Auth::user()->role_name ?? 'Administrator') }}
                     </p>
                 </div>
             </div>

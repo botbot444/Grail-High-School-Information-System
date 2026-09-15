@@ -16,8 +16,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-semibold text-on-surface mb-1">Amount *</label>
-                <input type="number" step="0.01" min="0.01" max="{{ $fee->balance }}" name="amount" value="{{ old('amount') }}" required
+                <input type="number" step="0.01" min="0.01" name="amount" value="{{ old('amount') }}" required
                     class="w-full rounded-lg border border-outline-variant px-3 py-2 focus:ring-2 focus:ring-primary" />
+                <p class="mt-1 text-xs text-on-surface-variant">
+                    Paying more than the ZMW {{ number_format($fee->balance, 2) }} balance is fine —
+                    the extra is kept as account credit and applied automatically to this family's next fee.
+                </p>
                 @error('amount')
                     <p class="mt-1 text-error text-label-sm">{{ $message }}</p>
                 @enderror

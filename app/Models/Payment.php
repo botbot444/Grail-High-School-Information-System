@@ -59,6 +59,7 @@ class Payment extends Model
             'cheque'       => 'Cheque',
             'mobile_money' => 'Mobile Money',
             'card'         => 'Card',
+            'credit'       => 'Account Credit',
             default        => ucfirst($this->payment_method),
         };
     }

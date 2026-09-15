@@ -270,6 +270,32 @@
         <!-- Financials Panel -->
         @if ($showFinancials)
             <div class="tab-panel hidden animate-in fade-in duration-500" id="panel-financial">
+                @if ((float) $student->credit_balance > 0)
+                    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-green-200 bg-green-50 px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-green-700" style="font-size:22px">savings</span>
+                            <div>
+                                <p class="text-body-md font-semibold text-green-800">
+                                    ZMW {{ number_format($student->credit_balance, 2) }} account credit available
+                                </p>
+                                <p class="text-xs text-green-700 mt-0.5">
+                                    From a prior overpayment. Normally applied automatically to the next fee —
+                                    refund only when the family is leaving and there's no future fee to carry it into.
+                                </p>
+                            </div>
+                        </div>
+                        <form method="POST" action="{{ route('admin.students.refund-credit', $student->student_id) }}"
+                            onsubmit="return confirm('Refund the full ZMW {{ number_format($student->credit_balance, 2) }} credit to this family? This cannot be undone.')">
+                            @csrf
+                            <button type="submit"
+                                class="shrink-0 flex items-center gap-2 px-4 py-2 bg-white border border-green-300 text-green-800 rounded-lg font-label-sm text-label-sm font-semibold hover:bg-green-100 transition-all">
+                                <span class="material-symbols-outlined text-lg">undo</span>
+                                Refund Full Credit
+                            </button>
+                        </form>
+                    </div>
+                @endif
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div class="bg-surface-container border border-outline-variant p-4 rounded-xl flex items-center gap-4">
                         <div class="p-3 bg-red-100 text-red-800 rounded-lg">

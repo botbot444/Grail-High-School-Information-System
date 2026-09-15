@@ -334,6 +334,39 @@ class AdminController extends Controller
     }
 
     /**
+     * Manually refund a student's entire available account credit.
+     *
+     * Overpayment credit is normally carried forward and applied
+     * automatically to the student's next fee (see Student::applyAvailableCredit()).
+     * This is the exception path: a withdrawing or graduating student with
+     * credit left over and no future fee to carry it into. Kept deliberately
+     * simple — one button, no form — it refunds the full available balance;
+     * how the money actually gets back to the family (cash, bank transfer,
+     * etc.) happens outside the system, same as it did when the credit was
+     * first created from an out-of-band overpayment.
+     */
+    public function refundCredit(Student $student)
+    {
+        $amount = (float) $student->credit_balance;
+
+        if ($amount <= 0) {
+            return back()->withErrors('This student has no account credit to refund.');
+        }
+
+        try {
+            $student->refundCredit(
+                $amount,
+                'Full credit balance refunded by admin.',
+                auth()->id()
+            );
+
+            return back()->with('notification', 'ZMW ' . number_format($amount, 2) . ' credit refunded successfully.');
+        } catch (\InvalidArgumentException $e) {
+            return back()->withErrors('Failed to refund credit: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Display a listing of teachers and staff.
      */
     public function teachers()

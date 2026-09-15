@@ -47,7 +47,14 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        // Deliberately NOT 'hashed'. Every write site in this codebase already
+        // calls Hash::make()/bcrypt() itself before assigning to this attribute
+        // (every seeder, RegisteredUserController, PasswordController,
+        // NewPasswordController, UserAccountController::resetPassword). Adding
+        // Eloquent's 'hashed' cast on top double-hashes the value on save —
+        // Hash::make(Hash::make($plain)) — which can never match $plain again
+        // on login. A prior merge introduced this cast without updating any of
+        // those call sites; removing it is the fix, not chasing every call site.
         'must_change_password' => 'boolean',
         'is_active' => 'boolean',
     ];

@@ -44,12 +44,14 @@ class Student extends Model
         'enrolment_date',
         'status',
         'graduated_on',
+        'credit_balance',
     ];
 
     protected $casts = [
         'date_of_birth'   => 'date',
         'enrolment_date'  => 'date',
         'graduated_on'    => 'date',
+        'credit_balance'  => 'decimal:2',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────
@@ -112,6 +114,124 @@ class Student extends Model
     public function promotions(): HasMany
     {
         return $this->hasMany(StudentPromotion::class, 'student_id', 'student_id');
+    }
+
+    /** Ledger of overpayment credits granted / applied / refunded. */
+    public function feeCredits(): HasMany
+    {
+        return $this->hasMany(FeeCredit::class, 'student_id', 'student_id');
+    }
+
+    // ── Fee credit (overpayment carry-forward) ──────────────────────────────
+
+    /**
+     * Grant this student a fee credit from an overpayment — a parent paid
+     * more than a fee's balance, so the excess didn't just vanish from the
+     * ledger. Immediately tries to apply it to whatever the student
+     * currently owes (oldest due date first); whatever's left over stays as
+     * a credit balance and is applied automatically the next time a fee is
+     * created for this student, e.g. next term's tuition.
+     *
+     * @param  array{source_payment_id?: int, recorded_by?: int, notes?: string}  $attrs
+     */
+    public function grantCredit(float $amount, array $attrs = []): void
+    {
+        if ($amount <= 0) {
+            return;
+        }
+
+        $this->credit_balance = round((float) $this->credit_balance + $amount, 2);
+        $this->save();
+
+        FeeCredit::create(array_merge([
+            'student_id' => $this->student_id,
+            'amount'     => $amount,
+            'type'       => 'overpayment',
+        ], $attrs));
+
+        $this->applyAvailableCredit($attrs['recorded_by'] ?? null);
+    }
+
+    /**
+     * Apply whatever credit this student has toward their outstanding fees,
+     * oldest due date first, until the credit or the debt runs out. Safe to
+     * call any time — right after a credit is granted, or right after a new
+     * fee is created — since it's a no-op when there's no credit or nothing
+     * owed. Each application is recorded as a real Payment (method
+     * 'credit'), not just a silent balance nudge, so the parent and the
+     * bursar both see where the money came from, same as any other
+     * payment method.
+     */
+    public function applyAvailableCredit(?int $recordedBy = null): void
+    {
+        if ((float) $this->credit_balance <= 0) {
+            return;
+        }
+
+        $fees = $this->fees()->where('balance', '>', 0)->orderBy('due_date')->get();
+
+        foreach ($fees as $fee) {
+            if ((float) $this->credit_balance <= 0) {
+                break;
+            }
+
+            $applied = round(min((float) $this->credit_balance, (float) $fee->balance), 2);
+
+            if ($applied <= 0) {
+                continue;
+            }
+
+            $fee->payments()->create([
+                'amount'           => $applied,
+                'payment_method'   => 'credit',
+                'reference_number' => null,
+                'notes'            => 'Applied from account credit (overpayment carried forward).',
+                'payment_date'     => now(),
+                'recorded_by'      => $recordedBy,
+            ]);
+
+            $fee->recordPayment($applied);
+
+            FeeCredit::create([
+                'student_id'     => $this->student_id,
+                'amount'         => -$applied,
+                'type'           => 'applied',
+                'applied_fee_id' => $fee->fee_id,
+                'recorded_by'    => $recordedBy,
+            ]);
+
+            $this->credit_balance = round((float) $this->credit_balance - $applied, 2);
+            $this->save();
+        }
+    }
+
+    /**
+     * Manual, logged exception to carry-forward: for a student leaving the
+     * school (withdrawn/graduated) with credit still on the books and no
+     * future fee to apply it to. This doesn't move any money itself — the
+     * school still has to actually pay the parent back outside the system
+     * (bank transfer, cash) — it only records that it happened, the same
+     * way the rest of Grail's payment flow is a reconciliation record, not
+     * a payment gateway.
+     */
+    public function refundCredit(float $amount, string $notes, ?int $recordedBy = null): void
+    {
+        if ($amount <= 0 || $amount > (float) $this->credit_balance) {
+            throw new \InvalidArgumentException(
+                'Refund amount must be > 0 and no more than the available credit.'
+            );
+        }
+
+        FeeCredit::create([
+            'student_id'  => $this->student_id,
+            'amount'      => -$amount,
+            'type'        => 'refunded',
+            'notes'       => $notes,
+            'recorded_by' => $recordedBy,
+        ]);
+
+        $this->credit_balance = round((float) $this->credit_balance - $amount, 2);
+        $this->save();
     }
 
     // ── Scopes ────────────────────────────────────────────────────────────────

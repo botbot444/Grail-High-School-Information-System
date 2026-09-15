@@ -161,6 +161,11 @@ class FeeController extends Controller
                 $fee->load('feeItems');
                 $fee->recalculateAmountDue();
                 $fee->save();
+
+                // If this student has account credit from a prior
+                // overpayment, apply it to the new bill immediately rather
+                // than leaving it sitting unused until someone notices.
+                $fee->student->applyAvailableCredit(auth()->id());
             });
         } catch (UniqueConstraintViolationException $e) {
             return back()->withInput()->withErrors([
@@ -365,6 +370,11 @@ class FeeController extends Controller
             $fee->load('feeItems');
             $fee->recalculateAmountDue();
             $fee->save();
+
+            // Editing a fee (e.g. adding a line item) can turn an already-
+            // cleared balance positive again — sweep any waiting credit
+            // onto it, same as a freshly created fee.
+            $fee->student->applyAvailableCredit(auth()->id());
         });
 
         static::clearFeeCache();

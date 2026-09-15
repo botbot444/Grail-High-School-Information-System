@@ -541,6 +541,8 @@ class ParentController extends Controller
             'overdueFees'  => $this->overdueFees($children->where('student_id', $student->student_id)),
             // Bank / mobile money details for the "How to pay" panel.
             'settings'     => SchoolSetting::all_settings(),
+            // Overpayment carried forward — Student::grantCredit()/applyAvailableCredit().
+            'creditBalance' => (float) $student->credit_balance,
         ]);
     }
 

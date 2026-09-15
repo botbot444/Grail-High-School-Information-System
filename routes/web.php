@@ -150,6 +150,10 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/students/{student}/financials', [ReportController::class, 'studentFinancials'])->name('students.financials');
         Route::get('/students/{student}/statement', [ReportController::class, 'statement'])->name('students.statement');
 
+        // Manual exception: refund a withdrawing/graduating student's leftover
+        // account credit (normally it's carried forward and applied automatically).
+        Route::post('/students/{student}/refund-credit', [AdminController::class, 'refundCredit'])->name('students.refund-credit');
+
     });
 
 // Teacher Routes

@@ -704,64 +704,40 @@ class TeacherController extends Controller
     }
 
     /**
-     * Build a small list of upcoming school events for the current month.
+     * Build a small list of upcoming school events for the current month,
+     * from the real academic calendar (holidays). Returns an empty array
+     * — not placeholder events — when nothing is scheduled; the dashboard
+     * view already has a genuine "No upcoming events scheduled" empty
+     * state for that case.
      */
     private function upcomingEvents(): array
     {
         $today = now()->startOfDay();
 
-        // Prefer the academic calendar (holidays) when data exists.
         $holidays = \App\Models\Holiday::where('date', '>=', $today)
             ->orderBy('date')
             ->limit(5)
             ->get();
 
-        if ($holidays->isNotEmpty()) {
-            return $holidays->map(function ($h) {
-                $colors = [
-                    'bg-secondary-fixed text-secondary',
-                    'bg-error-container text-error',
-                    'bg-primary/10 text-primary',
-                    'bg-surface-container-high text-on-surface',
-                ];
-                $i = 0;
-                return [
-                    'month'      => $h->date->format('M'),
-                    'day'        => $h->date->format('j'),
-                    'title'      => $h->name ?? 'School holiday',
-                    'tag'        => 'Holiday',
-                    'detail'     => $h->date->format('l'),
-                    'monthColor' => $colors[$i % count($colors)],
-                    'iconColor'  => 'text-secondary',
-                    'icon'       => 'event',
-                ];
-            })->all();
-        }
-
-        // Fallback placeholder events so the panel never looks empty.
-        $fallback = now();
-        return [
-            [
-                'month'      => $fallback->format('M'),
-                'day'        => $fallback->day,
-                'title'      => 'Staff Meeting',
-                'tag'        => 'Meeting',
-                'detail'     => $fallback->format('l') . ' · Faculty Room',
-                'monthColor' => 'bg-secondary-fixed text-secondary',
-                'iconColor'  => 'text-secondary',
-                'icon'       => 'meeting_room',
-            ],
-            [
-                'month'      => $fallback->addDay()->format('M'),
-                'day'        => $fallback->day,
-                'title'      => 'Grade Entry Due',
-                'tag'        => 'Deadline',
-                'detail'     => $fallback->format('l') . ' · Submit Term marks',
-                'monthColor' => 'bg-error-container text-error',
-                'iconColor'  => 'text-error',
-                'icon'       => 'assignment_late',
-            ],
+        $colors = [
+            'bg-secondary-fixed text-secondary',
+            'bg-error-container text-error',
+            'bg-primary/10 text-primary',
+            'bg-surface-container-high text-on-surface',
         ];
+
+        return $holidays->map(function ($h, $i) use ($colors) {
+            return [
+                'month'      => $h->date->format('M'),
+                'day'        => $h->date->format('j'),
+                'title'      => $h->name ?? 'School holiday',
+                'tag'        => 'Holiday',
+                'detail'     => $h->date->format('l'),
+                'monthColor' => $colors[$i % count($colors)],
+                'iconColor'  => 'text-secondary',
+                'icon'       => 'event',
+            ];
+        })->all();
     }
 
     /**

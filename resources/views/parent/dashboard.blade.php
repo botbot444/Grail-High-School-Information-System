@@ -30,6 +30,7 @@
         @include('parent.partials.overdue-banner')
 
         {{-- ── Children summary cards ── --}}
+        <h2 class="text-xs font-bold uppercase tracking-wide text-on-surface-variant">Your Children</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @forelse ($children as $child)
                 @php $s = $child['student']; @endphp
@@ -99,11 +100,21 @@
             @endforelse
         </div>
 
-        {{-- ── Selected-child quick stats ── --}}
+        {{-- ── Selected-child overview ── --}}
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-xs font-bold uppercase tracking-wide text-on-surface-variant">Overview</h2>
+            @if ($children->count() > 1)
+                <span class="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full">
+                    <span class="material-symbols-outlined text-[14px]">person</span>
+                    Viewing {{ $selectedChild?->full_name ?? 'no child selected' }}
+                </span>
+            @endif
+        </div>
+
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Attendance — {{ $selectedChild?->full_name ?? '—' }}</span>
+                    <span class="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Attendance</span>
                     <span class="w-9 h-9 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
                         <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
                     </span>
@@ -112,7 +123,7 @@
             </div>
             <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Latest Assessments — {{ $selectedChild?->full_name ?? '—' }}</span>
+                    <span class="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Assessments Recorded</span>
                     <span class="w-9 h-9 bg-amber-50 text-amber-700 rounded-lg flex items-center justify-center">
                         <span class="material-symbols-outlined text-[20px]">fact_check</span>
                     </span>
@@ -135,7 +146,7 @@
             {{-- ── Performance trend chart (CSS bars) ── --}}
             <div class="bg-white rounded-xl border border-outline-variant shadow-sm p-5">
                 <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Performance Trend</h2>
-                <p class="text-xs text-on-surface-variant mt-0.5 mb-4">{{ $selectedChild?->full_name ?? '—' }} · average % by month</p>
+                <p class="text-xs text-on-surface-variant mt-0.5 mb-4">Average % by month</p>
                 @if ($performanceTrend->isNotEmpty())
                     <div class="flex items-end gap-2 h-40">
                         @foreach ($performanceTrend as $point)
@@ -157,7 +168,7 @@
                 <div class="px-5 py-4 border-b border-outline-variant flex items-center justify-between">
                     <div>
                         <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Recent Results</h2>
-                        <p class="text-xs text-on-surface-variant mt-0.5">{{ $selectedChild?->full_name ?? '—' }} · latest graded work</p>
+                        <p class="text-xs text-on-surface-variant mt-0.5">Latest graded work</p>
                     </div>
                     <a href="{{ route('parent.performance') }}" class="text-xs font-semibold text-primary hover:underline">View all</a>
                 </div>
@@ -206,7 +217,7 @@
             <div class="px-5 py-4 border-b border-outline-variant flex items-center justify-between">
                 <div>
                     <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Latest Assessments</h2>
-                    <p class="text-xs text-on-surface-variant mt-0.5">{{ $selectedChild?->full_name ?? '—' }} · recently recorded</p>
+                    <p class="text-xs text-on-surface-variant mt-0.5">Recently recorded</p>
                 </div>
                 <a href="{{ route('parent.assignments') }}" class="text-xs font-semibold text-primary hover:underline">View all</a>
             </div>

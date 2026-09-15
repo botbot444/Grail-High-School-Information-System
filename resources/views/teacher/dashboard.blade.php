@@ -3,9 +3,6 @@
 @section('title', 'Dashboard – Teacher Portal')
 
 @section('page')
-    {{-- Toast Notification Container --}}
-    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none" id="toast-container"></div>
-
     <div class="max-w-7xl mx-auto space-y-6">
 
         {{-- 1. Welcome Header --}}
@@ -24,7 +21,7 @@
                     <span class="font-label-sm text-label-sm text-on-surface-variant font-data-mono">{{ $teacher?->full_name ?? auth()->user()->name }}</span>
                 </div>
                 <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight font-bold">Good {{ now()->format('A') === 'AM' ? 'morning' : 'afternoon' }}, {{ $greetingName }}</h1>
-                <p class="font-body-md text-body-md text-on-surface-variant">Here's your schedule and pending instructional tasks for today.</p>
+                <p class="font-body-md text-body-md text-on-surface-variant">Here's your teaching schedule and pending instructional tasks.</p>
             </div>
             <div class="flex items-center gap-3 z-10 flex-wrap">
                 <a href="{{ route('teacher.timetable') }}"
@@ -46,7 +43,7 @@
             <div class="flex flex-col justify-between p-space-md rounded-xl bg-surface-container-lowest shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
                 <div class="flex items-start justify-between">
                     <div class="flex flex-col">
-                        <span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Today's Classes</span>
+                        <span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">My Classes</span>
                         <span class="font-headline-lg text-headline-lg text-primary font-bold mt-1">{{ $assignments->count() }}</span>
                     </div>
                     <div class="w-11 h-11 rounded-lg bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-secondary-fixed transition-colors">
@@ -55,12 +52,12 @@
                 </div>
                 <div class="mt-4 flex items-center gap-1.5 font-body-sm text-body-sm text-on-surface-variant">
                     @if ($assignments->isNotEmpty())
-                        @php $next = $assignments->first(); @endphp
+                        @php $first = $assignments->first(); @endphp
                         <span class="w-2 h-2 rounded-full bg-secondary-container"></span>
-                        <span>Next: <strong class="font-title-sm text-on-surface">{{ $next->schoolClass?->class_name ?? 'Class' }}</strong> · {{ $next->subject?->subject_name ?? '' }}</span>
+                        <span>Includes <strong class="font-title-sm text-on-surface">{{ $first->schoolClass?->class_name ?? 'Class' }}</strong> · {{ $first->subject?->subject_name ?? '' }}</span>
                     @else
                         <span class="w-2 h-2 rounded-full bg-outline-variant"></span>
-                        <span>No classes scheduled today</span>
+                        <span>No classes rostered yet</span>
                     @endif
                 </div>
             </div>
@@ -124,8 +121,7 @@
                 <div class="px-space-md py-space-md bg-surface-container-low flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-secondary text-[22px]">calendar_view_day</span>
-                        <h2 class="font-title-md text-title-md text-primary">Today's Schedule</h2>
-                        <span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm">{{ now()->format('l, M d') }}</span>
+                        <h2 class="font-title-md text-title-md text-primary">Teaching Schedule</h2>
                     </div>
                     <a href="{{ route('teacher.timetable') }}" class="p-1.5 rounded hover:bg-surface-container transition-colors text-on-surface-variant" title="Full Timetable">
                         <span class="material-symbols-outlined text-[18px]">tune</span>
@@ -271,16 +267,14 @@
                 </div>
                 <div class="p-space-md flex flex-col gap-3">
                     @forelse ($pendingTasks as $task)
-                        <div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low transition-colors gap-3">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <input class="w-4 h-4 rounded text-secondary focus:ring-0 cursor-pointer" onchange="toggleTaskDone(this, '{{ $task['title'] }}')" type="checkbox"/>
-                                <div class="flex flex-col min-w-0">
-                                    <span class="font-title-sm text-title-sm text-on-surface truncate task-label">{{ $task['title'] }}</span>
-                                    <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $task['subtitle'] }}</span>
-                                </div>
+                        <a href="{{ $task['href'] }}"
+                            class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low transition-colors gap-3">
+                            <div class="flex flex-col min-w-0">
+                                <span class="font-title-sm text-title-sm text-on-surface truncate">{{ $task['title'] }}</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $task['subtitle'] }}</span>
                             </div>
-                            <a href="{{ $task['href'] }}" class="px-2.5 py-1 rounded font-label-sm text-label-sm {{ $task['badgeClass'] }} shrink-0">{{ $task['badge'] }}</a>
-                        </div>
+                            <span class="px-2.5 py-1 rounded font-label-sm text-label-sm {{ $task['badgeClass'] }} shrink-0">{{ $task['badge'] }}</span>
+                        </a>
                     @empty
                         <p class="py-6 text-center font-body-sm text-body-sm text-on-surface-variant">No pending tasks — all caught up!</p>
                     @endforelse
@@ -294,7 +288,6 @@
                         <span class="material-symbols-outlined text-secondary text-[20px]">event_upcoming</span>
                         <h3 class="font-title-md text-title-md text-primary">Upcoming School Events</h3>
                     </div>
-                    <button class="font-label-md text-label-md text-secondary hover:underline" onclick="triggerToast('Opening school institutional calendar...')">Full Calendar</button>
                 </div>
                 <div class="p-space-md flex flex-col gap-3">
                     @forelse ($upcomingEvents as $event)
@@ -322,39 +315,4 @@
         </section>
 
     </div>
-
-    <script>
-        function triggerToast(message) {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-
-            const toast = document.createElement('div');
-            toast.className = 'pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-lg bg-primary text-on-primary shadow-xl text-body-sm transform transition-all duration-300 translate-y-2 opacity-0';
-            toast.innerHTML = `
-                <span class="material-symbols-outlined text-secondary-container text-[18px]">check_circle</span>
-                <span>${message}</span>
-            `;
-            container.appendChild(toast);
-
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            });
-
-            setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3200);
-        }
-
-        function toggleTaskDone(checkbox, taskTitle) {
-            const label = checkbox.closest('div').querySelector('.task-label');
-            if (checkbox.checked) {
-                label.classList.add('line-through', 'text-on-surface-variant');
-                triggerToast(`Task completed: "${taskTitle}"`);
-            } else {
-                label.classList.remove('line-through', 'text-on-surface-variant');
-                triggerToast(`Task marked pending: "${taskTitle}"`);
-            }
-        }
-    </script>
 @endsection

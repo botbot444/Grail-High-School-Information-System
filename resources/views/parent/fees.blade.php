@@ -82,6 +82,21 @@
             </div>
         </div>
 
+        {{-- ── Account credit, from a prior overpayment (Student::grantCredit()) ── --}}
+        @if (($creditBalance ?? 0) > 0)
+            <div class="rounded-xl border border-green-200 bg-green-50 px-5 py-4 flex items-start gap-3">
+                <span class="material-symbols-outlined text-green-700" style="font-size:20px">savings</span>
+                <div>
+                    <p class="text-sm font-semibold text-green-800">
+                        ZMW {{ number_format($creditBalance, 2) }} account credit available
+                    </p>
+                    <p class="text-xs text-green-700 mt-0.5">
+                        From a previous overpayment. It's applied automatically to {{ $student->first_name }}'s next fee — no action needed.
+                    </p>
+                </div>
+            </div>
+        @endif
+
         {{-- ── How to pay: instructions + per-fee reference (no money moves here) ── --}}
         @include('parent.partials.how-to-pay')
 

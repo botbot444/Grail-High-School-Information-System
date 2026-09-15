@@ -16,8 +16,17 @@ class PaymentController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($fee, $validated) {
+            $amount  = (float) $validated['amount'];
+            $applied = min($amount, (float) $fee->balance);
+            $overage = round($amount - $applied, 2);
+
+            // The Payment row always reflects the actual amount received —
+            // accounting accuracy over convenience. If it's more than this
+            // fee owes, only $applied goes toward this fee's balance; the
+            // rest becomes account credit (Student::grantCredit()) rather
+            // than being silently dropped.
             $payment = $fee->payments()->create([
-                'amount'          => $validated['amount'],
+                'amount'          => $amount,
                 'payment_method'  => $validated['payment_method'],
                 'reference_number'=> $validated['reference_number'] ?? null,
                 'notes'           => $validated['notes'] ?? null,
@@ -26,7 +35,17 @@ class PaymentController extends Controller
             ]);
 
             // Reuse the existing state machine so balance/status/last_updated stay consistent.
-            $fee->recordPayment((float) $validated['amount']);
+            if ($applied > 0) {
+                $fee->recordPayment($applied);
+            }
+
+            if ($overage > 0) {
+                $fee->student->grantCredit($overage, [
+                    'source_payment_id' => $payment->payment_id,
+                    'recorded_by'       => auth()->id(),
+                    'notes'             => "Overpayment on fee #{$fee->fee_id} ({$fee->term} {$fee->academic_year}).",
+                ]);
+            }
         });
 
         // A payment changes fee balance/status shown on the index — refresh it.
