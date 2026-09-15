@@ -53,7 +53,16 @@
 
         @include('admin.partials.flash')
 
-        <form method="POST" action="{{ route('admin.classes.update', $class) }}">
+        {{--
+            The "Save Changes" button below is deliberately outside this
+            <form> (linked back to it via form="classEditForm") so the
+            "Delete Class" form in the actions bar can be a sibling instead
+            of nested inside it. Nested <form> elements are invalid HTML —
+            they were previously nested here, and the browser closed this
+            outer form at the inner form's </form> tag, so clicking Save
+            actually submitted to the delete route.
+        --}}
+        <form method="POST" action="{{ route('admin.classes.update', $class) }}" id="classEditForm">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
@@ -198,29 +207,29 @@
                     </section>
                 </div>
             </div>
-
-            <div class="flex items-center justify-end gap-3 mt-8">
-                <form method="POST" action="{{ route('admin.classes.destroy', $class) }}"
-                    onsubmit="return confirm('Delete this class? Students enrolled in it will need to be reassigned.');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="px-4 py-2.5 rounded-lg text-error hover:bg-error-container/30 transition-colors font-label-md text-label-md flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                        <span>Delete Class</span>
-                    </button>
-                </form>
-                <a href="{{ route('admin.classes.show', $class) }}"
-                    class="px-5 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md text-label-md">
-                    Cancel
-                </a>
-                <button type="submit"
-                    class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container transition-all shadow-md">
-                    <span class="material-symbols-outlined text-[20px]">save</span>
-                    <span>Save Changes</span>
-                </button>
-            </div>
         </form>
+
+        <div class="flex items-center justify-end gap-3 mt-8">
+            <form method="POST" action="{{ route('admin.classes.destroy', $class) }}"
+                onsubmit="return confirm('Delete this class? Students enrolled in it will need to be reassigned.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="px-4 py-2.5 rounded-lg text-error hover:bg-error-container/30 transition-colors font-label-md text-label-md flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                    <span>Delete Class</span>
+                </button>
+            </form>
+            <a href="{{ route('admin.classes.show', $class) }}"
+                class="px-5 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md text-label-md">
+                Cancel
+            </a>
+            <button type="submit" form="classEditForm"
+                class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">save</span>
+                <span>Save Changes</span>
+            </button>
+        </div>
     </main>
 
     @push('scripts')
