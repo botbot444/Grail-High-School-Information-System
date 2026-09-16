@@ -17,11 +17,6 @@
         </form>
     </div>
     <div class="flex items-center gap-4">
-        <a href="{{ route('admin.students.create') }}"
-            class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-label-sm text-label-sm hover:opacity-80 transition-opacity active:scale-95">
-            <span class="material-symbols-outlined">add_circle</span>
-            Add New
-        </a>
         <div class="flex items-center gap-2 border-l border-outline-variant pl-4">
             <div class="flex items-center gap-3 cursor-pointer group">
                 <div

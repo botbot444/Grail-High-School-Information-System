@@ -121,7 +121,7 @@
                                 </div>
                                 @foreach ($days as $day)
                                     @php $slot = $slots->get($day.'-'.$period->id); @endphp
-                                    @if ($slot && $slot->subject)
+                                    @if ($slot && $slot->subject && $slot->isMine)
                                         <div class="group relative bg-primary-container text-on-primary p-3.5 rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden cursor-pointer">
                                             <div class="flex items-start justify-between gap-1">
                                                 <div class="flex flex-col min-w-0"><span class="font-label-sm text-label-sm tracking-wider uppercase text-secondary-container font-semibold">{{ $slot->subject->subject_name }}</span><span class="font-title-sm text-title-sm text-on-primary truncate">{{ $class->grade_level_name }} · {{ $class->class_name }}</span></div>
@@ -130,6 +130,18 @@
                                             <div class="flex items-center justify-between text-on-primary-container font-data-sm text-data-sm pt-2">
                                                 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span>{{ $card['roster'] }} Stud.</span>
                                                 <span class="font-label-sm text-label-sm text-on-primary font-semibold">{{ $teacher?->first_name ?? '' }}</span>
+                                            </div>
+                                        </div>
+                                    @elseif ($slot && $slot->subject)
+                                        {{-- Another teacher's lesson — the class isn't free, it just isn't mine. --}}
+                                        <div class="group relative bg-surface-container text-on-surface p-3.5 rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden cursor-pointer border border-outline-variant/60">
+                                            <div class="flex items-start justify-between gap-1">
+                                                <div class="flex flex-col min-w-0"><span class="font-label-sm text-label-sm tracking-wider uppercase text-outline font-semibold">{{ $slot->subject->subject_name }}</span><span class="font-title-sm text-title-sm text-on-surface truncate">{{ $class->grade_level_name }} · {{ $class->class_name }}</span></div>
+                                                <span class="material-symbols-outlined text-[18px] text-outline">{{ $slot->icon ?? 'school' }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-on-surface-variant font-data-sm text-data-sm pt-2">
+                                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span>{{ $card['roster'] }} Stud.</span>
+                                                <span class="font-label-sm text-label-sm text-on-surface-variant font-semibold truncate">{{ $slot->teacher?->first_name ?? 'Other teacher' }}</span>
                                             </div>
                                         </div>
                                     @else

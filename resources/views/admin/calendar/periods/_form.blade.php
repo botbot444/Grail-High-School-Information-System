@@ -1,6 +1,4 @@
 {{-- resources/views/admin/calendar/periods/_form.blade.php --}}
-@include('admin.partials.flash')
-
 <form method="POST" action="{{ $action }}">
     @csrf
     @if ($method !== 'POST')

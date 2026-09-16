@@ -291,7 +291,10 @@ class TeacherController extends Controller
 
         $classes = collect();
         if ($teacher && $term) {
-            $slots = TimetableSlot::with([
+            // The teacher's own load — drives which classes appear on this
+            // page at all, and every "my week" stat below (legend, hours,
+            // day counts, up-next).
+            $myClassSlots = TimetableSlot::with([
                 'schoolClass.gradeLevel.periods',
                 'subject',
                 'period',
@@ -300,7 +303,20 @@ class TeacherController extends Controller
                 ->where('term_id', $term->term_id)
                 ->get();
 
-            $byClass = $slots->groupBy('school_class_id');
+            $byClass = $myClassSlots->groupBy('school_class_id');
+
+            // Every slot in those same classes, any teacher — so the grid
+            // only reads "Free Period" when the class genuinely has nothing
+            // on, not just when it isn't this teacher's own lesson.
+            $classIds = $byClass->keys();
+            $allSlotsByClass = $classIds->isEmpty()
+                ? collect()
+                : TimetableSlot::with(['subject', 'period', 'teacher.user'])
+                    ->whereIn('school_class_id', $classIds)
+                    ->where('term_id', $term->term_id)
+                    ->get()
+                    ->groupBy('school_class_id');
+
             foreach ($byClass as $classId => $classSlots) {
                 $schoolClass = $classSlots->first()->schoolClass;
                 if (! $schoolClass) continue;
@@ -311,8 +327,15 @@ class TeacherController extends Controller
                     $periods = collect($periods);
                 }
 
-                $map = $classSlots->keyBy(fn ($s) => $s->day_of_week.'-'.$s->period_id);
-                $map->each(function ($slot) { $slot->icon = $slot->subject ? $this->subjectIcon($slot->subject->subject_name) : 'school'; });
+                $mySlotsMap = $classSlots->keyBy(fn ($s) => $s->day_of_week.'-'.$s->period_id);
+                $mySlotsMap->each(function ($slot) { $slot->icon = $slot->subject ? $this->subjectIcon($slot->subject->subject_name) : 'school'; });
+
+                $allSlotsMap = $allSlotsByClass->get($classId, collect())->keyBy(fn ($s) => $s->day_of_week.'-'.$s->period_id);
+                $allSlotsMap->each(function ($slot) use ($teacher) {
+                    $slot->icon = $slot->subject ? $this->subjectIcon($slot->subject->subject_name) : 'school';
+                    $slot->isMine = (int) $slot->teacher_id === (int) $teacher->teacher_id;
+                });
+
                 $dayCounts = $days->mapWithKeys(fn ($d) => [
                     $d => $classSlots->where('day_of_week', $d)->count(),
                 ]);
@@ -320,7 +343,8 @@ class TeacherController extends Controller
                 $classes->push([
                     'class'     => $schoolClass,
                     'periods'   => $periods->sortBy('order')->values(),
-                    'slots'     => $map,
+                    'slots'     => $allSlotsMap,
+                    'mySlots'   => $mySlotsMap,
                     'roster'    => $schoolClass->students->count(),
                     'dayCounts' => $dayCounts,
                 ]);
@@ -330,7 +354,7 @@ class TeacherController extends Controller
         // Upcoming slot: the earliest day/period combination that is not in the past.
         $upNext = null;
         foreach ($classes as $card) {
-            foreach ($card['slots'] as $slot) {
+            foreach ($card['mySlots'] as $slot) {
                 if (! $slot->period || $slot->period->is_break) continue;
                 $order = (int) ($slot->period->order ?? 0);
                 $candidate = [
@@ -349,14 +373,14 @@ class TeacherController extends Controller
         $legend = collect();
         $subjectCounts = [];
         foreach ($classes as $card) {
-            foreach ($card['slots'] as $slot) {
+            foreach ($card['mySlots'] as $slot) {
                 if (! $slot->subject || $slot->period?->is_break) continue;
                 $key = $slot->subject->subject_id;
                 $subjectCounts[$key] = ($subjectCounts[$key] ?? 0) + 1;
             }
         }
         foreach ($classes as $card) {
-            foreach ($card['slots'] as $slot) {
+            foreach ($card['mySlots'] as $slot) {
                 if (! $slot->subject || $slot->period?->is_break) continue;
                 $legend->push([
                     'subject' => $slot->subject->subject_name,
@@ -372,7 +396,7 @@ class TeacherController extends Controller
         $freeSlots = 0;
         $totalHours = 0.0;
         foreach ($classes as $card) {
-            foreach ($card['slots'] as $slot) {
+            foreach ($card['mySlots'] as $slot) {
                 $period = $slot->period;
                 if (! $period || $period->is_break) continue;
                 if ($slot->subject) {
