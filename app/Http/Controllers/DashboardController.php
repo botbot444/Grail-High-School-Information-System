@@ -47,7 +47,11 @@ class DashboardController extends Controller
     public function adminDashboard()
     {
         $currentAcademicYear = Cache::remember('current_academic_year', 3600, function () {
-            return AcademicYear::current()->first();
+            // AcademicYear::current() is the static helper that already
+            // resolves to a single model (or null) — it isn't a query
+            // builder, so chaining ->first() onto it crashes the moment no
+            // year is flagged is_current, instead of degrading to null.
+            return AcademicYear::current();
         });
 
         $currentTerm = Cache::remember('current_term', 3600, function () use ($currentAcademicYear) {
