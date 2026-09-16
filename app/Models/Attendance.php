@@ -22,7 +22,12 @@ class Attendance extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        // Explicit format, not just 'date': MySQL's native DATE column
+        // silently truncates a stray time component on write, but SQLite
+        // doesn't — without this, a second save of the same day writes
+        // '... 00:00:00' while the lookup compares against the bare date,
+        // never matches, and collides with the unique index on insert.
+        'date' => 'date:Y-m-d',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────

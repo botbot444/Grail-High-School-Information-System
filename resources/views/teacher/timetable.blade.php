@@ -47,19 +47,17 @@
                     <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-on-surface-variant text-[16px] pointer-events-none">unfold_more</span>
                 </form>
             </div>
-            <div class="inline-flex items-center bg-surface-container-low p-1 rounded-lg">
-                <button class="px-3 py-1.5 rounded bg-surface-container-lowest text-on-surface font-title-sm text-title-sm shadow-sm transition-all flex items-center gap-1.5" id="weekViewBtn"><span class="material-symbols-outlined text-[16px] text-secondary">view_week</span><span>Week View</span></button>
-                <button class="px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all flex items-center gap-1.5" id="dayViewBtn"><span class="material-symbols-outlined text-[16px]">view_day</span><span>Day View</span></button>
-            </div>
             <div class="flex items-center gap-space-xs">
                 <button class="h-10 px-3.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-title-sm text-title-sm rounded-lg flex items-center gap-2 transition-all shadow-sm" onclick="window.print()"><span class="material-symbols-outlined text-[18px]">print</span><span class="hidden sm:inline">Print</span></button>
-                <button class="h-10 px-4 bg-secondary hover:bg-on-secondary-container text-on-primary font-title-sm text-title-sm rounded-lg flex items-center gap-2 transition-all shadow-sm" id="syncCalBtn"><span class="material-symbols-outlined text-[18px]">sync_alt</span><span>Sync Calendar</span></button>
             </div>
         </div>
     </div>
 
     @forelse ($classes as $card)
-        @php $class = $card['class']; $periods = $card['periods']; $slots = $card['slots']; $dayCounts = $card['dayCounts']; @endphp
+        @php
+            $class = $card['class']; $periods = $card['periods']; $slots = $card['slots']; $dayCounts = $card['dayCounts'];
+            $teachingPeriodCount = $periods->where('is_break', false)->count();
+        @endphp
         <div class="w-full bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-md mb-space-xl">
             {{-- Class header for this grid --}}
             <div class="flex items-center gap-2 px-space-sm pb-space-sm">
@@ -76,7 +74,7 @@
                 </div>
                 <div class="flex items-center gap-space-sm">
                     <span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Today: {{ $todayName }}</span>
-                    <span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-data-sm text-data-sm font-bold">{{ $periods->count() }} PERIODS</span>
+                    <span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-data-sm text-data-sm font-bold">{{ $teachingPeriodCount }} PERIODS</span>
                 </div>
             </div>
 
@@ -85,7 +83,7 @@
                 <div class="min-w-[960px] flex flex-col gap-2">
                     {{-- Days header row --}}
                     <div class="grid grid-cols-[130px_repeat(5,1fr)] gap-3 items-center">
-                        <div class="px-3 py-2 bg-surface-container-low rounded-lg flex flex-col justify-center"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Time Slot</span><span class="font-data-sm text-data-sm text-on-surface-variant">{{ $periods->count() }} Periods</span></div>
+                        <div class="px-3 py-2 bg-surface-container-low rounded-lg flex flex-col justify-center"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Time Slot</span><span class="font-data-sm text-data-sm text-on-surface-variant">{{ $teachingPeriodCount }} Periods</span></div>
                         @foreach ($days as $day)
                             @php $date = $weekDates[$day]; $isToday = $day === $todayName; $dayCount = $dayCounts[$day] ?? 0; @endphp
                             <div class="{{ $isToday ? 'p-3 bg-primary-container text-on-primary rounded-lg flex items-center justify-between shadow-md' : 'p-3 bg-surface-container-low rounded-lg flex items-center justify-between' }}">
@@ -248,9 +246,6 @@
             const modal = document.getElementById('timetableModal');
             const closeModalBtn = document.getElementById('closeModalBtn');
             const cancelModalBtn = document.getElementById('cancelModalBtn');
-            const syncBtn = document.getElementById('syncCalBtn');
-            const weekViewBtn = document.getElementById('weekViewBtn');
-            const dayViewBtn = document.getElementById('dayViewBtn');
 
             const classBlocks = document.querySelectorAll('[class*=bg-primary-container]');
             classBlocks.forEach(block => {
@@ -272,28 +267,6 @@
             if (closeModalBtn) closeModalBtn.addEventListener('click', hideModal);
             if (cancelModalBtn) cancelModalBtn.addEventListener('click', hideModal);
             if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
-
-            if (weekViewBtn && dayViewBtn) {
-                weekViewBtn.addEventListener('click', () => {
-                    weekViewBtn.className = 'px-3 py-1.5 rounded bg-surface-container-lowest text-on-surface font-title-sm text-title-sm shadow-sm transition-all flex items-center gap-1.5';
-                    dayViewBtn.className = 'px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all flex items-center gap-1.5';
-                });
-                dayViewBtn.addEventListener('click', () => {
-                    dayViewBtn.className = 'px-3 py-1.5 rounded bg-surface-container-lowest text-on-surface font-title-sm text-title-sm shadow-sm transition-all flex items-center gap-1.5';
-                    weekViewBtn.className = 'px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all flex items-center gap-1.5';
-                });
-            }
-
-            if (syncBtn) {
-                syncBtn.addEventListener('click', () => {
-                    const orig = syncBtn.innerHTML;
-                    syncBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span><span>Syncing...</span>';
-                    setTimeout(() => {
-                        syncBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span><span>Synced!</span>';
-                        setTimeout(() => { syncBtn.innerHTML = orig; }, 1800);
-                    }, 900);
-                });
-            }
         })();
     </script>
 @endsection

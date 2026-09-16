@@ -43,7 +43,7 @@ class RegistrationRequest extends Model
     ];
 
     protected $casts = [
-        'child_date_of_birth' => 'date',
+        'child_date_of_birth' => 'date:Y-m-d',
         'reviewed_at'         => 'datetime',
     ];
 

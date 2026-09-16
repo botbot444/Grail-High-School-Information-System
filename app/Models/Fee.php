@@ -34,7 +34,7 @@ class Fee extends Model
         'amount_due'   => 'decimal:2',
         'amount_paid'  => 'decimal:2',
         'balance'      => 'decimal:2',
-        'due_date'     => 'date',
+        'due_date'     => 'date:Y-m-d',
         'last_updated' => 'datetime',
         'academic_year'=> 'integer',
     ];

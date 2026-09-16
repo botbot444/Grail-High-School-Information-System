@@ -48,9 +48,9 @@ class Student extends Model
     ];
 
     protected $casts = [
-        'date_of_birth'   => 'date',
-        'enrolment_date'  => 'date',
-        'graduated_on'    => 'date',
+        'date_of_birth'   => 'date:Y-m-d',
+        'enrolment_date'  => 'date:Y-m-d',
+        'graduated_on'    => 'date:Y-m-d',
         'credit_balance'  => 'decimal:2',
     ];
 
