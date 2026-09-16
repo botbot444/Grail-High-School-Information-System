@@ -192,6 +192,125 @@
         transform: translateY(-2px);
       }
       /* ===============================
+           WELCOME VIEW CSS
+           =============================== */
+
+      #view-welcome {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #30b82c11, #177aa4);
+        padding: 40px 20px;
+      }
+
+      .welcome-container {
+        width: 960px;
+        max-width: 100%;
+        background: rgb(192, 231, 239);
+        border-radius: 25px;
+        overflow: hidden;
+        display: flex;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .welcome-right-panel {
+        flex: 1.15;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: hsl(204, 33%, 97%);
+        padding: 50px 45px;
+      }
+
+      .welcome-right-panel h2 {
+        font-size: 1.9rem;
+        margin-bottom: 8px;
+        color: #177aa4;
+      }
+
+      .welcome-right-panel > p {
+        color: gray;
+        margin-bottom: 28px;
+      }
+
+      .welcome-options {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .welcome-option {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        border-radius: 14px;
+        background: white;
+        border: 1px solid #cbd5e1;
+        text-decoration: none;
+        transition: 0.25s;
+      }
+
+      .welcome-option:hover {
+        border-color: #61b0e6;
+        box-shadow: 0 6px 18px rgba(97, 176, 230, 0.25);
+        transform: translateY(-2px);
+      }
+
+      .welcome-option-icon {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+      }
+
+      .welcome-option--primary .welcome-option-icon {
+        background: #177aa4;
+        color: white;
+      }
+
+      .welcome-option--secondary .welcome-option-icon {
+        background: #e0f2ea;
+        color: #1c8a5c;
+      }
+
+      .welcome-option-text h3 {
+        font-size: 1.1rem;
+        color: #1e293b;
+        margin-bottom: 3px;
+      }
+
+      .welcome-option-text p {
+        font-size: 0.9rem;
+        color: #64748b;
+        line-height: 1.4;
+      }
+
+      .welcome-option-arrow {
+        margin-left: auto;
+        color: #94a3b8;
+        font-size: 1.3rem;
+      }
+
+      @media (max-width: 720px) {
+        .welcome-container {
+          flex-direction: column;
+        }
+        .login-left-panel {
+          padding: 35px 30px;
+        }
+        .login-left-panel h1 {
+          font-size: 2.2rem;
+        }
+        .welcome-right-panel {
+          padding: 35px 30px;
+        }
+      }
+      /* ===============================
            ADMIN VIEW CSS
            =============================== */
 
