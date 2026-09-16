@@ -1,11 +1,11 @@
 # Tests
 
-> Last updated: 2026-09-13
+> Last updated: 2026-09-16
 > Update this file when tests are added or modified.
 
 ---
 
-All located in `tests/`.
+All located in `tests/`. **23** feature test files (17 top-level + 6 under `Feature/Auth/`) and **2** unit tests.
 
 ---
 
@@ -25,6 +25,11 @@ All located in `tests/`.
 | `Phase4ReportTest.php`              | Fee-collection report / student financials  |
 | `ProfileTest.php`                   | User profile operations                     |
 | `TeacherMarksEntryTest.php`         | Teacher marks entry workflow                |
+| `TeacherPerformanceTest.php`        | Teacher performance page + grade finalization |
+| `TeacherRosterTest.php`             | Teacher class roster page                   |
+| `TeacherSettingsTest.php`           | Teacher settings page                       |
+| `TimetableRoleScopeTest.php`        | Timetable visibility is scoped per role     |
+| `TimetableWorkflowTest.php`         | Admin timetable builder / copy / clear      |
 | `Auth/AuthenticationTest.php`       | Authentication flow (login/logout)          |
 | `Auth/EmailVerificationTest.php`    | Email verification flow                     |
 | `Auth/PasswordConfirmationTest.php` | Password confirmation for sensitive actions |
@@ -36,9 +41,10 @@ All located in `tests/`.
 
 ## Unit Tests (`tests/Unit/`)
 
-| File              | Purpose           |
-| ----------------- | ----------------- |
-| `ExampleTest.php` | Unit test example |
+| File                                 | Purpose                                              |
+| ------------------------------------ | ---------------------------------------------------- |
+| `ExampleTest.php`                    | Unit test example                                    |
+| `TimetablePeriodValidationTest.php`  | Period overlap / time-order validation rules         |
 
 ---
 

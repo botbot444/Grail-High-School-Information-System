@@ -40,7 +40,10 @@ php artisan serve    # in another
 
 | Role    | URL prefix | Access                                                                               |
 | ------- | ---------- | ------------------------------------------------------------------------------------ |
-| Admin   | `/admin`   | Dashboard, settings, examinations, calendar, fees/payments, reports, manage teachers/parents/classes/subjects/students |
-| Teacher | `/teacher` | Dashboard, my classes, mark entry and attendance; other sidebar destinations are placeholders until Stitch screens are ported |
-| Parent  | `/parent`  | Dashboard, children, attendance, performance, reports, assignments, fees, settings (scoped to linked children) |
-| Student | `/student` | Dashboard with personal results and attendance                                       |
+| Admin   | `/admin`   | Dashboard, settings, examinations, calendar, timetable, announcements, promotions, report cards, registration requests, user accounts, analytics reports, fees/payments + proof review, manage teachers/parents/classes/subjects/students |
+| Teacher | `/teacher` | Dashboard, my classes/roster/student profiles, mark entry, attendance, timetable, performance + grade finalization, assignments (authoring + marking), report cards (comments + finalize), announcements, settings |
+| Parent  | `/parent`  | Dashboard, children, attendance, performance, reports, timetable, assignments, report cards, announcements, fees (+ proof-of-payment upload), settings (all scoped to linked children) |
+| Student | `/student` | Dashboard, results, attendance, timetable, assignments (view + submit), report cards, announcements, settings |
+
+> **Registration is reviewed, not instant.** Public sign-up (`/register`) creates a pending registration request;
+> an admin approves it before any parent or student account exists.

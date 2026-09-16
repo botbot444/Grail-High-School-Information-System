@@ -1,6 +1,6 @@
 # Architecture
 
-> Last updated: 2026-09-13
+> Last updated: 2026-09-16
 > Update this file when the project structure, tech stack, or file counts change.
 
 ---
@@ -18,46 +18,55 @@ grail/
 │   │   │   ├── DashboardController.php   (role dispatch + admin dashboard)
 │   │   │   ├── ProfileController.php
 │   │   │   ├── TeacherController.php     (teacher portal)
-│   │   │   ├── Admin/        (students, teachers, parents, classes, subjects,
-│   │   │   │                  fees, payments, categories, audit logs, reports,
-│   │   │   │                  academic years, terms, holidays, grade levels)
-│   │   │   ├── Auth/         (Breeze auth controllers)
-│   │   │   ├── Parent/       (ParentController — full parent portal)
-│   │   │   └── Student/      (StudentController)
-│   │   ├── Middleware/       (CheckRole.php)
-│   │   └── Requests/         (Profile, Auth, StoreFee, StorePayment)
-│   ├── Models/               (19 Eloquent models — see models.md)
-│   ├── Notifications/        (fee reminder / overdue / payment confirmation)
+│   │   │   ├── Concerns/     (RendersReportCards — shared preview/PDF trait)
+│   │   │   ├── Admin/        (see controllers.md — 24 controllers: students,
+│   │   │   │                  teachers, parents, classes, subjects, fees,
+│   │   │   │                  payments + submissions, payment settings,
+│   │   │   │                  categories, audit logs, reports, analytics,
+│   │   │   │                  academic years, terms, holidays, grade levels,
+│   │   │   │                  periods, timetable, announcements, promotions,
+│   │   │   │                  report cards, registration requests, user accounts)
+│   │   │   ├── Auth/         (9 controllers incl. ParentRegistrationController)
+│   │   │   ├── Parent/       (ParentController, PaymentSubmissionController)
+│   │   │   ├── Student/      (StudentController, AssignmentController)
+│   │   │   └── Teacher/      (AssignmentController, ReportCardController)
+│   │   ├── Middleware/       (CheckRole, EnsureAccountIsActive, EnsurePasswordIsChanged)
+│   │   └── Requests/         (Login, StoreFee, StorePayment, StorePaymentSubmission,
+│   │                          StoreParentRegistration)
+│   ├── Models/               (34 Eloquent models — see models.md)
+│   ├── Notifications/        (fee reminder / overdue / payment confirmation /
+│   │                          payment-submission reviewed / registration reviewed)
+│   ├── Observers/            (ReportCacheObserver)
 │   ├── Policies/             (PaymentPolicy, ReportPolicy)
 │   ├── Providers/
-│   ├── Traits/               (Auditable)
+│   ├── Services/             (Analytics, Announcement, Promotion, ReportCard)
+│   ├── Traits/               (Auditable, GeneratesTemporaryPassword)
 │   └── View/
 ├── bootstrap/
 ├── config/
 ├── database/
-│   ├── factories/            (10 factories)
-│   ├── migrations/           (33 migration files)
-│   └── seeders/              (15 domain seeders + DatabaseSeeder orchestrator)
+│   ├── factories/            (12 factories)
+│   ├── migrations/           (56 migration files)
+│   └── seeders/              (18 domain seeders + DatabaseSeeder orchestrator)
 ├── Frontend/                 (Static HTML/CSS/JS prototypes — not served)
 │   ├── AdminViews/
 │   └── ParentViews/
 ├── stitch_grail_sis_teacher_portal/  (Stitch HTML + screenshots for teacher UI)
 ├── public/
 ├── resources/
-│   └── views/                (Blade templates — see views.md)
-│       ├── admin/
+│   └── views/                (158 Blade templates — see views.md)
+│       ├── admin/            (19 subdirectories — see views.md)
 │       ├── auth/
 │       ├── components/
 │       ├── errors/
 │       ├── layouts/          (app, guest, navigation, parent, teacher)
-│       ├── parent/
-│       ├── profile/
-│       ├── student/
-│       └── teacher/
-│       ├── dashboard.blade.php
-│       ├── login.blade.php
-│       ├── mark_entry.blade.php
-│       └── welcome.blade.php
+│       ├── parent/           (+ partials/)
+│       ├── profile/          (+ partials/)
+│       ├── reports/          (report-card.blade.php — shared by all portals)
+│       ├── shared/           (timetable-grid.blade.php)
+│       ├── student/          (+ assignments/, partials/)
+│       ├── students/         (profile-content.blade.php)
+│       └── teacher/          (+ assignments/, report-cards/)
 ├── routes/
 │   ├── auth.php
 │   ├── console.php
@@ -90,18 +99,41 @@ Portal chrome (admin, parent, teacher) uses Material Symbols plus Inter / JetBra
 
 ---
 
+## 2.1 Application Layers
+
+Beyond the standard Laravel layers, the app uses a small service/observer layer for logic shared across portals.
+
+| Class                             | Layer        | Responsibility                                                                                             |
+| --------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
+| `AnalyticsService`                | `app/Services` | Attendance/fee-aging/school-wide report figures, with version-keyed caching and `flush()` invalidation.  |
+| `AnnouncementService`             | `app/Services` | Audience resolution, reach summaries (for the admin preview), read tracking and unread counts.             |
+| `PromotionService`                | `app/Services` | Year-end promotion runs, blockers, default outcomes, per-student records and rollback.                     |
+| `ReportCardService`               | `app/Services` | The single build() of a report card (subject rows, averages, ranks), finalize/unfinalize, lock checks.     |
+| `ReportCacheObserver`             | `app/Observers` | Flushes cached reports whenever a model that feeds them is saved/deleted/restored.                        |
+| `Auditable`                       | `app/Traits`   | Writes create/update/delete events to `audit_logs`, honouring a per-model `$auditExclude` list.            |
+| `GeneratesTemporaryPassword`      | `app/Traits`   | Readable one-time passwords (no `I`, `O` or `L`) for admin-created or newly admitted accounts.             |
+| `CalendarHelper`                  | `app/Helpers`  | Shared calendar/term helpers used by calendar and timetable screens.                                       |
+
+`AnalyticsService` deliberately delegates term averages to `ReportCardService`, so a student's average in a
+school-wide report always matches their printed report card.
+
+---
+
 ## 3. File Counts
 
-- **19** Eloquent models
-- **33** Migrations (3 Laravel defaults + domain create/alter/backfill files)
-- **16** Seeders (15 domain seeders + 1 `DatabaseSeeder` orchestrator)
-- **10** Factories
-- **14** Admin controllers (students/settings plus dedicated resource controllers for staff, fees, calendar, reports)
-- **9** Breeze auth controllers
-- **1** Custom middleware (`CheckRole`)
-- Admin, parent, teacher, student, auth, profile, and layout Blade views (see views.md)
+- **34** Eloquent models
+- **56** Migrations (3 Laravel defaults + domain create/alter/backfill files)
+- **19** Seeders (18 domain seeders + 1 `DatabaseSeeder` orchestrator)
+- **12** Factories
+- **24** Admin controllers (students/settings plus dedicated controllers for staff, fees, payments + submissions, payment settings, announcements, promotions, report cards, registration requests, user accounts, analytics, calendar, timetable, reports)
+- **9** Auth controllers (8 Breeze + `ParentRegistrationController`)
+- **3** Custom middleware (`CheckRole`, `EnsureAccountIsActive`, `EnsurePasswordIsChanged`)
+- **4** Services (`AnalyticsService`, `AnnouncementService`, `PromotionService`, `ReportCardService`)
+- **1** Observer (`ReportCacheObserver`)
+- **5** Requests, **5** Notifications, **2** Traits, **2** Policies
+- **158** Blade views across admin, auth, components, errors, layouts, parent, profile, reports, shared, student, students, teacher (see views.md)
 - Static admin/parent HTML under `Frontend/` plus Stitch teacher screens under `stitch_grail_sis_teacher_portal/`
-- **18** Feature test files (12 top-level + 6 in `Feature/Auth/`) + 1 Unit test + 1 base TestCase
+- **23** Feature test files (17 top-level + 6 in `Feature/Auth/`) + **2** Unit tests + 1 base TestCase
 
 ---
 

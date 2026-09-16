@@ -1,7 +1,7 @@
 # Grail - High School Information System
 
 > **Project Documentation Hub**
-> Last updated: 2026-09-13
+> Last updated: 2026-09-16
 > This is the entry point for all project documentation. Each file below covers a specific concern so you can read and update only what you need.
 
 ---
@@ -10,20 +10,40 @@
 
 | File                                                                   | Purpose                                                                                         | Update When                              |
 | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| [architecture.md](architecture.md)                                     | Directory structure, tech stack, file counts                                                    | Project structure or dependencies change |
+| [architecture.md](architecture.md)                                     | Directory structure, tech stack, file counts, services/observers/traits                          | Project structure or dependencies change |
 | [database/schema.md](database/schema.md)                               | Database tables: columns, types, FKs, notes                                                     | Migrations are added/modified            |
 | [database/seeders-and-factories.md](database/seeders-and-factories.md) | Seeders and factories                                                                           | Seeders or factories change              |
 | [models.md](models.md)                                                 | Eloquent models (PKs, fillable, casts, relationships, scopes, accessors, business logic)        | Models are added/modified                |
-| [controllers.md](controllers.md)                                       | All controllers (top-level, Admin, Parent, Student, Auth)                                       | Controllers are added/modified           |
+| [controllers.md](controllers.md)                                       | All controllers (top-level, Admin, Parent, Student, Teacher, Auth)                              | Controllers are added/modified           |
 | [routes.md](routes.md)                                                 | Full route table (methods, URIs, names, middleware)                                             | Routes are added/modified                |
-| [middleware-and-error-handling.md](middleware-and-error-handling.md)   | CheckRole middleware + custom 419 handling                                                      | Middleware or error handling changes     |
+| [middleware-and-error-handling.md](middleware-and-error-handling.md)   | CheckRole + account-state middleware + custom 419 handling                                      | Middleware or error handling changes     |
 | [views.md](views.md)                                                   | Blade templates, components, layouts, role dashboards                                           | Views are added/modified                 |
 | [frontend-prototypes.md](frontend-prototypes.md)                       | Static HTML/CSS/JS prototypes (AdminViews, ParentViews, teacher Stitch screens)                 | Frontend prototypes change               |
-| [business-logic.md](business-logic.md)                                 | Fee state machine, grade letter calc, role auth, marks entry, portals                           | Business logic changes                   |
+| [business-logic.md](business-logic.md)                                 | Fee state machine + credits, grade letter calc, role auth, marks entry, report cards, portals   | Business logic changes                   |
 | [setup-and-conventions.md](setup-and-conventions.md)                   | Environment/setup steps, known conventions/gotchas                                              | Setup process or conventions change      |
 | [tests.md](tests.md)                                                   | Test suite overview                                                                             | Tests are added/modified                 |
 
-The living implementation checklist is [`implementation_plan.md`](../implementation_plan.md) at the repo root (not part of this hub’s numbered files).
+The living implementation checklist is [`implementation_plan (2).md`](<../implementation_plan (2).md>) at the repo root (not part of this hub’s numbered files). A collection of supporting guides (manual testing, UAT plan, progress summaries) lives in [`Claude outputs/`](<../Claude outputs/>).
+
+> The root checklist file is literally named `implementation_plan (2).md` (with a space and parentheses). If it is ever
+> renamed to `implementation_plan.md`, update this link.
+
+---
+
+## Feature Phases
+
+The codebase is organised around numbered delivery phases; most doc files reference them.
+
+| Phase | Feature area                                                                          |
+| ----- | ------------------------------------------------------------------------------------- |
+| 1     | Fee ledger, payments, audit logging                                                   |
+| 3     | School calendar (academic years, terms, holidays, grade levels, periods)              |
+| 4     | Fee-collection reporting, student financials and statements                           |
+| 5     | Announcements (audience targeting, reach preview, read tracking)                      |
+| 6     | Year-end student promotion and rollback                                               |
+| 9     | Analytics: attendance, fee aging, school-wide performance                             |
+| 11    | Report cards: subject/overall comments, finalization, ranking, PDF                    |
+| 12    | Account management: activation, roles, temporary passwords, parent/child registration |
 
 ---
 

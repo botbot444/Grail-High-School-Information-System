@@ -1,6 +1,6 @@
 # Frontend Prototypes
 
-> Last updated: 2026-09-13
+> Last updated: 2026-09-16
 > Update this file when frontend prototypes change.
 
 ---
@@ -41,12 +41,15 @@ HTML `code.html` (and `screen.png` where present) used as design sources:
 | `teacher_dashboard/` | Wired as `teacher.dashboard` |
 | `my_classes/` | Wired as `teacher.classes` |
 | `marks_grades_entry/` | Existing `teacher.marks` (not yet a full Stitch restyle) |
-| `teacher_timetable/` | Placeholder route `teacher.timetable` |
-| `record_attendance/` | Placeholder `teacher.attendance` (marks form still records P/A/L) |
-| `class_performance_summary/` | Placeholder `teacher.performance` |
-| `class_roster_teacher_portal/` | Not a dedicated route yet |
-| `announcements_messages/` | Placeholder `teacher.announcements` |
+| `teacher_timetable/` | Wired as `teacher.timetable` (read-only grids per class) |
+| `record_attendance/` | Wired as `teacher.attendance` (`GET`/`POST teacher.attendance`) |
+| `class_performance_summary/` | Wired as `teacher.performance` (includes grade finalization) |
+| `class_roster_teacher_portal/` | Wired as `teacher.classes.roster` and `teacher.students.show` |
+| `announcements_messages/` | Wired as `teacher.announcements` (read-only + read tracking) |
 | `academic_command/DESIGN.md` | Colour / type tokens for the teacher portal |
+
+`teacher.settings` is also now a real page (previously a placeholder). `teacher.placeholder` remains available as a
+fallback for any destination that has not yet been ported.
 
 ---
 

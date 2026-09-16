@@ -1,13 +1,17 @@
 # Database Schema
 
-> Last updated: 2026-09-13
+> Last updated: 2026-09-16
 > Update this file when migrations are added or modified.
 
 ---
 
 ## Overview
 
-33 migration files: Laravel `users` / `cache` / `jobs` plus domain tables and later alter/backfill migrations (fees, calendar, teacher_subjects, etc.).
+**56** migration files: Laravel `users` / `cache` / `jobs` plus domain tables and later alter/backfill migrations
+(fees, calendar, teacher_subjects, periods/timetables, assignments, report cards, school settings, announcements,
+student promotions, account flags, fee credits, payment submissions, registration requests, notifications).
+
+Section **4.1–4.22** preceded the 2026-09-13+ work; **4.23–4.35** cover the newer tables.
 
 ---
 
@@ -22,6 +26,7 @@
 | password          | string       | hashed                                       |
 | role              | string       | legacy: 'admin'/'teacher'/'parent'/'student' |
 | is_active         | boolean      | default `true` — account enabled flag        |
+| must_change_password | boolean   | default `false` — locks the account to its settings page |
 | role_id           | unsigned int | FK → `roles.id` (added later)                |
 | remember_token    | string       |                                              |
 | timestamps        |              |                                              |
@@ -102,10 +107,13 @@
 | date_of_birth  | date      |                                           |
 | gender         | enum      | 'Male'/'Female'                           |
 | student_number | string UQ |                                           |
-| class_id       | bigint    | FK → `school_classes.class_id` (nullable) |
+| class_id       | bigint    | FK → `school_classes.class_id` (nullable — unplaced until assigned) |
 | guardian_name  | string    | nullable                                  |
 | guardian_phone | string    | nullable                                  |
 | enrolment_date | date      | NOT NULL                                  |
+| status         | string    | `Enrolled` (default) / `Graduated` / `Transferred` / `Withdrawn` |
+| graduated_on   | date      | nullable — set on graduation              |
+| credit_balance | decimal   | default 0 — unapplied overpayment carried forward |
 | deleted_at     | timestamp | soft delete                               |
 | timestamps     |           |                                           |
 
@@ -331,5 +339,203 @@ Independent teacher-to-subject assignments (not the same as `class_subjects`).
 | term_id         | bigint    | FK -> `terms.term_id`, restricted           |
 
 Unique key: `school_class_id + day_of_week + period_id + term_id`.
+
+---
+
+## 4.23 `assignments`
+
+| Column              | Type      | Notes                                          |
+| ------------------- | --------- | ---------------------------------------------- |
+| assignment_id       | bigint PK |                                                |
+| class_subject_id    | bigint    | FK → `class_subjects.class_subject_id`         |
+| term_id             | bigint    | nullable FK → `terms.term_id`                  |
+| title               | string    |                                                |
+| instructions        | text      | nullable                                       |
+| status              | string    | `Draft` / `Published`                          |
+| published_at        | timestamp | nullable                                       |
+| due_at              | timestamp |                                                |
+| max_score           | decimal   |                                                |
+| allows_file_upload  | boolean   |                                                |
+| created_by          | bigint    | FK → `teachers.teacher_id`                     |
+| deleted_at          | timestamp | soft delete                                    |
+
+## 4.24 `assignment_submissions`
+
+| Column            | Type      | Notes                                     |
+| ----------------- | --------- | ----------------------------------------- |
+| submission_id     | bigint PK |                                           |
+| assignment_id     | bigint    | FK → `assignments.assignment_id`          |
+| student_id        | bigint    | FK → `students.student_id`                |
+| notes             | text      | nullable                                  |
+| file_path         | string    | nullable                                  |
+| original_filename | string    | nullable                                  |
+| submitted_at      | timestamp | nullable                                  |
+| score             | decimal   | nullable                                  |
+| feedback          | text      | nullable                                  |
+| graded_by         | bigint    | nullable FK → `teachers.teacher_id`       |
+| graded_at         | timestamp | nullable                                  |
+
+Unique key: `assignment_id + student_id` (one submission per student per assignment).
+
+## 4.25 `report_cards`
+
+| Column                 | Type      | Notes                                    |
+| ---------------------- | --------- | ---------------------------------------- |
+| report_card_id         | bigint PK |                                          |
+| student_id             | bigint    | FK → `students.student_id`               |
+| term_id                | bigint    | FK → `terms.term_id`                     |
+| class_id               | bigint    | FK → `school_classes.class_id`           |
+| term_average           | decimal   | nullable                                 |
+| class_rank             | integer   | nullable — competition ranking           |
+| class_size             | integer   | nullable                                 |
+| class_teacher_comment  | text      | nullable — the homeroom teacher's remark |
+| finalized_at           | timestamp | nullable — null means still a draft      |
+| finalized_by           | bigint    | nullable FK → `teachers.teacher_id`      |
+| audit_reason           | string    | nullable — added by `2026_09_13_000040`  |
+
+## 4.26 `report_card_comments`
+
+| Column           | Type      | Notes                                        |
+| ---------------- | --------- | -------------------------------------------- |
+| comment_id       | bigint PK |                                              |
+| student_id       | bigint    | FK → `students.student_id`                   |
+| term_id          | bigint    | FK → `terms.term_id`                         |
+| class_subject_id | bigint    | FK → `class_subjects.class_subject_id`       |
+| comment          | text      | per-subject remark                           |
+| teacher_id       | bigint    | FK → `teachers.teacher_id`                   |
+
+## 4.27 `school_settings`
+
+| Column | Type      | Notes                              |
+| ------ | --------- | ---------------------------------- |
+| id     | bigint PK |                                    |
+| key    | string UQ | e.g. `payment_bank_account_number` |
+| value  | text      | nullable                           |
+
+Reads are cached as a single `school_settings.all` map.
+
+## 4.28 `announcements`
+
+| Column          | Type      | Notes                           |
+| --------------- | --------- | ------------------------------- |
+| announcement_id | bigint PK |                                 |
+| title           | string    |                                 |
+| body            | text      |                                 |
+| audience        | string    | `all` / `class` / `grade_level` |
+| published_at    | timestamp | nullable — null is a Draft      |
+| expires_at      | timestamp | nullable                        |
+| created_by      | bigint    | FK → `users.id`                 |
+| deleted_at      | timestamp | soft delete                     |
+
+## 4.29 `announcement_targets`
+
+| Column          | Type      | Notes                                |
+| --------------- | --------- | ------------------------------------ |
+| id              | bigint PK |                                      |
+| announcement_id | bigint    | FK → `announcements.announcement_id` |
+| targetable_type | string    | `SchoolClass` or `GradeLevel`        |
+| targetable_id   | bigint    |                                      |
+
+## 4.30 `announcement_reads`
+
+| Column          | Type      | Notes                                |
+| --------------- | --------- | ------------------------------------ |
+| id              | bigint PK |                                      |
+| announcement_id | bigint    | FK → `announcements.announcement_id` |
+| user_id         | bigint    | FK → `users.id`                      |
+| read_at         | timestamp |                                      |
+
+No row means unread. Unique on `announcement_id + user_id`.
+
+## 4.31 `promotion_mappings`
+
+| Column        | Type      | Notes                                   |
+| ------------- | --------- | --------------------------------------- |
+| id            | bigint PK |                                         |
+| from_class_id | bigint    | FK → `school_classes.class_id`          |
+| to_class_id   | bigint    | nullable FK → `school_classes.class_id` |
+| graduates     | boolean   | true = this class leaves the school     |
+
+## 4.32 `student_promotions`
+
+| Column           | Type      | Notes                                   |
+| ---------------- | --------- | --------------------------------------- |
+| id               | bigint PK |                                         |
+| batch_ref        | string    | groups one promotion run                |
+| student_id       | bigint    | FK → `students.student_id`              |
+| from_class_id    | bigint    | nullable                                |
+| to_class_id      | bigint    | nullable                                |
+| outcome          | string    | `promoted` / `retained` / `graduated`   |
+| previous_status  | string    | student status before the run           |
+| academic_year_id | bigint    | FK → `academic_years.year_id`           |
+| promoted_by      | bigint    | FK → `users.id`                         |
+| rolled_back_at   | timestamp | nullable — set when a batch is reversed |
+
+## 4.33 `payment_submissions`
+
+| Column                  | Type      | Notes                                     |
+| ----------------------- | --------- | ----------------------------------------- |
+| submission_id           | bigint PK |                                           |
+| fee_id                  | bigint    | FK → `fees.fee_id`                        |
+| amount                  | decimal   | claimed amount                            |
+| payment_method          | string    | cash / bank_transfer / cheque / mobile_money / card |
+| reference_number        | string    | nullable                                  |
+| payment_date            | timestamp |                                           |
+| proof_path              | string    | stored on the `public` disk               |
+| proof_original_filename | string    | nullable                                  |
+| notes                   | text      | nullable                                  |
+| status                  | string    | `pending` / `approved` / `rejected`       |
+| submitted_by            | bigint    | FK → `users.id`                           |
+| reviewed_by             | bigint    | nullable FK → `users.id`                  |
+| reviewed_at             | timestamp | nullable                                  |
+| review_notes            | text      | nullable                                  |
+| payment_id              | bigint    | nullable FK → `payments.payment_id` (set on approval) |
+
+## 4.34 `registration_requests`
+
+| Column                  | Type      | Notes                                 |
+| ----------------------- | --------- | ------------------------------------- |
+| registration_request_id | bigint PK |                                       |
+| parent_first_name       | string    |                                       |
+| parent_last_name        | string    |                                       |
+| parent_email            | string    |                                       |
+| parent_password         | string    | hashed at submission, never shown     |
+| parent_phone            | string    | nullable                              |
+| parent_address          | string    | nullable                              |
+| parent_occupation       | string    | nullable                              |
+| parent_national_id      | string    | nullable, unique against parents      |
+| child_first_name        | string    |                                       |
+| child_last_name         | string    |                                       |
+| child_date_of_birth     | date      |                                       |
+| child_gender            | string    |                                       |
+| child_email             | string    |                                       |
+| status                  | string    | `pending` / `approved` / `rejected`   |
+| reviewed_by             | bigint    | nullable FK → `users.id`              |
+| reviewed_at             | timestamp | nullable                              |
+| review_notes            | text      | nullable                              |
+| created_parent_user_id  | bigint    | nullable FK → `users.id` (on approval)|
+| created_student_id      | bigint    | nullable FK → `students.student_id` (on approval) |
+
+## 4.35 `fee_credits` (append-only overpayment ledger)
+
+| Column            | Type      | Notes                                          |
+| ----------------- | --------- | ---------------------------------------------- |
+| credit_id         | bigint PK |                                                |
+| student_id        | bigint    | FK → `students.student_id`                     |
+| amount            | decimal   | positive for `overpayment`, negative otherwise |
+| type              | string    | `overpayment` / `applied` / `refunded`         |
+| source_payment_id | bigint    | nullable FK → `payments.payment_id`            |
+| applied_fee_id    | bigint    | nullable FK → `fees.fee_id`                    |
+| notes             | text      | nullable                                       |
+| recorded_by       | bigint    | nullable FK → `users.id`                       |
+
+Rows are never updated — each ledger event is its own row.
+
+## 4.36 `notifications` (Laravel)
+
+Standard Laravel database-notification table (`2026_09_15_140648`), used by the `database` channel of the
+payment-submission / registration-review notifications.
+
+---
 
 _End of database schema documentation._

@@ -1,6 +1,6 @@
 # Setup and Conventions
 
-> Last updated: 2026-09-13
+> Last updated: 2026-09-16
 > Update this file when the setup process or project conventions change.
 
 ---
@@ -41,6 +41,23 @@ php artisan serve    # in another
 - **Admin dashboard route** is `DashboardController@adminDashboard` (today’s `Payment` totals, cached academic year/term). `AdminController::dashboard()` still exists but is not the named `admin.dashboard` route.
 - **Parent/teacher layouts** live in `resources/views/layouts/{parent,teacher}.blade.php` and include role-specific sidebar/header partials.
 - **Vite** binds the dev server to `127.0.0.1` (`vite.config.js`) so HMR works with XAMPP/local hosts.
+- **Shared logic lives in services, not controllers** — report figures, announcement audiences, promotion runs and
+  report-card assembly are all in `app/Services/` so the four portals cannot disagree.
+- **Reports use version-keyed caching** — never tag-based. Call `AnalyticsService::flush()` after anything that changes
+  the numbers; `ReportCacheObserver` already does this for the models the reports read.
+- **Account state is enforced by middleware, not just at login** — `EnsureAccountIsActive` (immediate deactivation)
+  and `EnsurePasswordIsChanged` (must-change-password lock) are appended to the `web` group in `bootstrap/app.php`.
+- **`users.is_active` has a PHP-side default** (`protected $attributes = ['is_active' => true]`) because
+  `Model::create()` does not re-read DB defaults; without it a freshly created user would read as deactivated.
+- **`User` deliberately has no `password => hashed` cast** — every write site calls `Hash::make()` itself, so the cast
+  would double-hash. Do not re-add it.
+- **Proof-of-payment files** use `PaymentSubmission::proof_url` (which calls `asset()`), not
+  `Storage::disk('public')->url()`. `asset()` falls back to the current request's host/port, so links keep working when
+  `APP_URL` does not match the host actually being browsed.
+- **`students.class_id` is nullable by design** — a newly admitted student stays unplaced until an admin assigns a class.
+- **`/profile` is not routed** — `ProfileController` and `profile/*` views still exist, but settings now live on each
+  portal's `settings` action. Do not document `profile.*` route names.
+- **Announcement authoring is admin-only** — there is no teacher authoring route (teachers get a read-only feed).
 
 Status: Resolved (2026-08-05) — seeders were re-run against the XAMPP MySQL dev DB and fee statuses use the state-machine values. If you switch back to SQLite for local experiments, confirm enum/status strings still match (`Pending` / `Partially Paid` / `Cleared` / `Overdue`).
 

@@ -1,13 +1,13 @@
 # Database Seeders and Factories
 
-> Last updated: 2026-09-13
+> Last updated: 2026-09-16
 > Update this file when seeders or factories change.
 
 ---
 
 ## Seeders
 
-All located in `database/seeders/`. `DatabaseSeeder` call order:
+All located in `database/seeders/` — **19** files (18 domain seeders + the orchestrator). `DatabaseSeeder` call order:
 
 | Seeder                   | Purpose                                               |
 | ------------------------ | ----------------------------------------------------- |
@@ -27,12 +27,15 @@ All located in `database/seeders/`. `DatabaseSeeder` call order:
 | `AuditLogSeeder.php`     | Sample audit log rows                                 |
 | `GradeLevelSeeder.php`   | Canonical grade levels                                |
 | `AcademicYearSeeder.php` | Academic year (and related calendar seed data)        |
+| `TimetableSeeder.php`    | Periods + timetable slots for the sample classes       |
+| `AssignmentSeeder.php`   | Sample assignments (and submissions)                  |
+| `AnnouncementSeeder.php` | Sample announcements, targets and read rows            |
 
 ---
 
 ## Factories
 
-All located in `database/factories/`.
+All located in `database/factories/` — **12** factories.
 
 | Factory                    | Purpose                        |
 | -------------------------- | ------------------------------ |
@@ -41,10 +44,12 @@ All located in `database/factories/`.
 | `FeeFactory.php`           | Fee records for testing        |
 | `GradeFactory.php`         | Grade records for testing      |
 | `ParentProfileFactory.php` | Parent profiles for testing    |
+| `PeriodFactory.php`        | Timetable periods for testing  |
 | `SchoolClassFactory.php`   | School classes for testing     |
 | `StudentFactory.php`       | Student records for testing    |
 | `SubjectFactory.php`       | Subjects for testing           |
 | `TeacherFactory.php`       | Teacher records for testing    |
+| `TimetableSlotFactory.php` | Timetable slots for testing    |
 | `UserFactory.php`          | Users for testing              |
 
 ---
