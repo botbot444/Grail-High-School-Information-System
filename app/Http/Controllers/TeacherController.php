@@ -118,6 +118,8 @@ class TeacherController extends Controller
             ? ClassSubject::with(['schoolClass.gradeLevel', 'subject', 'teacher'])
                 ->where('teacher_id', $teacher->teacher_id)
                 ->get()
+                ->filter(fn ($a) => $a->schoolClass !== null)
+                ->values()
             : collect();
         $selected = $request->filled('assignment_id')
             ? $assignments->firstWhere('class_subject_id', (int) $request->assignment_id)
@@ -219,6 +221,7 @@ class TeacherController extends Controller
     {
         $teacher = auth()->user()->teacher;
         $assignment = ClassSubject::with('schoolClass')->where('class_subject_id', $request->integer('assignment_id'))->where('teacher_id', $teacher?->teacher_id)->firstOrFail();
+        abort_unless($assignment->schoolClass, 404);
         abort_unless((int) $assignment->schoolClass->teacher_id === (int) $teacher->teacher_id, 403);
         $term = Term::findOrFail($request->integer('term_id'));
 
@@ -240,6 +243,7 @@ class TeacherController extends Controller
             'reason' => ['required', 'string', 'min:5', 'max:1000'],
         ]);
         $assignment = ClassSubject::with('schoolClass')->where('class_subject_id', $validated['assignment_id'])->where('teacher_id', $teacher?->teacher_id)->firstOrFail();
+        abort_unless($assignment->schoolClass, 404);
 
         AuditLog::create([
             'user_id' => auth()->id(), 'auditable_type' => SchoolClass::class,
@@ -755,10 +759,16 @@ class TeacherController extends Controller
             ])->with('notification', 'Teacher profile not found.');
         }
 
-        // Get teacher's assignments with their classes and subjects
+        // Get teacher's assignments with their classes and subjects. A
+        // class_subjects row can outlive the class it points to (soft-deleted
+        // without checking for teacher assignments first) — filter those out
+        // here so a dangling reference never reaches the view or the
+        // ->schoolClass->class_id lookup below.
         $assignments = ClassSubject::with(['schoolClass', 'subject', 'teacher'])
             ->where('teacher_id', $teacher->teacher_id)
-            ->get();
+            ->get()
+            ->filter(fn ($a) => $a->schoolClass !== null)
+            ->values();
 
         // Term selector — same calendar (Phase 3) convention as Class Performance
         // and the roster/timetable pages, so "Enter Marks" and "Class Performance"
@@ -845,7 +855,9 @@ class TeacherController extends Controller
             $assignments = ClassSubject::with(['schoolClass', 'subject'])
                 ->where('teacher_id', $teacher->teacher_id)
                 ->orderBy('class_subject_id')
-                ->get();
+                ->get()
+                ->filter(fn ($a) => $a->schoolClass !== null)
+                ->values();
         }
 
         if ($assignments->isEmpty()) {

@@ -154,6 +154,15 @@ class AdminClassController extends Controller
             return back()->withErrors('Cannot delete a class with students still enrolled. Move them to another class first.');
         }
 
+        // Same problem, different dependency: a class with no students can
+        // still have teacher-subject assignments (class_subjects rows)
+        // pointing at it. Soft-deleting it then makes the class invisible
+        // everywhere teachers look it up, crashing their marks/attendance/
+        // performance pages on a null ->schoolClass reference.
+        if ($class->classSubjects()->exists()) {
+            return back()->withErrors('Cannot delete a class with subject/teacher assignments still attached. Remove those assignments first.');
+        }
+
         $class->delete();
         return redirect()->route('admin.classes.index')->with('notification', 'Class deleted.');
     }

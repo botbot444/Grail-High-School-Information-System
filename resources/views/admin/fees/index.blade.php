@@ -63,7 +63,9 @@
                     <p class="font-headline-md text-headline-md font-bold">ZMW {{ number_format($totalOutstanding, 2) }}</p>
                 </div>
             </div>
-            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4">
+            <a href="{{ route('admin.fees.index', ['status' => 'Overdue']) }}"
+                class="bg-surface-container-lowest p-5 rounded-xl border shadow-sm flex items-center gap-4 transition-colors hover:bg-error/5 {{ request('status') === 'Overdue' ? 'border-error ring-1 ring-error' : 'border-outline-variant' }}"
+                title="Show only overdue fees">
                 <div class="w-12 h-12 rounded-lg bg-error/15 flex items-center justify-center text-error">
                     <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">warning</span>
                 </div>
@@ -71,7 +73,7 @@
                     <p class="font-label-sm text-label-sm text-on-surface-variant">Overdue Fees</p>
                     <p class="font-headline-md text-headline-md font-bold">{{ $overdueCount }}</p>
                 </div>
-            </div>
+            </a>
         </div>
 
         {{-- Match a deposit slip or mobile money SMS to its fee in one step. --}}
@@ -150,8 +152,6 @@
                 <select name="action" required
                     class="rounded-lg border border-outline-variant px-3 py-2 text-sm focus:ring-2 focus:ring-primary">
                     <option value="">Bulk Actions</option>
-                    <option value="mark_cleared">Mark as Cleared</option>
-                    <option value="mark_overdue">Mark as Overdue</option>
                     <option value="send_reminder">Send Reminder</option>
                     <option value="export_selected">Export Selected</option>
                     <option value="delete_selected">Delete Selected</option>

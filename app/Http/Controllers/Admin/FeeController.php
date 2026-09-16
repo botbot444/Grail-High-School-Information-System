@@ -181,8 +181,23 @@ class FeeController extends Controller
 
     public function bulkAction(Request $request)
     {
+        // 'mark_cleared' and 'mark_overdue' used to live here and were
+        // removed: both set a fee's status by hand instead of through the
+        // state machine (Fee::recordPayment()/updateStatus()) that every
+        // other part of this app trusts to be the only source of truth for
+        // status. 'mark_cleared' in particular set amount_paid/balance
+        // directly with no Payment record behind it — no receipt, and the
+        // Fee Collection Report's "Collected" figure (which sums real
+        // Payment rows) silently undercounted against what the fee ledger
+        // claimed was paid. 'mark_overdue' didn't even do what it said: it
+        // reset due_date to today, which doesn't satisfy the "past due"
+        // check until the next day. Overdue detection already happens
+        // correctly and automatically via the nightly `fees:flag-overdue`
+        // scheduled command (routes/console.php), which goes through the
+        // real state machine — there's nothing for a manual action to do
+        // here that isn't already handled, and handled correctly.
         $validated = $request->validate([
-            'action'  => 'required|in:mark_cleared,mark_overdue,send_reminder,export_selected,delete_selected',
+            'action'  => 'required|in:send_reminder,export_selected,delete_selected',
             'fee_ids' => ['required', 'array', 'min:1'],
             'fee_ids.*' => ['exists:fees,fee_id'],
         ]);
@@ -196,23 +211,6 @@ class FeeController extends Controller
 
         DB::transaction(function () use ($fees, $validated, $feeIds) {
             switch ($validated['action']) {
-                case 'mark_cleared':
-                    foreach ($fees as $fee) {
-                        $fee->amount_paid = $fee->amount_due;
-                        $fee->balance     = 0.00;
-                        $fee->status      = 'Cleared';
-                        $fee->last_updated = \Carbon\Carbon::now();
-                        $fee->save();
-                    }
-                    break;
-
-                case 'mark_overdue':
-                    $fees->update(['due_date' => \Carbon\Carbon::today()]);
-                    foreach ($fees as $fee) {
-                        $fee->updateStatus();
-                    }
-                    break;
-
                 case 'send_reminder':
                     $this->sendBulkReminders($fees);
                     break;

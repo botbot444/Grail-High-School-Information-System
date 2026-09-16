@@ -39,7 +39,7 @@
                         <div class="relative">
                             <select class="w-full h-10 pl-3.5 pr-10 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:bg-surface-container-lowest shadow-[0_0_0_2px_#085bbd] transition-all cursor-pointer" id="assignmentSelect" name="assignment_id" onchange="this.form.submit()">
                                 @foreach ($assignments as $a)
-                                    <option value="{{ $a->class_subject_id }}" {{ $assignment && $a->class_subject_id === $assignment->class_subject_id ? 'selected' : '' }}>{{ $a->schoolClass->class_name }} ({{ $a->subject->subject_name }})</option>
+                                    <option value="{{ $a->class_subject_id }}" {{ $assignment && $a->class_subject_id === $assignment->class_subject_id ? 'selected' : '' }}>{{ $a->schoolClass?->class_name ?? '—' }} ({{ $a->subject?->subject_name ?? '—' }})</option>
                                 @endforeach
                             </select>
                             <span class="material-symbols-outlined pointer-events-none absolute right-3 top-2.5 text-on-surface-variant text-[20px]">expand_more</span>

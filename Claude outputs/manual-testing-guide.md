@@ -5,7 +5,7 @@
 > replace it, it's for hands-on QA of what the suite doesn't (or can't) cover:
 > real page rendering, JS behavior, and cross-feature flows.
 
-Last updated: 2026-09-15, after a testing pass that found and fixed several
+Last updated: 2026-09-16, after a testing pass that found and fixed several
 real bugs (see "Known bug patterns" below — read that section first, it'll
 save you time).
 
@@ -77,9 +77,12 @@ foreign keys pointing at it don't — so whatever it was doesn't vanish, it just
 becomes invisible and broken.
 
 **Found & fixed:** `admin.classes.destroy` (blocks deleting a class with
-enrolled students), `admin.teachers.destroy` (blocks deleting a homeroom
-teacher or one with active class-subject assignments), `admin.parents.destroy`
-(blocks deleting a parent with children still linked) — all verified live.
+enrolled students **and**, as of 2026-09-16, a class with active
+class-subject/teacher assignments — see §2g below for why the second check
+was missing and what it broke), `admin.teachers.destroy` (blocks deleting a
+homeroom teacher or one with active class-subject assignments),
+`admin.parents.destroy` (blocks deleting a parent with children still linked)
+— all verified live.
 **Checked and found clean:** `admin.grade-levels.destroy` and
 `admin.settings.categories` (fee categories) already had correct guards.
 `admin.announcements.destroy` / teacher `assignments.destroy` have no guard
@@ -116,6 +119,72 @@ this is intentional, not a bug, but it means you can't "poke around" as a
 freshly-created teacher/parent/student until you've completed that step on
 their settings page first.
 
+### f. "Mark as Cleared" / "Mark as Overdue" (bulk fee actions) — removed
+Found while checking the Fee Collection Report, then removed entirely on
+2026-09-16 rather than fixed in place. Both set a fee's status by hand
+instead of through the state machine every other part of this app trusts as
+the only source of truth for status:
+
+- **`mark_cleared`** set `amount_paid`/`balance`/`status` directly, with no
+  `Payment` row behind it — no receipt (the receipt feature reads from
+  `Payment`), and the Fee Collection Report's "Collected" figure (which sums
+  real `Payment` rows) silently undercounted against what the fee ledger
+  claimed was paid. On this test database, 11 of 14 "Cleared" fees
+  (ZMW 27,500) had zero `Payment` records behind them.
+- **`mark_overdue`** didn't even do what it said: it reset `due_date` to
+  today, which doesn't satisfy the "past due" check until the next day.
+  Overdue detection already happens correctly and automatically via the
+  nightly `fees:flag-overdue` scheduled command (`routes/console.php`),
+  which goes through the real state machine — there was nothing this manual
+  action did that wasn't already handled, and handled correctly, without it.
+
+Both options are gone from the bulk-actions dropdown and rejected
+server-side if posted directly. **Not retroactively fixed**: fees that were
+already bulk-cleared before this change still have no `Payment` row behind
+them, so the admin Fees index's "Total Collected" stat (sums `amount_paid`)
+and the Fee Collection Report's "Collected" stat (sums `Payment.amount`)
+will keep disagreeing for *that* historical data specifically — same root
+cause, just no longer able to recur going forward.
+
+The "Overdue Fees" stat box on the Fees index is now a working filter link
+(click it → `?status=Overdue`) instead of a static count, with an active
+state when that filter is applied.
+
+### g. Dependency guards need to check *every* kind of dependency, not just the obvious one
+Real crash, found 2026-09-16 on first teacher login of the session:
+`ErrorException: Attempt to read property 'class_name' on null` at
+`teacher/marks.blade.php:42`, on the default post-login page for any teacher.
+
+Root cause: `admin.classes.destroy`'s guard (added earlier this session, see
+§2b) only checked `$class->students()->exists()`. A class with **zero
+students but an active teacher/subject assignment** (a `class_subjects` row)
+sailed straight past that guard and got soft-deleted — which is exactly what
+happened to class 8C: 0 enrolled students, but two teachers still had live
+`class_subjects` rows pointing at it. The class vanished from every list, but
+those rows didn't, so the moment either teacher's marks/attendance/
+performance page tried to read `$assignment->schoolClass->class_name`, it
+crashed on null.
+
+**Fixed two ways** (matching this guide's own root-cause-first pattern):
+1. `admin.classes.destroy` now also blocks when `$class->classSubjects()->exists()`
+   — the same fix shape as the teacher/parent guards, just a dependency type
+   that got missed the first time. **Lesson for future dependency guards on
+   this codebase: enumerate every relation, not just the first one you think
+   of** — `students()` was the obvious one for a *class*, but `classSubjects()`
+   (teacher assignments) is just as real a dependency.
+2. Defense in depth on the read side, since old dangling rows (like 8C's, which
+   predated the guard fix and had to be restored by hand) can still exist:
+   `TeacherController::marks()/performance()/attendance()` now filter out any
+   `ClassSubject` whose `schoolClass` is null before it reaches the view, and
+   `marks.blade.php`'s dropdown uses `?->`/`?? '—'` instead of unguarded
+   property access. `finalizeGrades()`/`unfinalizeRequest()` now `abort_unless`
+   on a null `schoolClass` too.
+
+**Not yet checked:** whether the same "only checks the obvious dependency"
+gap exists on any other `destroy()` guard in this app (e.g. subjects,
+academic years) — worth a deliberate pass rather than assuming it's isolated
+to classes.
+
 ---
 
 ## 3. Admin portal (`/admin/...`, requires `role:admin`)
@@ -145,11 +214,11 @@ dependency guard), note that as a finding rather than forcing it.
 | Payment Submissions | `/admin/payment-submissions` | Review queue (pending/approved/rejected tabs), approve (creates a real `Payment`, updates fee balance), reject (requires a reason, notifies the parent, no accounts/payments created). |
 | Registration Requests | `/admin/registration-requests` | Review queue, approve (creates parent + child `User` + `Student`, child gets a temp password, parent's own chosen password carries over unchanged), reject (no accounts created, applicant notified with the reason). |
 | Fee Categories | `/admin/settings/categories` | Create, inline rename, delete — tested, clean apart from the uniqueness/soft-delete gap (fixed, see §2c). |
-| Payment Instructions | `/admin/settings/payments` | Edit the bank/mobile-money details shown to parents — **not yet manually tested this session**. |
-| Promotions | `/admin/promotions` | Grade-level mapping setup, run a promotion for a class (promote/retain/graduate decisions), rollback a batch — **not yet manually tested this session**; this touches Student, StudentPromotion, and login deactivation on graduation, worth real attention. |
-| Announcements | `/admin/announcements` | Create (check audience targeting), preview, edit, delete — **not yet manually tested this session**. |
-| Report Cards | `/admin/report-cards` | Browse finalized cards, unfinalize override — **not yet manually tested this session**. |
-| Reports & Analytics | `/admin/reports/*` | Fee collection, aging, attendance, school-wide performance — each has a CSV/export variant to check too. **Not yet manually tested this session**. |
+| Payment Instructions | `/admin/settings/payments` | Tested — edits correctly propagate to the parent-facing "How to pay" panel. Clean. |
+| Promotions | `/admin/promotions` | Tested — promote/retain/graduate mix, rollback (restores students to their exact prior class), and mapping overrides (default outcome updates correctly) all verified. Clean. Graduate outcome specifically (login deactivation) still untested — everything tested so far used promote/retain. |
+| Announcements | `/admin/announcements` | Tested — create with class-targeted audience, delivery to the right parent portal, mark-read, delete. Clean. |
+| Report Cards | `/admin/report-cards` | Preview/download tested and clean (figures cross-check correctly against the term's holiday-adjusted school-day count). **Unfinalize still untested** — needs a class actually finalized first, which happens from the Teacher portal (untested) — pair these two when you get to the teacher side. |
+| Reports & Analytics | `/admin/reports/*` | Fee collection, aging, attendance, school-wide performance, and the school-wide pass-threshold setting all render correctly with sensible numbers. **Found a real finding, not a crash** — see "Known issues" below: the Fee Collection Report's "Collected" figure only counts real `Payment` records, but the bulk "Mark as Cleared" action on the Fees list sets a fee to paid-in-full without creating one, so fees cleared that way go uncounted in "Collected" while still counting as "Cleared" in the status breakdown. CSV exports not independently re-verified against their on-screen counterparts. |
 | User Accounts | `/admin/users` | Filter by role/status, reset password (fixed this session — was silently failing with a wrong HTTP method), change role (check the "last active admin" guard), activate/deactivate. |
 | Audit Logs | `/admin/audit-logs` | Confirm actions taken above actually produce entries here with sensible before/after values, and that `password`/`remember_token` never appear in them. |
 | Student financials/statement | `/admin/students/{id}/financials`, `/statement` | **Not yet manually tested this session**. |
@@ -158,19 +227,17 @@ dependency guard), note that as a finding rather than forcing it.
 
 ## 4. Teacher portal (`/teacher/...`, requires `role:teacher`)
 
-Not manually tested this session — treat as a priority for the next pass.
-
 | Area | Route | What to verify |
 |---|---|---|
-| Dashboard | `/teacher/dashboard` | |
-| My Classes | `/teacher/classes`, `/teacher/classes/{class}/roster` | |
-| Marks entry | `/teacher/marks` | Enter marks for a class/subject, confirm they land correctly against the right `class_subject_id` |
-| Attendance | `/teacher/attendance` | Record attendance, confirm it feeds the same attendance-rate numbers the admin/parent/student portals show (there was a past bug where these disagreed across portals) |
-| Assignments | `/teacher/assignments/*` | Create, view submissions, grade a submission |
-| Performance / Report Cards | `/teacher/performance`, `/teacher/report-cards/*` | Finalize a class's report cards, request an unfinalize, subject comments |
-| Student profile | `/teacher/students/{student}` | |
-| Settings | `/teacher/settings` | Profile update, password change |
-| Timetable | `/teacher/timetable` | |
+| Dashboard | `/teacher/dashboard` | Tested — KPI tiles, teaching schedule table, recent activity, pending instructional tasks all render correctly. Clean. |
+| My Classes | `/teacher/classes`, `/teacher/classes/{class}/roster` | Index tested — grade/subject/term filters, per-class stat cards. Clean. **Roster page itself not yet opened.** |
+| Marks entry | `/teacher/marks` | **Crashed on load this session — fixed, see §2g.** Retested after fix: loads, class/subject picker, term selector, score entry with live grade calc all work. Save not yet exercised this pass. |
+| Attendance | `/teacher/attendance` | Tested — load class, roster with per-student P/L/A/E marking, "Mark All Present," save & finalize all work. Not cross-checked against admin/parent/student attendance-rate figures for agreement this pass. |
+| Assignments | `/teacher/assignments/*` | Index tested — list renders (already used `?->` defensively, unaffected by the §2g bug). **Create/grade flow not yet exercised.** |
+| Performance / Report Cards | `/teacher/performance`, `/teacher/report-cards/*` | Both index pages tested — class performance stats/rankings/grade distribution, and the report-cards term list (draft status, "all marks in" messaging). **Finalize / unfinalize-request actions themselves not yet exercised** — this also still blocks the admin-side "Unfinalize" test noted in §3. |
+| Student profile | `/teacher/students/{student}` | Not yet tested this pass. |
+| Settings | `/teacher/settings` | Tested — profile info display, password change form with complexity meter. Save actions not yet exercised. |
+| Timetable | `/teacher/timetable` | Tested — week view across all rostered classes, period grid, weekly load/roster summary. Clean. |
 
 ---
 
