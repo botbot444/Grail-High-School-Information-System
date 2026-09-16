@@ -75,6 +75,16 @@ class AcademicYearController extends Controller
             return back()->withErrors('You cannot delete the current academic year.');
         }
 
+        // terms.academic_year_id cascades on delete, and a term's own
+        // report_cards/report_card_comments cascade off IT in turn (and a
+        // term with a timetable slot would hard-crash on that table's
+        // restrictOnDelete) — so a year with terms is never safe to drop,
+        // even one this check's own grades()/fees() lookup missed. Same
+        // shape of guard as Class/Teacher/Parent/Subject destroy().
+        if ($academicYear->terms()->exists()) {
+            return back()->withErrors('Cannot delete an academic year that has terms defined. Delete its terms first.');
+        }
+
         $academicYear->delete();
 
         return redirect()->route('admin.academic-years.index')

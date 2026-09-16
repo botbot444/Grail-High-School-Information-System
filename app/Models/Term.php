@@ -46,6 +46,11 @@ class Term extends Model
         return $this->hasMany(TimetableSlot::class, 'term_id', 'term_id');
     }
 
+    public function reportCards(): HasMany
+    {
+        return $this->hasMany(ReportCard::class, 'term_id', 'term_id');
+    }
+
     /**
      * Scope: the term whose window contains today.
      *

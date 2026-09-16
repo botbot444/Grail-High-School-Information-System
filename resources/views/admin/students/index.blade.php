@@ -116,25 +116,6 @@
                     {{ $students->total() }} {{ Str::plural('student', $students->total()) }} on roll.
                 @endif
             </p>
-            <div class="ml-auto flex items-center gap-3">
-                <span class="text-body-md text-on-surface-variant">Bulk Actions:</span>
-                <button type="button"
-                    class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed"
-                    disabled>
-                    Transfer
-                </button>
-                <button type="button"
-                    class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed"
-                    disabled>
-                    Archive
-                </button>
-                <button id="bulkDeleteBtn" type="button"
-                    class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant font-label-sm opacity-50 cursor-not-allowed flex items-center gap-1"
-                    disabled>
-                    <span class="material-symbols-outlined text-[18px]">delete</span>
-                    Delete
-                </button>
-            </div>
         </form>
         <!-- Data Table Container -->
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
@@ -143,10 +124,6 @@
                     <thead>
                         <tr
                             class="bg-surface-container-low border-b border-outline-variant text-[12px] font-bold uppercase tracking-wider text-on-surface-variant">
-                            <th class="px-6 py-4 w-12">
-                                <input class="rounded border-outline-variant text-primary focus:ring-primary"
-                                    type="checkbox" />
-                            </th>
                             <th class="px-4 py-4">Student ID</th>
                             <th class="px-4 py-4">Student Name</th>
                             <th class="px-4 py-4">Class</th>
@@ -159,11 +136,6 @@
                     <tbody class="divide-y divide-surface-container-high">
                         @forelse ($students as $student)
                             <tr class="table-row-hover transition-colors">
-                                <td class="px-6 py-3">
-                                    <input
-                                        class="rounded border-outline-variant text-primary focus:ring-primary row-checkbox"
-                                        type="checkbox" />
-                                </td>
                                 <td class="px-4 py-3 font-data-mono text-data-mono text-primary font-bold">
                                     {{ $student->student_number }}
                                 </td>
@@ -184,7 +156,7 @@
                                     {{ $student->schoolClass?->class_name ?? 'N/A' }}
                                 </td>
                                 <td class="px-4 py-3 text-body-md text-on-surface">
-                                    {{ $student->parent?->full_name ?? 'N/A' }}
+                                    {{ $student->guardian?->name ?? 'N/A' }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex flex-col gap-1 w-32">
@@ -215,11 +187,11 @@
                                         </a>
                                         <form method="POST"
                                             action="{{ route('admin.students.destroy', $student->student_id) }}"
-                                            style="display: inline;" onsubmit="return confirm('Are you sure?');">
+                                            style="display: inline;" onsubmit="return confirm('Delete {{ addslashes($student->full_name) }}? This cannot be undone.');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all delete-btn"
+                                                class="p-1.5 hover:bg-error-container/20 hover:text-error rounded text-on-surface-variant transition-all"
                                                 title="Delete student">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                             </button>
@@ -229,7 +201,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-3 text-center text-gray-500">No students found.</td>
+                                <td colspan="7" class="px-6 py-3 text-center text-gray-500">No students found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -304,103 +276,6 @@
             updateLayout();
         })();
 
-        // Micro-interactions for table checkboxes + bulk delete
-        const mainCheckbox = document.querySelector(
-            'thead input[type="checkbox"]',
-        );
-        const rowCheckboxes = document.querySelectorAll(".row-checkbox");
-        const bulkButtons = document.querySelectorAll(
-            ".ml-auto .cursor-not-allowed, .ml-auto button[disabled]",
-        );
-        const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
-
-        function toggleBulkActions() {
-            const anyChecked = Array.from(rowCheckboxes).some((cb) => cb.checked);
-            // Transfer, Archive, Delete
-            const allBulkBtns = document.querySelectorAll(
-                ".ml-auto button:not(.opacity-50)",
-            );
-            const disabledBtns = document.querySelectorAll(
-                ".ml-auto .opacity-50",
-            );
-            if (anyChecked) {
-                disabledBtns.forEach((btn) => {
-                    btn.removeAttribute("disabled");
-                    btn.classList.remove("opacity-50", "cursor-not-allowed");
-                    btn.classList.add(
-                        "bg-white",
-                        "hover:bg-surface-container-high",
-                        "cursor-pointer",
-                    );
-                });
-            } else {
-                disabledBtns.forEach((btn) => {
-                    btn.setAttribute("disabled", "true");
-                    btn.classList.add("opacity-50", "cursor-not-allowed");
-                    btn.classList.remove(
-                        "bg-white",
-                        "hover:bg-surface-container-high",
-                        "cursor-pointer",
-                    );
-                });
-            }
-        }
-
-        mainCheckbox.addEventListener("change", (e) => {
-            rowCheckboxes.forEach((cb) => (cb.checked = e.target.checked));
-            toggleBulkActions();
-        });
-
-        rowCheckboxes.forEach((cb) => {
-            cb.addEventListener("change", () => {
-                toggleBulkActions();
-            });
-        });
-
-        // Individual delete buttons: show alert
-        document.querySelectorAll(".delete-btn").forEach((btn) => {
-            btn.addEventListener("click", function(e) {
-                e.stopPropagation();
-                const row = this.closest("tr");
-                const name = row
-                    .querySelector(".font-semibold")
-                    ?.textContent.trim();
-                if (confirm(`Delete student "${name || 'this student'}"?`)) {
-                    // In a real app, you'd send a DELETE request
-                    row.style.transition = "opacity 0.2s";
-                    row.style.opacity = "0.3";
-                    setTimeout(() => {
-                        row.remove();
-                    }, 200);
-                }
-            });
-        });
-
-        // Bulk delete: show alert and remove selected rows
-        bulkDeleteBtn?.addEventListener("click", function() {
-            const checked = document.querySelectorAll(".row-checkbox:checked");
-            if (checked.length === 0) return;
-            if (
-                confirm(
-                    `Delete ${checked.length} selected student(s)? This action cannot be undone.`,
-                )
-            ) {
-                checked.forEach((cb) => {
-                    const row = cb.closest("tr");
-                    row.style.transition = "opacity 0.2s";
-                    row.style.opacity = "0.3";
-                    setTimeout(() => {
-                        row.remove();
-                    }, 200);
-                });
-                // Uncheck main and reset bulk actions
-                mainCheckbox.checked = false;
-                toggleBulkActions();
-            }
-        });
-
-        // Toggle bulk actions initially
-        toggleBulkActions();
     </script>
 
 @endsection

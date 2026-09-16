@@ -164,7 +164,7 @@
                                             <span class="material-symbols-outlined text-xl">edit</span>
                                         </a>
                                         <form method="POST" action="{{ route('admin.subjects.destroy', $subject) }}"
-                                            style="display: inline;" onsubmit="return confirm('Delete this subject? It will be removed from any classes offering it.');">
+                                            style="display: inline;" onsubmit="return confirm('Delete this subject? This is blocked while any class still offers it, a teacher is assigned to it, or it has timetable slots booked.');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"

@@ -296,6 +296,99 @@ scaffold — the `verified` middleware no-ops for a model that isn't
 rather than dangerous (no live route touches it the way `/profile` did), so
 it was left alone rather than expanding this cleanup pass further.
 
+### j. Cascade-delete foreign keys make a missing dependency guard *destructive*, not just orphaning — found & fixed 2026-09-16
+Every dependency-guard gap fixed earlier in this guide (§2b, §2g) was about
+*orphaning* — a reference left pointing at something invisible, causing a
+crash somewhere else. Subjects and the academic calendar are a sharper
+version of the same root cause: several of their foreign keys are declared
+`cascadeOnDelete()` in the migrations, so a missing guard doesn't orphan
+data, it **silently and permanently destroys it**, several tables deep, with
+nothing but a generic confirm() dialog standing in the way.
+
+- **`Admin\AdminSubjectController::destroy()` had no guard at all.**
+  `class_subjects.subject_id` cascades on delete, and `Attendance`, `Grade`,
+  `Assignment` and `ReportCardComment` all cascade off `class_subjects` in
+  turn — deleting a Subject that's offered in any class would have wiped
+  every grade, attendance record, assignment and report-card comment ever
+  entered for that class's teaching of it. Found by reading the migrations
+  after noticing a delete on an unoffered QA test subject silently didn't
+  fire (see the automation note below) — the cascade chain was traced and
+  fixed *before* ever attempting the delete against real, offered data like
+  Biology, rather than discovering it by breaking something. **Fixed:**
+  blocks delete when
+  `classSubjects()`, `teachers()` (the independent `teacher_subjects` table,
+  also cascades), or `timetableSlots()` (`restrictOnDelete` — would’ve
+  surfaced as a raw 500 instead) exist. Verified live: blocked on Biology
+  (1 class offering it, data untouched), succeeded on an unoffered QA test
+  subject.
+- **`Admin\AcademicYearController::destroy()` only checked its own direct
+  `grades()`/`fees()`, not `terms()`.** `terms.academic_year_id` cascades on
+  delete, and a term's own `report_cards`/`report_card_comments` cascade off
+  *that* — so a freshly-created academic year with terms defined (dates set
+  up, no grades entered yet) could have its terms silently destroyed, along
+  with any report cards those terms already carried, without the existing
+  guard ever noticing. **Fixed:** now also blocks when `terms()->exists()`.
+  Verified live: blocked deleting a fresh year with one empty term attached;
+  succeeded once the term was removed first.
+- **`Admin\TermController::destroy()` had the identical gap one level
+  down.** Checked `grades()`/`fees()` (fees is `nullOnDelete`, harmless
+  either way) but not `report_cards.term_id` (`cascadeOnDelete`) or
+  `timetable_slots.term_id` (`restrictOnDelete`). **Fixed:** added a
+  `reportCards()` relation to the `Term` model and guards on both.
+
+**Lesson for future dependency guards on this codebase:** before writing a
+guard, check the migration for that foreign key's `onDelete` behavior, not
+just whether a relation exists. `nullOnDelete` needs no guard (the data
+survives, just loses the reference). `restrictOnDelete` needs a guard only
+to turn a raw DB crash into a friendly message. `cascadeOnDelete` needs a
+guard because the dependent rows do not survive — treat every
+`cascadeOnDelete()` in a migration as a live list of "what this destroy()
+must check before deleting."
+
+**Testing-automation note:** every delete confirmation in this app runs
+through a JS `confirm()` dialog, which the browser automation used for this
+sweep auto-dismisses as cancelled by default — so a delete button appearing
+to "do nothing" when clicked is expected, not a finding. Override with
+`window.confirm = () => true` before clicking (same for `window.prompt` on
+the unfinalize-request flow, §3) before concluding a delete path is broken.
+
+### k. Students list (`/admin/students`) — fake bulk actions and a broken `->parent` relation, found & fixed 2026-09-16
+- **Bulk "Delete" did nothing to the database.** The button lived inside the
+  page's `GET` filter `<form>` (`type="button"`, no `action`), and its click
+  handler only faded out the selected `<tr>` elements client-side —
+  `checked.forEach(cb => { ...row.remove() })`, no `fetch`, no form submit —
+  behind a confirm dialog that explicitly said *"This action cannot be
+  undone."* Refreshing the page brought every "deleted" student straight
+  back. Bulk "Transfer" and "Archive" were permanently `disabled` with no
+  handler at all — inert, not deceptive, but also not real. **Fixed:**
+  removed the entire bulk-actions toolbar and its row-checkbox column rather
+  than build real multi-select transfer/archive/delete from scratch in a
+  testing pass — the same treatment as the §3 System Settings mockup.
+- **The individual per-row delete button, by contrast, was already real**
+  (`<form action="{{ route('admin.students.destroy', ...) }}">`, proper
+  `@csrf`/`@method('DELETE')`) — but a leftover JS click handler stacked a
+  *second*, differently-worded `confirm()` in front of the form's own, plus
+  a pointless fade-and-remove animation that raced with the real page
+  navigation the POST triggers. Removed the redundant JS; the form's own
+  `onsubmit` confirm now does the whole job, reworded to name the student
+  and state the consequence plainly. Verified live end-to-end: created a QA
+  test student, deleted it through this button with the confirm overridden,
+  confirmed via tinker it was actually (soft-)deleted, not just hidden.
+- **The "Parent / Guardian" column showed "N/A" for every student, including
+  ones with a real linked parent.** `Student::with('schoolClass', 'user')`
+  never loaded a `parent` relation, and — more to the point — `Student` has
+  no `parent()` relation method at all, only `parentUser()`/`guardian()`
+  (both `belongsTo(User::class, 'parent_user_id')`). The blade called
+  `$student->parent?->full_name`, which Eloquent resolves to a silent `null`
+  for a nonexistent relation rather than an error, so it always fell through
+  to "N/A" no matter what the data said. Confirmed live: `Student::find(1)`
+  (Demo Student, `parent_user_id = 19`) — `->parent` returned `null`,
+  `->guardian->name` correctly returned "Demo Parent". **Fixed:** query now
+  eager-loads `guardian`, and the blade reads `$student->guardian?->name`
+  (also matches what the working Financials page already used). **Grep
+  turned up no other view or controller referencing `->parent` on a
+  `Student`** — this looks isolated to this one page.
+
 ---
 
 ## 3. Admin portal (`/admin/...`, requires `role:admin`)
@@ -309,15 +402,15 @@ dependency guard), note that as a finding rather than forcing it.
 | Area | Route | What to verify |
 |---|---|---|
 | Dashboard | `/admin/dashboard` | Loads, stat cards aren't obviously wrong (e.g. hardcoded "14 pending" style numbers — the "Suspensions" card was exactly this and got removed) |
-| Students | `/admin/students` | List, search, filter by class/grade/status/gender, CSV export. Create (with and without a login email — check the one-time password flow when email is given). Edit. Bulk actions (Transfer/Archive/Delete) — **not yet manually tested this session**. Delete guard. |
+| Students | `/admin/students` | Create (with and without a login email — one-time password flow verified), search/filter, individual delete (real, guard-checked, verified end to end). **Found & fixed this session — see §2k:** bulk actions were fake (Delete did nothing to the DB despite claiming to be permanent; Transfer/Archive were inert placeholders) and the Parent/Guardian column always showed "N/A" due to a nonexistent `->parent` relation. Bulk toolbar removed; guardian display fixed. CSV export and the class/grade/status/gender filter combinations not independently re-verified this pass. |
 | Fees — bulk select | `/admin/fees` | **Fixed this session**: per-row Delete buttons were nested inside the bulk-select form, which broke both the individual delete button *and* silently excluded every row after the first from bulk actions (Mark Cleared/Overdue, Send Reminder, Export, Delete Selected). Re-verify: check boxes on two different rows, confirm a bulk action includes both. |
 | Teachers | `/admin/teachers` | Create (temp password flow), edit, assign subject to class (test the "already taught by X, confirm handover" prompt), unassign, delete (blocked if homeroom teacher or has class-subjects — verified), email reusable after a dependency-free delete (verified). |
 | Parents | `/admin/parents` | Create (temp password flow), edit — linked-children checkboxes save correctly (fixed & verified), reset password, delete (blocked if children still linked — verified). |
 | Classes | `/admin/classes` | Create/edit with subjects checked but no teacher (should succeed, show "No teacher assigned"), delete guard (blocked when students enrolled), duplicate name rejected, name reusable after a dependency-free delete. |
-| Subjects | `/admin/subjects` | Create, edit, delete (check what happens if a class still offers it). |
+| Subjects | `/admin/subjects` | Tested — create, duplicate-name rejection, edit, delete. **Found & fixed a severe bug this session — see §2j:** deleting a subject offered in any class had no guard and would have cascaded through the database to permanently destroy every grade, attendance record, assignment and report-card comment for that class's teaching of it. Now blocked (verified against Biology, 1 class offering it — correctly blocked, data untouched) while an unoffered subject still deletes cleanly (verified). |
 | Grade Levels | `/admin/grade-levels` | Create, edit, delete — tested, clean (already had a proper dependency guard, hard-deletes so no soft-delete/uniqueness risk). |
-| Academic Years | `/admin/academic-years` | Create, edit, delete (blocked if it has grades/fees or is the current year). |
-| Terms | `/admin/terms` | Create, overlap validation (two terms in the same year with overlapping dates should be rejected), edit, delete. Note: the index defaults to the *current* academic year — a term you just added under a different year won't visibly appear until you switch the year filter. |
+| Academic Years | `/admin/academic-years` | Tested — create, delete guard (grades/fees/current-year, all pre-existing and verified). **Found & fixed this session — see §2j:** the guard never checked for terms, so a year with terms defined but no grades yet (a realistic state for a freshly-set-up year) could cascade-destroy those terms and anything already on them. Now also blocked when `terms()->exists()` — verified live against a throwaway year+term, then a clean delete once the term was removed first. |
+| Terms | `/admin/terms` | Tested — create, overlap validation (rejected an overlapping Term 3 date range, verified), edit, delete guard (grades/fees, pre-existing). **Found & fixed this session — see §2j:** same shape of gap as Academic Years, one level down — `report_cards`/`report_card_comments` cascade off a deleted term, and a timetable slot would have hard-crashed the delete instead of failing cleanly. Both now guarded. Note: the index defaults to the *current* academic year — a term you just added under a different year won't visibly appear until you switch the year filter (confirmed still true, not a bug). |
 | Holidays | `/admin/holidays` | Create, edit, delete — confirm the affected term's "school days" count on the Terms page recalculates. |
 | Periods | `/admin/periods` | Create/edit/delete, scoped per grade level. |
 | Timetable | `/admin/timetable` | Assign a subject+teacher to a day/period cell, save. Try assigning a teacher who's already booked elsewhere at that time — should be rejected with a clear conflict error and nothing written. "Copy to Term" (duplicates a class's whole week into another term) and "Clear" (wipes one). |
@@ -327,7 +420,7 @@ dependency guard), note that as a finding rather than forcing it.
 | System Settings | `/admin/settings` | **Found & fixed this session.** This page was a non-functional mockup — "School Profile" fields, a "Save Changes" button, "Security & Access" toggles (2FA, session timeout), and three dead nav buttons (Academic Settings, Roles & Permissions, Notifications) were all static HTML with no `<form>`, no route, nothing persisted. Rebuilt as a simple, honest hub linking to the two settings areas that actually exist and work (Payment Details, Fee Categories — the two rows below). If any of the removed sections (school profile fields, 2FA, session timeout, roles/permissions) become a real requirement, they need an actual settings table/controller behind them, not a re-add of the static markup. |
 | Fee Categories | `/admin/settings/categories` | Create, inline rename, delete — tested, clean apart from the uniqueness/soft-delete gap (fixed, see §2c). |
 | Payment Instructions | `/admin/settings/payments` | Tested — edits correctly propagate to the parent-facing "How to pay" panel. Clean. |
-| Promotions | `/admin/promotions` | Tested — promote/retain/graduate mix, rollback (restores students to their exact prior class), and mapping overrides (default outcome updates correctly) all verified. Clean. Graduate outcome specifically (login deactivation) still untested — everything tested so far used promote/retain. |
+| Promotions | `/admin/promotions` | Tested — promote/retain/graduate mix, rollback (restores students to their exact prior class), and mapping overrides (default outcome updates correctly) all verified. Graduate outcome specifically tested end to end with a throwaway student: `class_id` cleared, `status` → Graduated, `graduated_on` stamped, and — the part that needed its own login to verify — `User.is_active` correctly flipped to `false` (portal access actually removed, not just a status label). Rollback tested against the same batch: class, status, and login access all correctly restored. Clean. |
 | Announcements | `/admin/announcements` | Tested — create with class-targeted audience, delivery to the right parent portal, mark-read, delete. Clean. |
 | Report Cards | `/admin/report-cards` | Preview/download tested and clean (figures cross-check correctly against the term's holiday-adjusted school-day count). Unfinalize tested end-to-end (teacher finalizes → requests unlock with a reason → admin unfinalizes with their own reason → both reasons correctly land in Audit Logs, ranks clear, status reverts to Draft) — clean. **Minor gap, not a bug:** the teacher's unfinalize-request reason isn't surfaced anywhere on this admin page itself — an admin has to already know to check Audit Logs (filter model=SchoolClass, action=Unfinalize_requested) to see *why* a teacher asked. Every other request-style workflow in this app (Payment Submissions, Registration Requests) has a dedicated review queue; this one doesn't. Worth a small UX fix if unfinalize requests turn out to be common in practice. |
 | Reports & Analytics | `/admin/reports/*` | Fee collection, aging, attendance, school-wide performance, and the school-wide pass-threshold setting all render correctly with sensible numbers. **Found a real finding, not a crash** — see "Known issues" below: the Fee Collection Report's "Collected" figure only counts real `Payment` records, but the bulk "Mark as Cleared" action on the Fees list sets a fee to paid-in-full without creating one, so fees cleared that way go uncounted in "Collected" while still counting as "Cleared" in the status breakdown. CSV exports not independently re-verified against their on-screen counterparts. |

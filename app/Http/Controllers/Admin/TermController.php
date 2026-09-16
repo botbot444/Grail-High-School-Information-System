@@ -67,6 +67,19 @@ class TermController extends Controller
             return back()->withErrors('Cannot delete a term that has grades or fees.');
         }
 
+        // report_cards.term_id (and report_card_comments off it) cascades on
+        // delete — a term with finalized report cards would have them
+        // silently destroyed. timetable_slots.term_id is restrictOnDelete,
+        // which would otherwise surface as a raw DB error instead of this
+        // message. Same shape of guard as Class/Teacher/Parent/Subject
+        // destroy().
+        if ($term->reportCards()->exists()) {
+            return back()->withErrors('Cannot delete a term that has report cards. Unfinalize and remove them first.');
+        }
+        if ($term->timetableSlots()->exists()) {
+            return back()->withErrors('Cannot delete a term that has timetable slots booked. Clear its timetable first.');
+        }
+
         $term->delete();
 
         return redirect()->route('admin.terms.index')

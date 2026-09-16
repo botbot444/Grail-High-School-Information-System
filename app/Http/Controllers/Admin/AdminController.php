@@ -111,7 +111,7 @@ class AdminController extends Controller
             'gender'         => $request->input('gender') ?: null,
         ];
 
-        $query = Student::with('schoolClass', 'user')
+        $query = Student::with('schoolClass', 'user', 'guardian')
             ->when($filters['search'], function ($query, $term) {
                 // "Mary" matches either name or the admission number; "Mary Banda"
                 // is treated as first + last rather than one string, so it works
