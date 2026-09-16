@@ -22,6 +22,7 @@ use App\Models\TimetableSlot;
 use App\Models\User;
 use App\Services\ReportCardService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Carbon;
 
 class ParentController extends Controller
@@ -697,7 +698,7 @@ class ParentController extends Controller
         $user = auth()->user();
         $data = $request->validate([
             'name'  => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string'],
         ]);

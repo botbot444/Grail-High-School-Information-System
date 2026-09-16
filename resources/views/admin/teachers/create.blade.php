@@ -376,17 +376,6 @@
         });
 
         // ===================================================
-        // 6. FLASH-DRIVEN TOASTS
-        // ===================================================
-        @if (session('notification'))
-            showToast(@js(session('notification')));
-        @endif
-
-        @if (session('error'))
-            showToast(@js(session('error')));
-        @endif
-
-        // ===================================================
         // 7. CLEAR ERROR STYLING ON INPUT
         // ===================================================
         document.querySelectorAll('#teacherForm input, #teacherForm select, #teacherForm textarea').forEach(field => {

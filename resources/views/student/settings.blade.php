@@ -111,12 +111,6 @@
                     <span class="material-symbols-outlined text-lg">key</span>
                     Update Password
                 </button>
-                @if (session('status') === 'password-updated')
-                    <span class="text-body-sm text-secondary font-semibold flex items-center gap-1">
-                        <span class="material-symbols-outlined" style="font-size:16px">check_circle</span>
-                        Saved.
-                    </span>
-                @endif
             </div>
         </form>
     </section>

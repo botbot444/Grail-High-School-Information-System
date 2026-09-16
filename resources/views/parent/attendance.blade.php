@@ -17,12 +17,15 @@
             </div>
             <span class="text-xs font-semibold text-on-surface-variant bg-surface-container px-2 py-1 rounded flex items-center gap-1 self-start">
                 <span class="material-symbols-outlined" style="font-size:14px">calendar_month</span>
-                {{ $totalDays }} records
+                {{ $totalDays }} records this term{{ $term ? ' · '.$term->name : '' }}
             </span>
         </div>
 
         @if ($student)
             {{-- ── Stats grid ── --}}
+            <p class="text-xs font-semibold uppercase tracking-wide text-on-surface-variant -mb-2">
+                This term{{ $term ? ' · '.$term->name : '' }}
+            </p>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
                     <div class="flex items-center justify-between mb-2">
@@ -99,7 +102,7 @@
                     <div class="px-5 py-4 border-b border-outline-variant flex items-center justify-between">
                         <div>
                             <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Attendance History</h2>
-                            <p class="text-xs text-on-surface-variant mt-0.5">Most recent first</p>
+                            <p class="text-xs text-on-surface-variant mt-0.5">Most recent first · every term on record</p>
                         </div>
                     </div>
                     <div class="overflow-x-auto">

@@ -9,32 +9,6 @@
         $subjectsTaught = $teacher ? $teacher->classSubjects->pluck('subject_id')->unique()->count() : 0;
     @endphp
 
-    @if (session('status') === 'profile-updated' || session('status') === 'password-updated')
-        <div class="fixed top-24 right-8 z-50 flex items-center justify-between gap-3 px-space-md py-3 rounded-xl bg-surface-container-lowest shadow-xl max-w-sm"
-            id="toast-notification">
-            <div class="flex items-center gap-3">
-                <div class="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
-                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="font-title-sm text-title-sm text-on-surface">
-                        {{ session('status') === 'profile-updated' ? 'Profile updated' : 'Password updated' }}
-                    </span>
-                    <span class="font-body-sm text-body-sm text-on-surface-variant">
-                        {{ session('status') === 'profile-updated' ? 'Your name and email were saved.' : 'Your password was changed successfully.' }}
-                    </span>
-                </div>
-            </div>
-            <button aria-label="Dismiss" class="p-1 rounded-full text-outline hover:text-on-surface hover:bg-surface-container transition-colors"
-                onclick="document.getElementById('toast-notification')?.remove()">
-                <span class="material-symbols-outlined text-[18px]">close</span>
-            </button>
-        </div>
-        <script>
-            setTimeout(() => document.getElementById('toast-notification')?.remove(), 4000);
-        </script>
-    @endif
-
     <div class="max-w-3xl mx-auto w-full flex flex-col gap-space-lg pb-16">
         <div class="flex flex-col gap-1">
             <div class="flex items-center gap-2 font-label-md text-label-md text-on-surface-variant mb-1">
@@ -99,7 +73,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('profile.update') }}" class="p-space-lg space-y-space-md">
+            <form method="POST" action="{{ route('teacher.settings.update') }}" class="p-space-lg space-y-space-md">
                 @csrf
                 @method('patch')
 

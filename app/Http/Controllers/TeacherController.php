@@ -15,6 +15,7 @@ use App\Models\AuditLog;
 use App\Services\AnnouncementService;
 use App\Services\ReportCardService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class TeacherController extends Controller
@@ -25,6 +26,19 @@ class TeacherController extends Controller
             'user' => auth()->user(),
             'teacher' => auth()->user()->teacher,
         ]);
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $user = $request->user();
+        $data = $request->validate([
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+        ]);
+
+        $user->update($data);
+
+        return redirect()->route('teacher.settings')->with('notification', 'Settings updated successfully.');
     }
 
     public function roster(Request $request, int $class)

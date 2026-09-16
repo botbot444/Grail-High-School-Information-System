@@ -421,13 +421,6 @@
     </div>
 </div>
 
-<!-- ==================== TOAST NOTIFICATION ==================== -->
-<div id="toast"
-    class="fixed bottom-8 right-8 bg-inverse-surface text-inverse-on-surface px-6 py-4 rounded-lg shadow-xl translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-[100]">
-    <span class="material-symbols-outlined text-green-400">check_circle</span>
-    <span class="font-label-sm text-label-sm" id="toastMessage">Student record updated successfully.</span>
-</div>
-
 @push('scripts')
     <script>
         // ===================================================
@@ -486,40 +479,7 @@
         });
 
         // ===================================================
-        // 4. TOAST (server-side flash messages)
-        // ===================================================
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            const icon = toast.querySelector('.material-symbols-outlined');
-
-            toastMessage.textContent = message;
-
-            if (type === 'error') {
-                icon.textContent = 'error';
-                icon.className = 'material-symbols-outlined text-red-400';
-            } else {
-                icon.textContent = 'check_circle';
-                icon.className = 'material-symbols-outlined text-green-400';
-            }
-
-            toast.classList.remove('translate-y-20', 'opacity-0');
-
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 4000);
-        }
-
-        @if (session('notification'))
-            showToast(@js(session('notification')), 'success');
-        @endif
-
-        @if (session('error'))
-            showToast(@js(session('error')), 'error');
-        @endif
-
-        // ===================================================
-        // 5. CONFIRM BEFORE NAVIGATION (if form is dirty)
+        // 4. CONFIRM BEFORE NAVIGATION (if form is dirty)
         // ===================================================
         let formChanged = false;
 

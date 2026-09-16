@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminController;
@@ -43,12 +42,6 @@ Route::get('/', function () {
 Route::view('/welcome', 'welcome')->name('welcome');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])
@@ -196,6 +189,7 @@ Route::middleware(['auth', 'role:teacher'])
         Route::post('/announcements/read-all', [TeacherController::class, 'readAllAnnouncements'])->name('announcements.read-all');
         Route::post('/announcements/{announcement}/read', [TeacherController::class, 'readAnnouncement'])->name('announcements.read');
         Route::get('/settings', [TeacherController::class, 'settings'])->name('settings');
+        Route::patch('/settings', [TeacherController::class, 'updateSettings'])->name('settings.update');
 
         // Assignments — authoring and marking.
         Route::get('/assignments', [TeacherAssignmentController::class, 'index'])->name('assignments.index');

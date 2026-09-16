@@ -65,12 +65,6 @@
                 </div>
             </div>
             <div class="px-5 py-4 bg-surface-container border-t border-outline-variant flex items-center justify-end gap-3">
-                @if (session('notification'))
-                    <span class="text-xs font-semibold text-green-700 mr-auto flex items-center gap-1">
-                        <span class="material-symbols-outlined" style="font-size:14px">check_circle</span>
-                        {{ session('notification') }}
-                    </span>
-                @endif
                 <button type="submit"
                     class="text-sm font-bold bg-primary text-on-primary rounded-lg px-4 py-2 hover:bg-primary/90 transition-colors flex items-center gap-1.5">
                     <span class="material-symbols-outlined" style="font-size:16px">save</span> Save Changes
