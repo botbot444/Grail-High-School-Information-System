@@ -31,7 +31,11 @@ class StoreParentRegistrationRequest extends FormRequest
             'parent_phone'         => ['nullable', 'string', 'max:20'],
             'parent_address'       => ['nullable', 'string', 'max:500'],
             'parent_occupation'    => ['nullable', 'string', 'max:255'],
-            'parent_national_id'   => ['nullable', 'string', 'max:50'],
+            'parent_national_id'   => [
+                'nullable', 'string', 'max:50',
+                Rule::unique('parents', 'national_id')->whereNull('deleted_at'),
+                Rule::unique('registration_requests', 'parent_national_id')->where('status', 'pending'),
+            ],
 
             'child_first_name'    => ['required', 'string', 'max:255'],
             'child_last_name'     => ['required', 'string', 'max:255'],

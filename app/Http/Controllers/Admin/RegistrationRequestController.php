@@ -59,6 +59,20 @@ class RegistrationRequestController extends Controller
     {
         abort_unless($registrationRequest->isPending(), 422, 'This request has already been reviewed.');
 
+        // Belt-and-suspenders re-check: submission-time validation blocks a
+        // duplicate national ID against approved parents and other *pending*
+        // requests, but two requests can still both be pending with the same
+        // ID (one submitted before that check existed, or approved between
+        // this page loading and this click) — catch it here with a message
+        // an admin can act on instead of a raw constraint-violation crash.
+        if ($registrationRequest->parent_national_id
+            && ParentProfile::where('national_id', $registrationRequest->parent_national_id)->exists()) {
+            return back()->withErrors(
+                'Another parent already has national ID "'.$registrationRequest->parent_national_id.'" on file. '
+                .'Reject this request and ask the applicant to correct it, or clear the ID before approving.'
+            );
+        }
+
         // Generated up front so it can be emailed once the transaction
         // commits — never stored anywhere in readable form.
         $childTemporary = $this->temporaryPassword();
