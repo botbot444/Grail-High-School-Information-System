@@ -59,7 +59,7 @@ class FeeSeeder extends Seeder
                 'amount_due'       => $amountDue,
                 'amount_paid'      => $amountPaid,
                 'balance'          => $balance,
-                'due_date'         => now()->startOfYear()->addDays(30)->format('d-m-Y'),
+                'due_date'         => now()->startOfYear()->addDays(30)->format('Y-m-d'),
                 'status'           => $status,
                 'term'             => $term,
                 'academic_year'    => $year,

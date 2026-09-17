@@ -20,7 +20,7 @@ class AttendanceSeeder extends Seeder
         $date  = Carbon::now()->startOfWeek()->subWeeks(4);
         while ($date->lte(Carbon::now())) {
             if ($date->isWeekday()) {
-                $dates[] = $date->format('d-m-Y');
+                $dates[] = $date->format('Y-m-d');
             }
             $date->addDay();
         }

@@ -58,7 +58,7 @@ class StudentSeeder extends Seeder
                 'class_id'       => $classes->first()->class_id,
                 'guardian_name'  => 'Demo Parent',
                 'guardian_phone' => '+260 97 0000002',
-                'enrolment_date' => now()->startOfYear()->format('d-m-Y'),
+                'enrolment_date' => now()->startOfYear()->format('Y-m-d'),
             ]
         );
         $count++;
@@ -98,13 +98,13 @@ class StudentSeeder extends Seeder
                         'parent_user_id' => null,
                         'first_name'     => $firstName,
                         'last_name'      => $lastName,
-                        'date_of_birth'  => fake()->dateTimeBetween('-18 years', '-13 years')->format('d-m-Y'),
+                        'date_of_birth'  => fake()->dateTimeBetween('-18 years', '-13 years')->format('Y-m-d'),
                         'gender'         => fake()->randomElement(['Male', 'Female']),
                         'student_number' => $sNum,
                         'class_id'       => $class->class_id,
                         'guardian_name'  => fake()->name(),
                         'guardian_phone' => fake()->phoneNumber(),
-                        'enrolment_date' => now()->startOfYear()->format('d-m-Y'),
+                        'enrolment_date' => now()->startOfYear()->format('Y-m-d'),
                     ]
                 );
                 $count++;

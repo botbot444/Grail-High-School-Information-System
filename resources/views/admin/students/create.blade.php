@@ -100,16 +100,14 @@
                         <section class="rounded-xl border border-outline-variant bg-white p-6 shadow-sm">
                             <div class="flex items-center gap-2 mb-6">
                                 <span class="material-symbols-outlined text-primary">badge</span>
-                                <h2 class="text-lg font-bold text-on-surface">Student Login (optional)</h2>
+                                <h2 class="text-lg font-bold text-on-surface">Student Login</h2>
                             </div>
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-on-surface">Email</label>
-                                <input type="email" name="email" value="{{ old('email') }}"
+                                <label class="mb-2 block text-sm font-semibold text-on-surface">Email *</label>
+                                <input type="email" name="email" value="{{ old('email') }}" required
                                     class="w-full rounded-lg border border-outline-variant px-3 py-2 focus:ring-2 focus:ring-primary" />
                                 <p class="mt-2 text-xs text-on-surface-variant">
-                                    Leave blank if this student doesn't need their own login — the parent portal
-                                    already covers most of what a young student needs. If given, a one-time password
-                                    is generated and shown once after saving.
+                                    A one-time password is generated and shown once after saving.
                                 </p>
                             </div>
                         </section>

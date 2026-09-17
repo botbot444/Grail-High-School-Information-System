@@ -241,53 +241,44 @@ class AdminController extends Controller
             'guardian_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:20',
             'enrolment_date' => 'nullable|date',
-            // A student login is optional — most young children don't need
-            // one, the parent portal already covers them.
-            'email' => 'nullable|email|unique:users,email',
+            'email' => 'required|email|unique:users,email',
         ]);
 
         if (! empty($validated['parent_user_id'])) {
             $validated['parent_user_id'] = (int) $validated['parent_user_id'];
         }
 
-        $email = $validated['email'] ?? null;
+        $email = $validated['email'];
         unset($validated['email']);
 
         // Generated up front so it can be flashed to admin after the
         // transaction commits — never stored anywhere in readable form.
-        $temporary = $email ? $this->temporaryPassword() : null;
+        $temporary = $this->temporaryPassword();
 
         try {
             $student = DB::transaction(function () use ($validated, $email, $temporary) {
                 $student = Student::createWithGeneratedNumber($validated);
 
-                if ($email) {
-                    $user = User::create([
-                        'name' => trim("{$student->first_name} {$student->last_name}"),
-                        'email' => $email,
-                        'password' => Hash::make($temporary),
-                        'role_id' => Role::where('name', 'student')->value('id'),
-                        'email_verified_at' => now(),
-                        // Forces the student onto their settings page at
-                        // first login until they choose their own password.
-                        'must_change_password' => true,
-                    ]);
+                $user = User::create([
+                    'name' => trim("{$student->first_name} {$student->last_name}"),
+                    'email' => $email,
+                    'password' => Hash::make($temporary),
+                    'role_id' => Role::where('name', 'student')->value('id'),
+                    'email_verified_at' => now(),
+                    // Forces the student onto their settings page at
+                    // first login until they choose their own password.
+                    'must_change_password' => true,
+                ]);
 
-                    $student->user_id = $user->id;
-                    $student->save();
-                }
+                $student->user_id = $user->id;
+                $student->save();
 
                 return $student;
             });
 
-            $redirect = redirect()->route('admin.students.index')->with(
-                'notification',
-                $email
-                    ? "Student created successfully! Student number: {$student->student_number}. Their one-time login password is:"
-                    : "Student created successfully! Student number: {$student->student_number}."
-            );
-
-            return $email ? $redirect->with('temporary_password', $temporary) : $redirect;
+            return redirect()->route('admin.students.index')
+                ->with('notification', "Student created successfully! Student number: {$student->student_number}. Their one-time login password is:")
+                ->with('temporary_password', $temporary);
         } catch (\Exception $e) {
             return back()->withErrors('Failed to create student: ' . $e->getMessage());
         }
