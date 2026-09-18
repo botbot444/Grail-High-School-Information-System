@@ -1,6 +1,6 @@
 # Views
 
-> Last updated: 2026-09-16
+> Last updated: 2026-09-18
 > Update this file when views are added or modified.
 
 ---
@@ -40,7 +40,7 @@ All templates live under `resources/views/` — **158** `.blade.php` files in to
 - `reports/` — `fee-collection.blade.php`, `attendance.blade.php`, `aging.blade.php`, `school-wide.blade.php`
 - `settings/categories.blade.php` — fee categories
 - `settings/payment-instructions.blade.php` — bank / mobile-money details shown to parents
-- `students/` — student CRUD plus `financial-summary.blade.php` and `statement.blade.php`
+- `students/` — student CRUD plus `financial-summary.blade.php` and `statement.blade.php`; in `create.blade.php` the "Student Login" section is **mandatory** (`email` is `required`) and a one-time password is always generated and shown once on save
 - `subjects/` — subject management
 - `teachers/` — teacher management
 - `timetable/builder.blade.php` — class/term timetable builder
@@ -62,17 +62,20 @@ All templates live under `resources/views/` — **158** `.blade.php` files in to
 
 ## 9.4 Components (`resources/views/components/`)
 
-Standard Breeze components: `application-logo`, `auth-session-status`, `danger-button`, `dropdown`, `dropdown-link`, `input-error`, `input-label`, `modal`, `nav-link`, `primary-button`, `responsive-nav-link`, `secondary-button`, `text-input`. Extra: `status-pill`.
+Standard Breeze components: `application-logo`, `auth-session-status`, `danger-button`, `dropdown`, `dropdown-link`, `input-error`, `input-label`, `modal`, `nav-link`, `primary-button`, `responsive-nav-link`, `secondary-button`, `text-input`. Extra: `status-pill` (per-row status badge) and `flash` (flash-message banner).
 
 ---
 
 ## 9.5 Layouts (`resources/views/layouts/`)
 
-- `app.blade.php` — main authenticated layout
-- `guest.blade.php` — guest layout
-- `navigation.blade.php` — Breeze top nav
+- `app.blade.php` — main authenticated layout (declares the vendored Font Awesome / Material Symbols `<head>` links)
+- `guest.blade.php` — guest layout (no icon fonts)
 - `parent.blade.php` — parent portal shell (sidebar + header)
+- `student.blade.php` — student portal shell
 - `teacher.blade.php` — teacher portal shell (sidebar + header)
+
+> Breeze's `navigation.blade.php` was removed along with the `/profile` screens; the sidebar/header partials now carry
+> the portal navigation.
 
 ---
 
@@ -119,7 +122,7 @@ Shared / other:
 - `reports/report-card.blade.php` — the **single** report-card template rendered by all four portals (HTML preview and DomPDF)
 - `shared/timetable-grid.blade.php` — reusable timetable grid used by admin/teacher/parent/student screens
 - `students/profile-content.blade.php` — shared student profile block
-- `profile/edit.blade.php` + `profile/partials/` — **view only**; the `/profile` routes are no longer registered
+- `profile/partials/update-password-form.blade.php` — the only surviving profile view; `/profile` is no longer routed and `profile/edit.blade.php` has been deleted (settings now live on each portal's own settings page)
 
 ---
 

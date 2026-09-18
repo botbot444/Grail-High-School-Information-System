@@ -1,6 +1,6 @@
 # Controllers
 
-> Last updated: 2026-09-16
+> Last updated: 2026-09-18
 > Update this file when controllers are added or modified.
 
 ---
@@ -12,8 +12,10 @@
 | `Controller.php`          | Base controller                                                                                                                    |
 | `AuthController.php`      | Custom login dispatcher (redirects by role after auth)                                                                             |
 | `DashboardController.php` | `/dashboard` role redirect; `adminDashboard()` for `/admin/dashboard`                                                              |
-| `ProfileController.php`   | Edit/update/delete user profile                                                                                                    |
 | `TeacherController.php`   | Teacher portal: `dashboard()`, `classes()`, `roster()`, `studentProfile()`, `marks()`, `storeMarks()`, `timetable()`, `attendance()`, `storeAttendance()`, `performance()`, `finalizeGrades()`, `unfinalizeRequest()`, `announcements()`, `readAnnouncement()`, `readAllAnnouncements()`, `settings()`, `updateSettings()` |
+
+> `ProfileController` and `ProfileUpdateRequest` have been **removed** — `/profile` is no longer routed and settings
+> now live on each portal's `settings` action (see setup-and-conventions.md).
 
 ### `Concerns/RendersReportCards.php`
 
@@ -26,7 +28,7 @@ Shared trait used by the Admin, Teacher, Student and Parent portals. `renderRepo
 
 | File                             | Methods                                                                                                                                                                        |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `AdminController.php`            | Student CRUD (`index`–`destroy`), `export()`, `refundCredit()`, `settings()`, `examinations()`. `dashboard()` still exists but the live `/admin/dashboard` route uses `DashboardController@adminDashboard`. |
+| `AdminController.php`            | Student CRUD (`index`–`destroy`), `export()`, `refundCredit()`, `settings()`, `examinations()`. `store()` now **requires** a unique student `email` and always provisions that student's `User` (one-time password from `GeneratesTemporaryPassword`, `must_change_password = true`); the optional-login branch was removed in `7dbf85f`. `dashboard()` still exists but the live `/admin/dashboard` route uses `DashboardController@adminDashboard`. |
 | `AdminTeacherController.php`     | CRUD for teachers + `assignSubject()` / `unassignSubject()` (write `class_subjects`)                                                                                            |
 | `AdminParentController.php`      | CRUD for parents (new parents get a system-generated temporary password)                                                                                                       |
 | `AdminClassController.php`       | CRUD for classes                                                                                                                                                                |
@@ -74,6 +76,8 @@ Fee totals on parent pages use `amount_due` / `amount_paid` sums (not only `Fee:
 `ParentRegistrationController` (`create()`, `store()`, `submitted()`) replaces Laravel’s stock `RegisteredUserController`.
 Sign-up creates a **pending `RegistrationRequest`** — no `users` row and no working login — until an admin approves it.
 Sign-up is throttled (`throttle:5,1`) and always represents a brand-new admission (linking a parent to an already-enrolled student stays admin-only).
+`StoreParentRegistrationRequest` validates `child_email` as required, unique against `users` **and** against other *pending*
+requests, and `different:parent_email` — a child cannot be registered with the guardian's own address.
 
 ---
 

@@ -28,6 +28,7 @@ php artisan serve    # in another
 | Language   | PHP 8.2+                                        |
 | Framework  | Laravel 12.x                                    |
 | Frontend   | Blade, Tailwind CSS 3, Alpine.js                |
+| Icons      | Font Awesome 6.5.1 (solid) + Material Symbols Outlined — vendored in `public/fonts/` |
 | Build tool | Vite 6                                          |
 | Database   | MySQL (SQLite supported for local development)  |
 | Auth       | Laravel Breeze                                  |

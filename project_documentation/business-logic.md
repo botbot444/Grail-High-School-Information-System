@@ -1,6 +1,6 @@
 # Business Logic
 
-> Last updated: 2026-09-16
+> Last updated: 2026-09-18
 > Update this file when business logic changes.
 
 ---
@@ -183,6 +183,8 @@ The teacher **portal dashboard** (`TeacherController@dashboard`) and **My Classe
   The child gets a `GeneratesTemporaryPassword` one-time password, `must_change_password = true`, and is left
   **unplaced** (`class_id` null) for the admin to assign separately.
 - A belt-and-suspenders re-check refuses an approval whose `parent_national_id` already exists on another parent.
+- Validation rejects a `child_email` that is not unique (against `users` **and** other pending requests) or that equals the
+  `parent_email` (`different:parent_email`) — the child's login needs its own address.
 - **Rejection** notifies the raw email address via `Notification::route()` (no `User` was ever created, so an
   `AnonymousNotifiable` is used and the `database` channel is skipped).
 - Already-reviewed requests return 422.

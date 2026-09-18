@@ -1,6 +1,6 @@
 # Middleware and Error Handling
 
-> Last updated: 2026-09-16
+> Last updated: 2026-09-18
 > Update this file when middleware or error handling changes.
 
 ---
@@ -36,7 +36,8 @@
   `parent.settings`, `student.settings`.
 - **Role → settings route**: `admin` → `admin.settings`, `teacher` → `teacher.settings`, `parent` → `parent.settings`,
   `student` → `student.settings`. Redirects carry the notification *"For security, please set a new password before continuing."*
-- **Set by**: admin-created parent accounts (`AdminParentController@store`), admin password resets
+- **Set by**: admin-created parent accounts (`AdminParentController@store`), admin-created **students**
+  (`AdminController@store` — a login is always provisioned now, `7dbf85f`), admin password resets
   (`UserAccountController@resetPassword`), and approved registrations (child account).
 - **Cleared by**: `PasswordController@update` once a new password is saved.
 

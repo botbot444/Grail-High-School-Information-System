@@ -1,6 +1,6 @@
 # Architecture
 
-> Last updated: 2026-09-16
+> Last updated: 2026-09-18
 > Update this file when the project structure, tech stack, or file counts change.
 
 ---
@@ -16,7 +16,6 @@ grail/
 │   │   │   ├── AuthController.php
 │   │   │   ├── Controller.php
 │   │   │   ├── DashboardController.php   (role dispatch + admin dashboard)
-│   │   │   ├── ProfileController.php
 │   │   │   ├── TeacherController.php     (teacher portal)
 │   │   │   ├── Concerns/     (RendersReportCards — shared preview/PDF trait)
 │   │   │   ├── Admin/        (see controllers.md — 24 controllers: students,
@@ -31,7 +30,7 @@ grail/
 │   │   │   ├── Student/      (StudentController, AssignmentController)
 │   │   │   └── Teacher/      (AssignmentController, ReportCardController)
 │   │   ├── Middleware/       (CheckRole, EnsureAccountIsActive, EnsurePasswordIsChanged)
-│   │   └── Requests/         (Login, StoreFee, StorePayment, StorePaymentSubmission,
+│   │   └── Requests/         (Login [in Auth/], StoreFee, StorePayment, StorePaymentSubmission,
 │   │                          StoreParentRegistration)
 │   ├── Models/               (34 Eloquent models — see models.md)
 │   ├── Notifications/        (fee reminder / overdue / payment confirmation /
@@ -48,10 +47,6 @@ grail/
 │   ├── factories/            (12 factories)
 │   ├── migrations/           (56 migration files)
 │   └── seeders/              (18 domain seeders + DatabaseSeeder orchestrator)
-├── Frontend/                 (Static HTML/CSS/JS prototypes — not served)
-│   ├── AdminViews/
-│   └── ParentViews/
-├── stitch_grail_sis_teacher_portal/  (Stitch HTML + screenshots for teacher UI)
 ├── public/
 ├── resources/
 │   └── views/                (158 Blade templates — see views.md)
@@ -59,7 +54,7 @@ grail/
 │       ├── auth/
 │       ├── components/
 │       ├── errors/
-│       ├── layouts/          (app, guest, navigation, parent, teacher)
+│       ├── layouts/          (app, guest, parent, student, teacher)
 │       ├── parent/           (+ partials/)
 │       ├── profile/          (+ partials/)
 │       ├── reports/          (report-card.blade.php — shared by all portals)
@@ -82,20 +77,21 @@ grail/
 
 ## 2. Tech Stack
 
-| Layer      | Technology                                      |
-| ---------- | ----------------------------------------------- |
-| Language   | PHP 8.2+                                        |
-| Framework  | Laravel 12.x                                    |
-| Frontend   | Blade, Tailwind CSS 3, Alpine.js                |
-| Build tool | Vite 6                                          |
-| Database   | MySQL (SQLite supported for local development)  |
-| Auth       | Laravel Breeze                                  |
-| PDF        | barryvdh/laravel-dompdf 3.1                     |
-| PWA        | vite-plugin-pwa (installed, not wired in Vite)  |
-| Testing    | PHPUnit 11                                      |
-| Dev runner | Concurrently (artisan serve + queue + vite)     |
+| Layer      | Technology                                                                           |
+| ---------- | ------------------------------------------------------------------------------------ |
+| Language   | PHP 8.2+                                                                             |
+| Framework  | Laravel 12.x                                                                         |
+| Frontend   | Blade, Tailwind CSS 3, Alpine.js                                                     |
+| Icons      | Font Awesome 6.5.1 (solid) + Material Symbols Outlined — vendored in `public/fonts/` |
+| Build tool | Vite 6                                                                               |
+| Database   | MySQL (SQLite supported for local development)                                       |
+| Auth       | Laravel Breeze                                                                       |
+| PDF        | barryvdh/laravel-dompdf 3.1                                                          |
+| PWA        | vite-plugin-pwa (installed, not wired in Vite)                                       |
+| Testing    | PHPUnit 11                                                                           |
+| Dev runner | Concurrently (artisan serve + queue + vite)                                          |
 
-Portal chrome (admin, parent, teacher) uses Material Symbols plus Inter / JetBrains Mono tokens defined in `tailwind.config.js`.
+Portal chrome (admin, parent, teacher) uses Material Symbols plus Inter / JetBrains Mono tokens defined in `tailwind.config.js`. The icon fonts themselves are vendored in `public/fonts/` and linked with `asset()` — see assets-and-icons.md.
 
 ---
 
@@ -132,7 +128,7 @@ school-wide report always matches their printed report card.
 - **1** Observer (`ReportCacheObserver`)
 - **5** Requests, **5** Notifications, **2** Traits, **2** Policies
 - **158** Blade views across admin, auth, components, errors, layouts, parent, profile, reports, shared, student, students, teacher (see views.md)
-- Static admin/parent HTML under `Frontend/` plus Stitch teacher screens under `stitch_grail_sis_teacher_portal/`
+- The static admin/parent HTML and teacher Stitch prototypes that used to live under `Frontend/` and `stitch_grail_sis_teacher_portal/` have been **removed** from the repository — the Blade portals under `resources/views/` are the live UI (see frontend-prototypes.md)
 - **23** Feature test files (17 top-level + 6 in `Feature/Auth/`) + **2** Unit tests + 1 base TestCase
 
 ---

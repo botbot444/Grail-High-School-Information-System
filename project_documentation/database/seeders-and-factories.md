@@ -1,6 +1,6 @@
 # Database Seeders and Factories
 
-> Last updated: 2026-09-16
+> Last updated: 2026-09-18
 > Update this file when seeders or factories change.
 
 ---
@@ -51,6 +51,16 @@ All located in `database/factories/` — **12** factories.
 | `TeacherFactory.php`       | Teacher records for testing    |
 | `TimetableSlotFactory.php` | Timetable slots for testing    |
 | `UserFactory.php`          | Users for testing              |
+
+---
+
+## Date formats in seeders
+
+Seeders must write MySQL-accepted date strings. `StudentSeeder`, `FeeSeeder` and `AttendanceSeeder` were changed from
+`d-m-Y` to **`Y-m-d`** (commit `7dbf85f` — "Seeder date issue") because MySQL rejects/truncates a `d-m-Y` string, which
+surfaced as missing or wrong `date_of_birth`, `enrolment_date` and `due_date` values after `php artisan db:seed`.
+
+Use `now()->format('Y-m-d')` (or `->toDateString()`), and remember the models cast these columns as `date:Y-m-d`.
 
 ---
 

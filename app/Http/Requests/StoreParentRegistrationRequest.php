@@ -43,6 +43,7 @@ class StoreParentRegistrationRequest extends FormRequest
             'child_gender'        => ['required', 'in:Male,Female'],
             'child_email'         => [
                 'required', 'email', 'max:255',
+                'different:parent_email',
                 'unique:users,email',
                 Rule::unique('registration_requests', 'child_email')->where('status', 'pending'),
             ],

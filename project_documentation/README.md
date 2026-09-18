@@ -1,29 +1,31 @@
 # Grail - High School Information System
 
 > **Project Documentation Hub**
-> Last updated: 2026-09-16
+> Last updated: 2026-09-18
 > This is the entry point for all project documentation. Each file below covers a specific concern so you can read and update only what you need.
 
 ---
 
 ## Documentation Index
 
-| File                                                                   | Purpose                                                                                         | Update When                              |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| [architecture.md](architecture.md)                                     | Directory structure, tech stack, file counts, services/observers/traits                          | Project structure or dependencies change |
-| [database/schema.md](database/schema.md)                               | Database tables: columns, types, FKs, notes                                                     | Migrations are added/modified            |
-| [database/seeders-and-factories.md](database/seeders-and-factories.md) | Seeders and factories                                                                           | Seeders or factories change              |
-| [models.md](models.md)                                                 | Eloquent models (PKs, fillable, casts, relationships, scopes, accessors, business logic)        | Models are added/modified                |
-| [controllers.md](controllers.md)                                       | All controllers (top-level, Admin, Parent, Student, Teacher, Auth)                              | Controllers are added/modified           |
-| [routes.md](routes.md)                                                 | Full route table (methods, URIs, names, middleware)                                             | Routes are added/modified                |
-| [middleware-and-error-handling.md](middleware-and-error-handling.md)   | CheckRole + account-state middleware + custom 419 handling                                      | Middleware or error handling changes     |
-| [views.md](views.md)                                                   | Blade templates, components, layouts, role dashboards                                           | Views are added/modified                 |
-| [frontend-prototypes.md](frontend-prototypes.md)                       | Static HTML/CSS/JS prototypes (AdminViews, ParentViews, teacher Stitch screens)                 | Frontend prototypes change               |
-| [business-logic.md](business-logic.md)                                 | Fee state machine + credits, grade letter calc, role auth, marks entry, report cards, portals   | Business logic changes                   |
-| [setup-and-conventions.md](setup-and-conventions.md)                   | Environment/setup steps, known conventions/gotchas                                              | Setup process or conventions change      |
-| [tests.md](tests.md)                                                   | Test suite overview                                                                             | Tests are added/modified                 |
+| File                                                                   | Purpose                                                                                       | Update When                                  |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| [architecture.md](architecture.md)                                     | Directory structure, tech stack, file counts, services/observers/traits                       | Project structure or dependencies change     |
+| [database/schema.md](database/schema.md)                               | Database tables: columns, types, FKs, notes                                                   | Migrations are added/modified                |
+| [database/seeders-and-factories.md](database/seeders-and-factories.md) | Seeders and factories                                                                         | Seeders or factories change                  |
+| [models.md](models.md)                                                 | Eloquent models (PKs, fillable, casts, relationships, scopes, accessors, business logic)      | Models are added/modified                    |
+| [controllers.md](controllers.md)                                       | All controllers (top-level, Admin, Parent, Student, Teacher, Auth)                            | Controllers are added/modified               |
+| [routes.md](routes.md)                                                 | Full route table (methods, URIs, names, middleware)                                           | Routes are added/modified                    |
+| [middleware-and-error-handling.md](middleware-and-error-handling.md)   | CheckRole + account-state middleware + custom 419 handling                                    | Middleware or error handling changes         |
+| [views.md](views.md)                                                   | Blade templates, components, layouts, role dashboards                                         | Views are added/modified                     |
+| [frontend-prototypes.md](frontend-prototypes.md)                       | Record of the removed static prototypes (AdminViews, ParentViews, teacher Stitch screens)      | Frontend prototypes change                   |
+| [assets-and-icons.md](assets-and-icons.md)                             | Vendored icon fonts (`public/fonts/`), per-page `<head>` links, remaining remote assets       | Icon fonts, webfonts or global assets change |
+| [business-logic.md](business-logic.md)                                 | Fee state machine + credits, grade letter calc, role auth, marks entry, report cards, portals | Business logic changes                       |
+| [setup-and-conventions.md](setup-and-conventions.md)                   | Environment/setup steps, known conventions/gotchas                                            | Setup process or conventions change          |
+| [user-manual.md](user-manual.md)                                       | End-user guide covering installation, sign-in, role actions, and quick-start usage            | User flow or install steps change            |
+| [tests.md](tests.md)                                                   | Test suite overview                                                                           | Tests are added/modified                     |
 
-The living implementation checklist is [`implementation_plan (2).md`](<../implementation_plan (2).md>) at the repo root (not part of this hub’s numbered files). A collection of supporting guides (manual testing, UAT plan, progress summaries) lives in [`Claude outputs/`](<../Claude outputs/>).
+The living implementation checklist is [`implementation_plan (2).md`](<../implementation_plan (2).md>) at the repo root (not part of this hub’s numbered files). End-user installation and day-to-day usage guidance lives in [`user-manual.md`](user-manual.md).
 
 > The root checklist file is literally named `implementation_plan (2).md` (with a space and parentheses). If it is ever
 > renamed to `implementation_plan.md`, update this link.
@@ -64,18 +66,19 @@ php artisan serve    # in another
 
 ## Tech Stack at a Glance
 
-| Layer      | Technology                                      |
-| ---------- | ----------------------------------------------- |
-| Language   | PHP 8.2+                                        |
-| Framework  | Laravel 12.x                                    |
-| Frontend   | Blade, Tailwind CSS 3, Alpine.js                |
-| Build tool | Vite 6                                          |
-| Database   | MySQL (SQLite supported for local development)  |
-| Auth       | Laravel Breeze                                  |
-| PDF        | barryvdh/laravel-dompdf 3.1                     |
-| PWA        | vite-plugin-pwa (installed, not yet configured) |
-| Testing    | PHPUnit 11                                      |
-| Dev runner | Concurrently (artisan serve + queue + vite)     |
+| Layer      | Technology                                                                           |
+| ---------- | ------------------------------------------------------------------------------------ |
+| Language   | PHP 8.2+                                                                             |
+| Framework  | Laravel 12.x                                                                         |
+| Frontend   | Blade, Tailwind CSS 3, Alpine.js                                                     |
+| Icons      | Font Awesome 6.5.1 (solid) + Material Symbols Outlined — vendored in `public/fonts/` |
+| Build tool | Vite 6                                                                               |
+| Database   | MySQL (SQLite supported for local development)                                       |
+| Auth       | Laravel Breeze                                                                       |
+| PDF        | barryvdh/laravel-dompdf 3.1                                                          |
+| PWA        | vite-plugin-pwa (installed, not yet configured)                                      |
+| Testing    | PHPUnit 11                                                                           |
+| Dev runner | Concurrently (artisan serve + queue + vite)                                          |
 
 ---
 

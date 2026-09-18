@@ -1,6 +1,6 @@
 # Setup and Conventions
 
-> Last updated: 2026-09-16
+> Last updated: 2026-09-18
 > Update this file when the setup process or project conventions change.
 
 ---
@@ -10,7 +10,9 @@
 `.env` requirements (see `.env.example`):
 
 - `APP_NAME`, `APP_ENV`, `APP_KEY`, `APP_URL`
-- `DB_CONNECTION=sqlite` (default) — or MySQL/Postgres
+- `DB_CONNECTION=sqlite` (as shipped in `.env.example`) — or MySQL/Postgres. The XAMPP + MySQL path used for coursework
+  is written up in [`user-manual.md`](user-manual.md). Both work; just make sure the `DB_*` block matching the connection
+  you chose is the one left uncommented.
 - `MAIL_*` for Breeze email verification / password reset
 - `CACHE_STORE`, `QUEUE_CONNECTION`, `SESSION_DRIVER`
 
@@ -55,9 +57,18 @@ php artisan serve    # in another
   `Storage::disk('public')->url()`. `asset()` falls back to the current request's host/port, so links keep working when
   `APP_URL` does not match the host actually being browsed.
 - **`students.class_id` is nullable by design** — a newly admitted student stays unplaced until an admin assigns a class.
-- **`/profile` is not routed** — `ProfileController` and `profile/*` views still exist, but settings now live on each
-  portal's `settings` action. Do not document `profile.*` route names.
+- **`/profile` is not routed and its controller is gone** — `ProfileController` and `ProfileUpdateRequest` were deleted;
+  only `resources/views/profile/partials/update-password-form.blade.php` survives as an orphan view. Settings now live on
+  each portal's `settings` action. Do not document `profile.*` route names.
 - **Announcement authoring is admin-only** — there is no teacher authoring route (teachers get a read-only feed).
+- **Creating a student always creates a login** — `AdminController@store` `require`s a unique `email` and provisions that
+  student's `User` inside the same transaction, flashing a one-time password (`GeneratesTemporaryPassword`,
+  `must_change_password = true`). The old email-optional student path was removed in `7dbf85f`; approved registrations
+  reach the same end state.
+- **Seeder dates are `Y-m-d`** — MySQL rejects `d-m-Y` strings, so keep new seeders on `Y-m-d` (see
+  database/seeders-and-factories.md).
+- **Static prototypes were deleted** — `Frontend/` and `stitch_grail_sis_teacher_portal/` no longer exist in the repo; do
+  not add links or asset paths pointing at them (see frontend-prototypes.md).
 
 Status: Resolved (2026-08-05) — seeders were re-run against the XAMPP MySQL dev DB and fee statuses use the state-machine values. If you switch back to SQLite for local experiments, confirm enum/status strings still match (`Pending` / `Partially Paid` / `Cleared` / `Overdue`).
 
